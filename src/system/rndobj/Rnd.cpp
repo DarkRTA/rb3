@@ -1,4 +1,13 @@
 #include "Rnd.h"
+#include "decomp.h"
+#include "math/Color.h"
+#include "math/Geo.h"
+#include "obj/Data.h"
+#include "obj/Dir.h"
+#include "os/File.h"
+#include "os/Joypad.h"
+#include "os/Keyboard.h"
+#include "os/Timer.h"
 #include "rndobj/ModalKeyListener.h"
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
@@ -45,6 +54,7 @@
 #include "rndobj/Set.h"
 #include "rndobj/ShaderOptions.h"
 #include "rndobj/SoftParticles.h"
+#include "rndobj/Tex.h"
 #include "rndobj/TexBlendController.h"
 #include "rndobj/TexBlender.h"
 #include "rndobj/TexRenderer.h"
@@ -54,8 +64,10 @@
 #include "rndobj/TransProxy.h"
 #include "rndobj/Utl.h"
 #include "rndobj/Wind.h"
+#include "rndwii/Rnd.h"
 #include "types.h"
 #include "utl/Cheats.h"
+#include "utl/DataPointMgr.h"
 #include "utl/FileStream.h"
 #include "utl/MemMgr.h"
 #include "utl/Option.h"
@@ -65,6 +77,8 @@
 #include <cstring>
 #include <list>
 
+float gSyncAvg;
+float gAvg;
 int gCurHeap = -1;
 bool gNotifyKeepGoing;
 bool gFailKeepGoing;
@@ -79,13 +93,13 @@ DataNode ModalKeyListener::OnMsg(const KeyboardKeyMsg &k) {
     if (k.GetKey() == 0x12e) {
         if (!GetEnabledKeyCheats() && !TheRnd->ConsoleShowing()) {
             TheRnd->ShowConsole(true);
-            return DataNode(0);
+            return 0;
         } else
             return DataNode(kDataUnhandled, 0);
     } else {
         if (!TheRnd->ConsoleShowing()) {
             gNotifyKeepGoing = true;
-            return DataNode(0);
+            return 0;
         } else
             return DataNode(kDataUnhandled, 0);
     }
@@ -102,28 +116,58 @@ static DataNode FailRestartConsole(DataArray *) {
 }
 
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
+
+FORCE_LOCAL_INLINE
 bool Rnd::ConsoleShowing() { return mConsole->Showing(); }
+END_FORCE_LOCAL_INLINE
 
 void WordWrap(const char *, int, char *, int) {}
 
 void Rnd::Modal(bool &b, char *c, bool bb) {
     if (bb)
-        TheDebug << MakeString("%s\n", c);
+        MILO_LOG("%s\n", c);
     if (CanModal(b)) {
-        if (MainThread()) {
-            // timer stuff
-            strcat(c, "Rnd::Modal");
-        }
+        AutoSlowFrame frame("Rnd::Modal");
         char buf[0x1000];
         WordWrap(c, 0x5a, buf, 0x1000);
         if (!bb) {
             strcat(buf, "\n\n-- Waiting on Stack Trace --\n");
-        } else if (!b) {
-            strcat(buf, "\n\n-- Press any button to continue --\n");
-        } else
+        } else if (b) {
             strcat(buf, "\n\n-- Program ended --\n");
-
-        strcat(c, ""); // only here to generate the string in the pool
+        } else
+            strcat(buf, "\n\n-- Press any button to continue --\n");
+        bool oldShowing = ConsoleShowing();
+        ShowConsole(false);
+        if (!b || !bb)
+            RndSplasherSuspend();
+        ModalDraw(b, buf);
+        if (bb) {
+            gFailKeepGoing = false;
+            gNotifyKeepGoing = false;
+            gFailRestartConsole = false;
+            ModalKeyListener mkl;
+            KeyboardSubscribe(&mkl);
+            int mask = -1;
+            if (b)
+                mask = 0x800;
+            while (!(mask & JoypadPollForButton(-1))) {
+                KeyboardPoll();
+                ModalDraw(b, buf);
+                if (b && gFailKeepGoing) {
+                    b = false;
+                    break;
+                }
+                if (!b && gNotifyKeepGoing)
+                    break;
+                if (b && gFailRestartConsole)
+                    TheDebug.Exit(1, true);
+            }
+            KeyboardUnsubscribe(&mkl);
+            ShowConsole(false);
+            ModalDraw(b, "");
+            RndSplasherResume();
+        }
+        ShowConsole(oldShowing);
     }
 }
 
@@ -131,28 +175,31 @@ Rnd::Rnd()
     : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16),
       mDrawCount(0), mDrawTimer(), mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0),
       mStatsOverlay(0), mDefaultMat(0), mOverlayMat(0), mOverdrawMat(0), mDefaultCam(0),
-      unk94(0), unk98(0), unk9c(0), unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "),
-      mSync(1), mGsTiming(0), mShowSafeArea(0), mDrawing(0), unkdf(1),
-      mAspect(kWidescreen), mDrawMode(kDrawNormal), unke8(0), unke9(0), mShrinkToSafe(1),
-      mInGame(0), mVerboseTimers(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0),
-      unkf4(0), unkf8(0), mPostProcOverride(0), unk110(this), mDraws(this), unk130(0),
-      unk131(1), mProcCounter(), mProcCmds(kProcessAll), mLastProcCmds(kProcessAll)
+      mWorldCamCopy(0), mDefaultEnv(0), mDefaultLit(0), mRateTotal(0.0f), mRateCount(6),
+      mFrameID(0), mRateGate("    "), mSync(1), mGsTiming(0), mShowSafeArea(0),
+      mDrawing(0), mWorldEnded(1), mAspect(kWidescreen), mDrawMode(kDrawNormal), unke8(0),
+      unke9(0), mShrinkToSafe(1), mInGame(0), mVerboseTimers(0), mDisablePostProc(0),
+      unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
+      unk110(this), mDraws(this), unk130(0), unk131(1), mProcCounter(),
+      mProcCmds(kProcessAll), mLastProcCmds(kProcessAll)
 #ifdef MILO_DEBUG
       ,
       mForceCharLod(-1) // jank it up!
 #endif
 {
     for (int i = 0; i < 8; i++)
-        unk_arr[i] = 0;
+        mDefaultTex[i] = 0;
 #ifdef MILO_DEBUG
     gpDbgFrameID = (int *)&mFrameID;
 #endif
 }
 
+FORCE_LOCAL_INLINE
 float Rnd::YRatio() {
     static const float kRatio[4] = { 1.0f, 0.75f, 0.5625f, 0.5625f }; // qualifiers :)
     return kRatio[mAspect];
 }
+END_FORCE_LOCAL_INLINE
 
 void TerminateCallback() {
     RndUtlTerminate();
@@ -166,13 +213,26 @@ void Rnd::DrawRectScreen(
     const Hmx::Color *c2,
     const Hmx::Color *c3
 ) {
-    DrawRect(r, c1, m, c2, c3);
+    float fwidth = mWidth;
+    float fheight = mHeight;
+    Hmx::Rect rect(r.x * fwidth, r.y * fheight, r.w * fwidth, r.h * fheight);
+    DrawRect(rect, c1, m, c2, c3);
 }
 
 Vector2 &Rnd::DrawString(const char *, const Vector2 &v, const Hmx::Color &, bool) {
     static Vector2 s;
     s = v;
     return s;
+}
+
+Vector2 &
+Rnd::DrawStringScreen(const char *c, const Vector2 &v, const Hmx::Color &color, bool b4) {
+    float fwidth = mWidth;
+    float fheight = mHeight;
+    Vector2 &vres = DrawString(c, Vector2(v.x * fwidth, v.y * fheight), color, b4);
+    vres.x /= fwidth;
+    vres.y /= fheight;
+    return vres;
 }
 
 void Rnd::SetupFont() {
@@ -182,10 +242,10 @@ void Rnd::SetupFont() {
         for (int j = 0; j < cloned->Size(); j++) {
             DataArray *jArr = cloned->Array(j);
             for (int k = 1; k < jArr->Size(); k += 2) {
-                CONST_ARRAY(jArr)->Node(k) = DataNode(0.7f * jArr->Float(k) + 0.3f);
+                jArr->Node(k) = 0.7f * jArr->Float(k) + 0.3f;
             }
         }
-        CONST_ARRAY(mFont)->Node(i + 0x62) = DataNode(cloned, kDataArray);
+        mFont->Node(i + 0x62) = DataNode(cloned, kDataArray);
         cloned->Release();
     }
 }
@@ -203,7 +263,7 @@ void Rnd::PreInit() {
         mAspect = kWidescreen;
 
     // some other code
-    mWidth = YRatio();
+    mWidth = ((float)mHeight / Rnd::YRatio()) + 0.5f;
 
     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
     SetupFont();
@@ -269,8 +329,8 @@ void Rnd::PreInit() {
     mTimersOverlay->SetCallback(this);
     mConsole = new RndConsole();
     mDrawing = 0;
-    unkdf = 1;
-    mGsTiming = mTimersOverlay->mShowing;
+    mWorldEnded = 1;
+    mGsTiming = TimersShowing();
     CreateDefaults();
     InitParticleSystem();
     DataRegisterFunc("keep_going", FailKeepGoing);
@@ -293,8 +353,7 @@ void Rnd::Terminate() {
 #ifdef MILO_DEBUG
     gpDbgFrameID = 0;
 #endif
-    delete mConsole;
-    mConsole = NULL;
+    RELEASE(mConsole);
     TheDebug.RemoveExitCallback(TerminateCallback);
     RndOverlay::Terminate();
     RndMultiMesh::Terminate();
@@ -302,25 +361,54 @@ void Rnd::Terminate() {
     SetName(NULL, NULL);
 }
 
-void Rnd::RegisterPostProcessor(PostProcessor *p) { mPostProcessors.push_back(p); }
-
-void Rnd::UnregisterPostProcessor(PostProcessor *p) {
-    for (std::list<PostProcessor *>::iterator it = mPostProcessors.begin();
-         it != mPostProcessors.end();
-         it++) {
-        if (p == *it)
-            mPostProcessors.erase(it);
+void Rnd::RemovePointTest(RndFlare *flare) {
+    if (!TheHiResScreen.IsActive()) {
+        FOREACH (it, mPointTests) {
+            if (it->unk_0xC == flare) {
+                mPointTests.erase(it);
+                return;
+            }
+        }
     }
 }
+
+void Rnd::RegisterPostProcessor(PostProcessor *p) {
+    mPostProcessors.push_back(p);
+    mPostProcessors.sort(SortPostProc());
+}
+
+void Rnd::UnregisterPostProcessor(PostProcessor *p) { mPostProcessors.remove(p); }
 
 void Rnd::SetPostProcOverride(RndPostProc *pp) { mPostProcOverride = pp; }
 
 PostProcessor *Rnd::GetPostProcOverride() const { return mPostProcOverride; }
 
+void Rnd::BeginDrawing() {
+    mDrawing = true;
+    mWorldEnded = false;
+    mDrawTimer.Restart();
+    { START_AUTO_TIMER("gs"); }
+    { START_AUTO_TIMER("world"); }
+    mLastProcCmds = mProcCmds;
+    mProcCmds = mProcCounter.ProcCommands();
+    mDefaultCam->Select();
+    mDefaultEnv->Select(nullptr);
+    if (!TheHiResScreen.IsActive()) {
+        mPointTests.clear();
+    }
+    mDrawCount++;
+    if (RndPostProc::Current()) {
+        RndPostProc::Current()->SetBloomColor();
+    }
+    RndText::CollectGarbage();
+}
+
 void Rnd::EndWorld() {
-    if (!unkdf) {
+    if (!mWorldEnded) {
         // function ptr stuff here?
-        unkdf = true;
+        DoWorldEnd();
+        DoPostProcess();
+        mWorldEnded = true;
     }
 }
 
@@ -339,8 +427,8 @@ void Rnd::CopyWorldCam(RndCam *cam) {
     if (mProcCmds & 1) {
         if (!cam)
             cam = RndCam::sCurrent;
-        unk94->Copy(cam, Hmx::Object::kCopyShallow);
-        unk94->SetTransParent(0, false);
+        mWorldCamCopy->Copy(cam, Hmx::Object::kCopyShallow);
+        mWorldCamCopy->SetTransParent(0, false);
         unkef = true;
     }
 }
@@ -388,6 +476,144 @@ float Rnd::UpdateOverlay(RndOverlay *ovl, float f) {
     else if (ovl == mTimersOverlay)
         f = DrawTimers(f);
     return f;
+}
+
+#pragma push
+#pragma auto_inline on
+void Rnd::UpdateRate() {
+    mRateTotal += mDrawTimer.GetLastMs();
+    static Timer *cpuTimer = AutoTimer::GetTimer("cpu");
+    static Timer *gsTimer = AutoTimer::GetTimer("gs");
+    if (gsTimer && cpuTimer) {
+        if (gsTimer->GetLastMs() > 16.7f) {
+            if (gsTimer->GetLastMs() > cpuTimer->GetLastMs() + 0.1f) {
+                mRateGate = "gs";
+            } else
+                mRateGate = "cpu";
+        }
+    }
+    mRateCount--;
+    if (mRateCount == 0) {
+        int rate = mRateTotal ? 6000.0f / mRateTotal + 0.5f : 0;
+        int div = TheWiiRnd.mProcCounter.mEvenOddDisabled ? rate / 3 : rate / 2;
+        *mRateOverlay << "rate:" << rate << "/" << div << mRateGate << "avg" << gAvg
+                      << "sync_avg" << gSyncAvg;
+        *mRateOverlay << "\n";
+        mRateCount = 6;
+        mRateTotal = 0;
+        mRateGate = "";
+    }
+}
+#pragma pop
+
+void Rnd::CreateDefaults() {
+    RELEASE(mWorldCamCopy);
+    RELEASE(mDefaultCam);
+    RELEASE(mDefaultEnv);
+    RELEASE(mDefaultLit);
+    RELEASE(mDefaultMat);
+    RELEASE(mOverlayMat);
+    RELEASE(mOverdrawMat);
+    mWorldCamCopy = ObjectDir::sMainDir->New<RndCam>("[world cam copy]");
+    mDefaultCam = ObjectDir::sMainDir->New<RndCam>("[default cam]");
+    mDefaultEnv = ObjectDir::sMainDir->New<RndEnviron>("[default env]");
+    mDefaultLit = ObjectDir::sMainDir->New<RndLight>("[default lit]");
+    mDefaultLit->SetTransParent(mDefaultCam, false);
+    mDefaultLit->SetLightType(RndLight::kDirectional);
+    mDefaultEnv->AddLight(mDefaultLit);
+    mDefaultEnv->SetUseApproxes(true);
+    mDefaultEnv->SetUseApproxGlobal(false);
+    mDefaultMat = Hmx::Object::New<RndMat>();
+    mDefaultMat->SetUseEnv(false);
+    mDefaultMat->SetPreLit(true);
+    mOverlayMat = Hmx::Object::New<RndMat>();
+    mOverlayMat->SetUseEnv(false);
+    mOverlayMat->SetPreLit(true);
+    mOverlayMat->SetBlend(RndMat::kBlendSrcAlpha);
+    mOverlayMat->SetZMode(RndMat::kZModeForce);
+    mOverdrawMat = Hmx::Object::New<RndMat>();
+    mOverdrawMat->SetUseEnv(false);
+    mOverdrawMat->SetBlend(RndMat::kBlendSrcAlpha);
+    Hmx::Color col(1, 0, 0, 0.2f);
+    mOverdrawMat->SetColor(col);
+    mOverdrawMat->SetAlpha(col.alpha);
+    for (uint i = 0; i < kDefaultTex_Max; i++) {
+        RELEASE(mDefaultTex[i]);
+        mDefaultTex[i] = CreateDefaultTexture((DefaultTextureType)i);
+    }
+}
+
+RndTex *Rnd::CreateDefaultTexture(DefaultTextureType textureType) {
+    MILO_ASSERT(textureType < kDefaultTex_Max, 0x5F5);
+    static const int sDefSize[kDefaultTex_Max][2] = { 8,     8, 8,    8,   8,    8,
+                                                      8,     8, 8,    8,   0x40, 0x40,
+                                                      0x100, 8, 0x80, 0x80 };
+    static const unsigned char sDefColor[kDefaultTex_Max][4] = {
+        0,    0,    0,    0xFF, 0,    0,    0,    0,    0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff, 0,    0x7f, 0x7f, 0xff, 0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0,    0,    0,    0xff
+    };
+    int width = sDefSize[textureType][0];
+    int height = sDefSize[textureType][1];
+    unsigned char red = sDefColor[textureType][0];
+    unsigned char green = sDefColor[textureType][1];
+    unsigned char blue = sDefColor[textureType][2];
+    unsigned char alpha = sDefColor[textureType][3];
+    RndBitmap bmap;
+    bmap.Create(width, height, 0, 0x20, 0x40, 0, 0, 0);
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            bmap.SetPixelColor(j, i, red, green, blue, alpha);
+        }
+    }
+    switch (textureType) {
+    case 5:
+        for (int i = 0; i < width; i++) {
+            unsigned char u10 = 0xFF - (i * 255) / (width - 1);
+            for (int j = 0; j < height; j++) {
+                bmap.SetPixelColor(i, j, u10, u10, u10, alpha);
+            }
+        }
+        break;
+    case 6:
+        Hmx::Color color;
+        for (int i = 0; i < width; i++) {
+            MakeColor((float)i / 255.0f, 1, 0.5f, color);
+            unsigned char thisRed = color.red * 255.0f;
+            unsigned char thisGreen = color.green * 255.0f;
+            unsigned char thisBlue = color.blue * 255.0f;
+            for (int j = 0; j < height; j++) {
+                bmap.SetPixelColor(i, j, thisRed, thisGreen, thisBlue, alpha);
+            }
+        }
+        break;
+    case 7:
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (((i ^ j) >> 2) & 1) {
+                    bmap.SetPixelColor(j, i, 0xff, 0x80, 0x40, alpha);
+                } else {
+                    bmap.SetPixelColor(j, i, 0, 0, 0, alpha);
+                }
+            }
+        }
+        break;
+    default:
+        break;
+    }
+    RndTex *tex = Hmx::Object::New<RndTex>();
+    tex->SetBitmap(bmap, nullptr, true);
+    return tex;
+}
+
+RndTex *Rnd::GetNullTexture() { return mNullTex; }
+
+void Rnd::CompressTextureCancel(CompressTextureCallback *cb) {
+    FOREACH (it, unk154) {
+        if (*it == cb) {
+            *it = nullptr;
+        }
+    }
 }
 
 #pragma push
@@ -497,7 +723,7 @@ DataNode Rnd::OnShowOverlay(const DataArray *da) {
     if (da->Size() > 4) {
         o->SetTimeout(da->Float(4));
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnToggleHeap(const DataArray *) {
@@ -513,7 +739,7 @@ DataNode Rnd::OnToggleHeap(const DataArray *) {
             mHeapOverlay->SetShowing(true);
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnReflect(const DataArray *da) {
@@ -525,7 +751,7 @@ DataNode Rnd::OnReflect(const DataArray *da) {
         }
         TheDebug.SetReflect(idk);
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnToggleOverlay(const DataArray *da) {
@@ -539,7 +765,7 @@ DataNode Rnd::OnToggleOverlay(const DataArray *da) {
 
 DataNode Rnd::OnToggleOverlayPosition(const DataArray *) {
     RndOverlay::TogglePosition();
-    return DataNode(0);
+    return 0;
 }
 
 void Rnd::SetProcAndLock(bool b) { mProcCounter.SetProcAndLock(b); }
@@ -556,7 +782,18 @@ void Rnd::ResetProcCounter() {
 bool Rnd::GetEvenOddDisabled() const { return mProcCounter.mEvenOddDisabled; }
 void Rnd::SetEvenOddDisabled(bool b) { mProcCounter.SetEvenOddDisabled(b); }
 
-String UniqueFileName(const char *) {}
+String UniqueFileName(const char *name) {
+    int idx = 0;
+    String out;
+    File *file = nullptr;
+    do {
+        idx++;
+        out = MakeString("%s_%06d.bmp", name, idx);
+        delete file;
+        file = NewFile(out.c_str(), 4);
+    } while (file);
+    return out;
+}
 
 void Rnd::ScreenDump(const char *cc) {
     RndTex *tex = Hmx::Object::New<RndTex>();
@@ -573,19 +810,37 @@ void Rnd::ScreenDump(const char *cc) {
 
 void Rnd::ScreenDumpUnique(const char *cc) { ScreenDump(UniqueFileName(cc).c_str()); }
 
+void Rnd::UploadDebugStats() {
+    static int gBigUpload;
+    if (UsingCD()) {
+        int mark = GetParticleHighWaterMark();
+        if (mark > gBigUpload) {
+            gBigUpload = mark;
+            DataArray *cfg = SystemConfig("rnd", "title");
+            SendDataPoint(
+                MakeString("debug/%s/rnd/particlesys/max", cfg->Str(1)),
+                "count",
+                gBigUpload
+            );
+        }
+    }
+}
+
+DECOMP_FORCEACTIVE(Rnd, "SSSC(%d)\n")
+
 DataNode Rnd::OnShowConsole(const DataArray *) {
     ShowConsole(true);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnToggleTimers(const DataArray *) {
     SetShowTimers(mVerboseTimers || !TimersShowing(), false);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnToggleTimersVerbose(const DataArray *) {
     SetShowTimers(mVerboseTimers == 0, mVerboseTimers == 0);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnClearColorR(const DataArray *) { return DataNode(mClearColor.red); }
@@ -600,7 +855,7 @@ DataNode Rnd::OnClearColorPacked(const DataArray *) {
 
 DataNode Rnd::OnSetClearColor(const DataArray *da) {
     SetClearColor(Hmx::Color(da->Float(2), da->Float(3), da->Float(4)));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnSetClearColorPacked(const DataArray *da) {
@@ -608,25 +863,25 @@ DataNode Rnd::OnSetClearColorPacked(const DataArray *da) {
     float green = ((da->Int(2) >> 8) & 255) / 255.0f;
     float blue = ((da->Int(2) >> 0x10) & 255) / 255.0f;
     SetClearColor(Hmx::Color(red, green, blue));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnScreenDump(const DataArray *da) {
     ScreenDump(da->Str(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnScreenDumpUnique(const DataArray *da) {
     ScreenDumpUnique(da->Str(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnScaleObject(const DataArray *da) {
     RndScaleObject(da->GetObj(2), da->Float(3), da->Float(4));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Rnd::OnSetSphereTest(const DataArray *da) {
     unk131 = da->Int(2);
-    return DataNode(0);
+    return 0;
 }
