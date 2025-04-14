@@ -1256,7 +1256,7 @@
             "system/rndobj/Movie.cpp": "Matching",
             "system/rndobj/MultiMesh.cpp": "NonMatching",
             "system/rndobj/MultiMeshProxy.cpp": "Matching",
-            "system/rndobj/Overlay.cpp": "NonMatching",
+            "system/rndobj/Overlay.cpp": "Equivalent",
             "system/rndobj/Part.cpp": "NonMatching",
             "system/rndobj/PartAnim.cpp": "NonMatching",
             "system/rndobj/PartLauncher.cpp": "NonMatching",

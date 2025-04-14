@@ -92,6 +92,8 @@ public:
 
     const std::vector<RndTransformable *> &TransChildren() { return mChildren; }
 
+    bool Dirty() const { return mCache->mFlags & 1; }
+
     void SetDirty() {
         if (mCache->mFlags & 1)
             return;

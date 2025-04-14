@@ -8,12 +8,21 @@
 #include "rndobj/Draw.h"
 #include "math/Vec.h"
 
+enum ProcessCmd {
+    kProcessNone = 0,
+    kProcessWorld = 1,
+    kProcessPost = 2,
+    kProcessChar = 4,
+    kProcessPostChar = 6,
+    kProcessAll = 7
+};
+
 class ProcCounter {
 public:
     ProcCounter();
     void SetProcAndLock(bool);
     void SetEvenOddDisabled(bool);
-    int ProcCommands();
+    ProcessCmd ProcCommands();
 
     bool mProcAndLock;
     int mCount;
@@ -35,6 +44,12 @@ public:
         OSReport("Base PostProcessor::OnGPHangRecover called.\n");
     }
     virtual float Priority() { return 1.0f; }
+};
+
+struct SortPostProc {
+    bool operator()(PostProcessor *p1, PostProcessor *p2) const {
+        return p1->Priority() < p2->Priority();
+    }
 };
 
 /** "A PostProc drives post-processing effects." */

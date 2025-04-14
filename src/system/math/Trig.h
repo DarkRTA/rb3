@@ -7,6 +7,8 @@ float Lookup(float); // fn_802E2F90
 float Sine(float); // fn_802E2F38
 float FastSin(float); // fn_802E2FE8
 
+inline float FastCos(float f) { return FastSin(f + 1.570796370506287f); }
+
 // fn_802DE4D4
 inline float Cosine(float f) { return Sine(f + 1.5707964f); }
 

@@ -16,7 +16,7 @@ public:
     };
 
     RndOverlay(const DataArray *);
-    virtual ~RndOverlay();
+    virtual ~RndOverlay() {}
     virtual void Print(const char *);
 
     void SetCallback(Callback *cb) { mCallback = cb; }

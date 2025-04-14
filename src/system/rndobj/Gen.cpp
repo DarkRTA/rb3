@@ -163,9 +163,8 @@ void RndGenerator::SetPath(RndTransAnim *path, float start, float end) {
 
 void RndGenerator::Generate(float frame) {
     if (mParticleSys) {
-        RndParticle *p = RndParticleSys::AllocParticle();
-        mCurParticle = p;
-        mParticleSys->InitParticle(p, NULL);
+        mCurParticle = mParticleSys->AllocParticle();
+        mParticleSys->InitParticle(mCurParticle, NULL);
     }
 }
 

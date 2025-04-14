@@ -63,6 +63,12 @@ public:
         mFadeStart = start;
         mFadeEnd = end;
     }
+    void SetUseApproxLocal(bool b) { mUseApprox_Local = b; }
+    void SetUseApproxGlobal(bool b) { mUseApprox_Global = b; }
+    void SetUseApproxes(bool b) {
+        SetUseApproxLocal(b);
+        SetUseApproxGlobal(b);
+    }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
