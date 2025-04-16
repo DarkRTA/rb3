@@ -9,8 +9,7 @@ typedef struct unkStruct {
     void (*unkC)();
 } unkStruct;
 
-namespace Quazal
-{
+namespace Quazal {
     class Socket {
         static unsigned long long s_pSocketDriver;
 
@@ -24,7 +23,5 @@ namespace Quazal
 
         Socket(unsigned int);
         ~Socket();
-
-        
     };
 }
