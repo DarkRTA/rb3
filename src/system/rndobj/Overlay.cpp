@@ -3,6 +3,7 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Rnd.h"
+#include "utl/Std.h"
 
 bool RndOverlay::sTopAligned = true;
 std::list<RndOverlay *> RndOverlay::sOverlays;
@@ -16,22 +17,17 @@ void RndOverlay::Init() {
 }
 
 void RndOverlay::Terminate() {
-    for (std::list<RndOverlay *>::iterator i = sOverlays.begin(); i != sOverlays.end();
-         i) {
+    for (std::list<RndOverlay *>::iterator i = sOverlays.begin(); i != sOverlays.end();) {
         delete *i;
         i = sOverlays.erase(i);
     }
 }
 
-RndOverlay::~RndOverlay() {}
-
 static float DrawOverlayLine(RndOverlay *o);
 
 void RndOverlay::DrawAll(bool b) {
     float toUse = sTopAligned ? 0.0212f : 0.9788f;
-    for (std::list<RndOverlay *>::const_iterator it = sOverlays.begin();
-         it != sOverlays.end();
-         ++it) {
+    FOREACH (it, sOverlays) {
         RndOverlay *cur = *it;
         if (!b || cur->mModal) {
             if (sTopAligned)
@@ -45,21 +41,21 @@ void RndOverlay::DrawAll(bool b) {
 }
 
 static inline float DrawOverlayLine(RndOverlay *o) {
-    unsigned int numlines = o->mLines.size();
+    unsigned int numlines = o->NumLines();
     return TheRnd->DrawStringScreen("", Vector2(0, 0), o->mTextColor, true).y * numlines
         + 0.0268f;
 }
 
 void RndOverlay::TogglePosition() { sTopAligned = !sTopAligned; }
 
-RndOverlay *RndOverlay::Find(Symbol s, bool fail) {
+RndOverlay *RndOverlay::Find(Symbol name, bool fail) {
     for (std::list<RndOverlay *>::iterator it = sOverlays.begin(); it != sOverlays.end();
          it++) {
-        if (s == (*it)->mName)
+        if (name == (*it)->mName)
             return *it;
     }
     if (fail)
-        MILO_FAIL("Could not find overlay \"%s\"", s);
+        MILO_FAIL("Could not find overlay \"%s\"", name);
     return 0;
 }
 
@@ -84,12 +80,14 @@ void RndOverlay::SetLines(int lines) {
     }
 }
 
-void RndOverlay::SetTimeout(float f) { mTimeout = f * 1000.0f + SystemMs(); }
+void RndOverlay::SetTimeout(float seconds) { mTimeout = seconds * 1000.0f + SystemMs(); }
 
 String &RndOverlay::CurrentLine() {
     if (mLine == mLines.begin()) {
         String newstr;
-        mLine = mLines.insert(mLines.erase(mLine), newstr);
+        mLines.pop_front();
+        mLines.push_back(newstr);
+        mLine = PrevItr(mLines.begin());
         mLine->reserve(0x7F);
     }
     return *mLine;
@@ -103,24 +101,54 @@ void RndOverlay::Clear() {
     mCursorChar = -1;
 }
 
-float RndOverlay::Draw(float) {
+float RndOverlay::Draw(float topY) {
     if (mTimeout > 0 && mShowing) {
         if (SystemMs() > mTimeout) {
             mShowing = false;
             mTimeout = 0;
         }
     }
+    if (!mShowing)
+        return topY;
+    else if (mCallback) {
+        float updated = mCallback->UpdateOverlay(this, topY);
+        if (updated != topY)
+            return updated;
+    }
+
+    Hmx::Rect rect(0, topY, 1, DrawOverlayLine(this));
+    TheRnd->DrawRectScreen(rect, mBackColor, TheRnd->OverlayMat(), nullptr, nullptr);
+    Vector2 pos(0.025f, 0.0134f + topY);
+    if (mCursorChar > -1 && !mLines.empty()) {
+        String str4c(mLines.front());
+        str4c.erase(mCursorChar);
+        str4c += String("_");
+        TheRnd->DrawStringScreen(str4c.c_str(), pos, mTextColor, true);
+    }
+    FOREACH (it, mLines) {
+        pos.y = TheRnd->DrawStringScreen(it->c_str(), pos, mTextColor, true).y;
+    }
+    if (mDumpCount > 0) {
+        mDumpCount--;
+        FOREACH (it, mLines) {
+            TheDebug << it->c_str() << "\n";
+        }
+    }
+    return rect.y + rect.h;
 }
 
 void RndOverlay::Print(const char *cc) {
     for (const char *p = cc; *p != '\0'; p++) {
         if (mLine == mLines.begin()) {
             String str;
+            mLines.pop_front();
+            mLines.push_back(str);
+            mLine = PrevItr(mLines.begin());
+            mLine->reserve(0x7F);
         }
-        char curChar = *p;
-        if (curChar == '\n') {
+        if (*p == '\n') {
             ++mLine;
         } else
-            *mLine += curChar;
+            *mLine += *p;
     }
 }

@@ -2,10 +2,10 @@
 #include "obj/ObjPtr_p.h"
 #include "utl/BinStream.h"
 
-class ObjectStage : public ObjPtr<Hmx::Object, ObjectDir> {
+class ObjectStage : public ObjPtr<Hmx::Object> {
 public:
-    ObjectStage() : ObjPtr<Hmx::Object, ObjectDir>(sOwner, 0) {}
-    ObjectStage(Hmx::Object *o) : ObjPtr<Hmx::Object, ObjectDir>(sOwner, o) {}
+    ObjectStage() : ObjPtr<Hmx::Object>(sOwner) {}
+    ObjectStage(Hmx::Object *o) : ObjPtr<Hmx::Object>(sOwner, o) {}
     virtual ~ObjectStage() {}
 
     // copy ctor - calls ObjPtr copy ctor

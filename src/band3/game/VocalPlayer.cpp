@@ -1018,7 +1018,7 @@ void VocalPlayer::UpdateVocalStyle() {
 
 bool VocalPlayer::Freestyling() const {
     bool insection = InFreestyleSection();
-    return unk268 || IsDeployingBandEnergy() && insection;
+    return mIsInCoda || IsDeployingBandEnergy() && insection;
 }
 
 bool VocalPlayer::CanDeployCoda() const {

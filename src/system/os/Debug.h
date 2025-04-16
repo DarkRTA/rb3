@@ -193,7 +193,7 @@ public:
 
     DebugNotifyOncerBeta &operator<<(const char *cc) {
         if (AddToNotifies(cc, mNotifies)) {
-            DebugBeta() << cc;
+            MILO_LOG("NOTIFY_BETA: %s\n", cc);
         }
         return *this;
     }
@@ -207,8 +207,8 @@ public:
     }
 #define MILO_NOTIFY_ONCE_BETA(...)                                                       \
     {                                                                                    \
-        static DebugNotifyOncer _dw;                                                     \
-        _dw << MakeString(__VA_ARGS__);                                                  \
+        static DebugNotifyOncerBeta _dnob;                                               \
+        _dnob << MakeString(__VA_ARGS__);                                                \
     }
 #define MILO_LOG_ONCE(...)                                                               \
     {                                                                                    \

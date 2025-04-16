@@ -1,8 +1,14 @@
 #include "rndobj/Part.h"
+#include "math/Mtx.h"
+#include "math/Rand.h"
+#include "math/Rot.h"
+#include "math/Trig.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
+#include "obj/Task.h"
 #include "os/Debug.h"
+#include "os/File.h"
 #include "os/System.h"
 #include "os/Timer.h"
 #include "rndobj/Anim.h"
@@ -12,6 +18,8 @@
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Utl.h"
+#include "types.h"
+#include "utl/Loader.h"
 #include "utl/MemMgr.h"
 #include "obj/DataFunc.h"
 #include "utl/Symbols.h"
@@ -25,22 +33,26 @@ namespace {
         return SystemConfig("rnd", "particlesys", "global_limit")->Int(1);
     }
 
-    DataNode PrintParticlePoolSize(DataArray *da) {
+    DataNode PrintParticlePoolSize(DataArray *) {
         MILO_LOG("Particle Pool Size:\n");
         if (gParticlePool) {
             int size = ParticlePoolSize();
-            MILO_LOG("   %d particles can be allocated, %.1f KB.\n", size, (float)size);
+            MILO_LOG(
+                "   %d particles can be allocated, %.1f KB.\n",
+                size,
+                (float)(size * 176 * 0.0009765625f)
+            );
             MILO_LOG(
                 "   %d particles active, %d is the high water mark.\n",
-                gParticlePool->mNumActiveParticles,
-                gParticlePool->mHighWaterMark
+                gParticlePool->NumActiveParticles(),
+                gParticlePool->HighWaterMark()
             );
             MILO_LOG(
                 "   Adding 30%%, suggesting a particle global limit of %d (set in default.dta).\n",
-                (int)(gParticlePool->mHighWaterMark * 1.3f)
+                (int)(gParticlePool->HighWaterMark() * 1.3f)
             );
         }
-        return DataNode(0);
+        return 0;
     }
 }
 
@@ -60,14 +72,94 @@ int GetParticleHighWaterMark() {
 }
 
 void ParticleCommonPool::InitPool() {
-    static int x = MemFindHeap("main");
-    MemPushHeap(x);
-    mPoolParticles = new RndFancyParticle[0xb0];
+    static int _x = MemFindHeap("main");
+    MemTempHeap tmp(_x);
+    int size = ParticlePoolSize();
+    mPoolParticles = new RndFancyParticle[size];
+    for (int i = 0; i < size - 1; i++) {
+        mPoolParticles[i].prev = nullptr;
+        mPoolParticles[i].next = &mPoolParticles[i + 1];
+    }
+    mPoolParticles[size - 1].prev = nullptr;
+    mPoolParticles[size - 1].next = nullptr;
+    mPoolFreeParticles = mPoolParticles;
 }
 
-void RndParticleSys::SetPool(int max, RndParticleSys::Type ty) {
+RndParticle *ParticleCommonPool::AllocateParticle() {
+    RndParticle *cur = mPoolFreeParticles;
+    RndParticle *ret = nullptr;
+    if (cur) {
+        mPoolFreeParticles = mPoolFreeParticles->next;
+        cur->prev = cur;
+        mNumActiveParticles++;
+        ret = cur;
+        if (mNumActiveParticles > mHighWaterMark) {
+            mHighWaterMark = mNumActiveParticles;
+        }
+    }
+    return ret;
+}
+
+RndParticle *ParticleCommonPool::FreeParticle(RndParticle *p) {
+    if (!p)
+        return nullptr;
+    else {
+        RndParticle *ret = p->next;
+        p->next = mPoolFreeParticles;
+        p->prev = nullptr;
+        mPoolFreeParticles = p;
+        mNumActiveParticles--;
+        return ret;
+    }
+}
+
+void RndParticleSys::SetPersistentPool(int i1, Type ty) {
+    delete[] mPersistentParticles;
+    mMaxParticles = i1;
+    mType = ty;
+    if (mMaxParticles != 0) {
+        RndParticle *p = nullptr;
+        if (ty == 1) {
+            mPersistentParticles = new RndFancyParticle[i1];
+            RndFancyParticle *fp = (RndFancyParticle *)p;
+            for (int i = 0; i != i1; i++) {
+                (fp++)->next = fp;
+            }
+            p = fp;
+        } else {
+            mPersistentParticles = new RndParticle[i1];
+            for (int i = 0; i != i1; i++) {
+                (p++)->next = p;
+            }
+        }
+        p->next = nullptr;
+    } else
+        mPersistentParticles = 0;
+    mFreeParticles = mPersistentParticles;
+    mActiveParticles = 0;
+    mNumActive = 0;
+    mEmitCount = 0;
+}
+
+void RndParticleSys::SetPool(int max, Type ty) {
     mMaxParticles = max;
     DataArray *cfg = SystemConfig("rnd", "particlesys", "local_limit");
+    int limit = cfg->Int(1);
+    if (mMaxParticles > limit) {
+        mMaxParticles = limit;
+    }
+    if (mPreserveParticles) {
+        SetPersistentPool(max, ty);
+    } else {
+        if (mActiveParticles) {
+            for (RndParticle *p = mActiveParticles; p != nullptr; p = FreeParticle(p))
+                ;
+        }
+        mType = ty;
+        mActiveParticles = 0;
+        mNumActive = 0;
+        mEmitCount = 0;
+    }
 }
 
 BEGIN_COPYS(RndParticleSys)
@@ -80,9 +172,19 @@ BEGIN_COPYS(RndParticleSys)
     COPY_SUPERCLASS(RndDrawable)
     COPY_MEMBER_FROM(f, mPreserveParticles)
     if (mPreserveParticles) {
-        SetPool(mMaxParticles, mType);
+        SetPool(f->mMaxParticles, f->mType);
+        for (RndParticle *p = f->mActiveParticles; p != nullptr; p = p->next) {
+            RndParticle *alloced = AllocParticle();
+            if (!alloced)
+                break;
+            RndParticle *next = alloced->next;
+            RndParticle *prev = alloced->prev;
+            *alloced = *p;
+            alloced->next = next;
+            alloced->prev = prev;
+        }
     }
-    COPY_MEMBER_FROM(f, unkdc)
+    COPY_MEMBER_FROM(f, mNumActive)
     unke4 = GetFrame();
     if (ty != kCopyFromMax) {
         COPY_MEMBER_FROM(f, mLife)
@@ -94,9 +196,9 @@ BEGIN_COPYS(RndParticleSys)
         COPY_MEMBER_FROM(f, mYaw)
         COPY_MEMBER_FROM(f, mEmitRate)
         COPY_MEMBER_FROM(f, mMaxBurst)
-        COPY_MEMBER_FROM(f, mTimeBetween)
-        COPY_MEMBER_FROM(f, mPeakRate)
-        COPY_MEMBER_FROM(f, mDuration)
+        COPY_MEMBER_FROM(f, mBurstInterval)
+        COPY_MEMBER_FROM(f, mBurstPeak)
+        COPY_MEMBER_FROM(f, mBurstLength)
         COPY_MEMBER_FROM(f, mStartSize)
         COPY_MEMBER_FROM(f, mDeltaSize)
         COPY_MEMBER_FROM(f, mStartColorLow)
@@ -108,7 +210,41 @@ BEGIN_COPYS(RndParticleSys)
         COPY_MEMBER_FROM(f, mMat)
         COPY_MEMBER_FROM(f, mBubblePeriod)
         COPY_MEMBER_FROM(f, mBubbleSize)
-        // bitfield shenanigans here
+        COPY_MEMBER_FROM(f, mBubble)
+        COPY_MEMBER_FROM(f, mRotate)
+        COPY_MEMBER_FROM(f, mRPM)
+        COPY_MEMBER_FROM(f, mRPMDrag)
+        COPY_MEMBER_FROM(f, mRotRandomDir)
+        COPY_MEMBER_FROM(f, mDrag)
+        COPY_MEMBER_FROM(f, mStartOffset)
+        COPY_MEMBER_FROM(f, mEndOffset)
+        COPY_MEMBER_FROM(f, mAlignWithVelocity)
+        COPY_MEMBER_FROM(f, mStretchWithVelocity)
+        COPY_MEMBER_FROM(f, mConstantArea)
+        COPY_MEMBER_FROM(f, mPerspectiveStretch)
+        COPY_MEMBER_FROM(f, mStretchScale)
+        COPY_MEMBER_FROM(f, mFastForward)
+        mNeedForward = mFastForward;
+        COPY_MEMBER_FROM(f, mGrowRatio)
+        COPY_MEMBER_FROM(f, mShrinkRatio)
+        COPY_MEMBER_FROM(f, mMidColorRatio)
+        COPY_MEMBER_FROM(f, mMidColorLow)
+        COPY_MEMBER_FROM(f, mMidColorHigh)
+        COPY_MEMBER_FROM(f, mMesh)
+        COPY_MEMBER_FROM(f, mFrameDrive)
+        COPY_MEMBER_FROM(f, mPauseOffscreen)
+        unkec = 0;
+        mElapsedTime = 0;
+        if (!mPreserveParticles) {
+            SetPool(f->mMaxParticles, f->mType);
+        }
+        RndTransformable *parent = f->mRelativeParent;
+        if (parent != f)
+            parent = f->mRelativeParent;
+        else
+            parent = this;
+        SetRelativeMotion(f->mRelativeMotion, parent);
+        SetSubSamples(f->mSubSamples);
     }
 END_COPYS
 
@@ -117,16 +253,454 @@ SAVE_OBJ(RndParticleSys, 0x13D)
 BEGIN_LOADS(RndParticleSys)
     LOAD_REVS(bs)
     ASSERT_REVS(0x25, 0)
-    MILO_LOG("%s_bounce.trans");
-    MILO_LOG("Unable to allocate all particles for %s\n");
+    if (gRev > 0x16)
+        LOAD_SUPERCLASS(Hmx::Object);
+    if (gRev > 0x1B)
+        LOAD_SUPERCLASS(RndPollable);
+    if (gRev != 0) {
+        LOAD_SUPERCLASS(RndAnimatable)
+        LOAD_SUPERCLASS(RndTransformable)
+        LOAD_SUPERCLASS(RndDrawable)
+    }
+    bs >> mLife;
+    if (gRev > 0x23)
+        bs >> mScreenAspect;
+    bs >> mBoxExtent1;
+    bs >> mBoxExtent2;
+    bs >> mSpeed;
+    bs >> mPitch;
+    bs >> mYaw;
+    bs >> mEmitRate;
+    if (gRev > 0x20) {
+        bs >> mMaxBurst >> mBurstInterval >> mBurstPeak >> mBurstLength;
+    }
+    bs >> mStartSize;
+    if (gRev > 0xF)
+        bs >> mDeltaSize;
+    bs >> mStartColorLow;
+    bs >> mStartColorHigh;
+    bs >> mEndColorLow;
+    bs >> mEndColorHigh;
+    if (gRev > 0x19)
+        bs >> mBounce;
+    else if (gRev > 1) {
+        bool ba7;
+        bs >> ba7;
+        if (gRev > 0xB) {
+            Plane c;
+            bs >> c;
+        } else {
+            Vector3 v1, v2;
+            bs >> v1 >> v2;
+            float f144 = -Dot(v2, v1);
+        }
+        if (ba7) {
+            bool old = LOADMGR_EDITMODE;
+            TheLoadMgr.SetEditMode(true);
+            mBounce = Dir()->New<RndTransformable>(
+                MakeString("%s_bounce.trans", FileGetBase(Name(), nullptr))
+            );
+            TheLoadMgr.SetEditMode(old);
+            Transform tf140;
+            Plane p150;
+            Vector3 v11c(p150.On());
+            Vector3 v128(reinterpret_cast<Vector3 &>(p150));
+            Cross(Vector3(0, 1, 0), v128, tf140.m.x);
+            Cross(v128, tf140.m.x, tf140.m.y);
+            Normalize(tf140.m.x, tf140.m.x);
+            Normalize(tf140.m.y, tf140.m.y);
+            mBounce->SetWorldXfm(tf140);
+        }
+    } else {
+        std::list<Plane> planes;
+        bs >> planes;
+    }
+    bs >> mForceDir;
+    bs >> mMat;
+    if (gRev == 0x18) {
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        if (!mMat && buf[0] != '\0') {
+            mMat = LookupOrCreateMat(buf, Dir());
+        }
+    }
+    if (gRev > 0x11) {
+        bs >> (int &)mType >> mGrowRatio >> mShrinkRatio >> mMidColorRatio;
+        bs >> mMidColorLow >> mMidColorHigh;
+    } else if (gRev < 0xD) {
+        int i94;
+        bs >> i94;
+    }
+    bs >> mMaxParticles;
+    if (gRev > 2) {
+        if (gRev < 7) {
+            int i98;
+            bs >> i98;
+        } else if (gRev < 0xD) {
+            int i9c;
+            bs >> i9c;
+        }
+    }
+    if (gRev > 3) {
+        bs >> mBubblePeriod >> mBubbleSize;
+        LOAD_BITFIELD(bool, mBubble);
+    }
+    if (gRev > 0x1D) {
+        LOAD_BITFIELD(bool, mRotate);
+        bs >> mRPM >> mRPMDrag;
+        if (gRev > 0x24) {
+            LOAD_BITFIELD(bool, mRotRandomDir);
+        }
+        bs >> mDrag;
+    }
+    if (gRev > 0x1F) {
+        bs >> mStartOffset >> mEndOffset;
+        LOAD_BITFIELD(bool, mAlignWithVelocity);
+        LOAD_BITFIELD(bool, mStretchWithVelocity);
+        LOAD_BITFIELD(bool, mConstantArea);
+        bs >> mStretchScale;
+    }
+    if (gRev > 0x21) {
+        LOAD_BITFIELD(bool, mPerspectiveStretch);
+    }
+    if (gRev >= 5 && gRev <= 14) {
+        bool baf;
+        bs >> baf;
+        int u1 = 0;
+        if (baf)
+            u1 = 2;
+        if (mMat)
+            mMat->SetZMode((RndMat::ZMode)u1);
+    }
+    if (gRev >= 6 && gRev <= 16) {
+        String str;
+        bs >> str;
+    }
+    if (gRev == 8) {
+        bool b1b0;
+        bs >> b1b0;
+    }
+    if (gRev == 0xD) {
+        int i1a0;
+        bs >> i1a0;
+    }
+    if (gRev > 0x13)
+        bs >> mRelativeMotion;
+    else if (gRev > 0xC) {
+        bool i1b1;
+        bs >> i1b1;
+        mRelativeMotion = i1b1;
+    }
+    if (gRev > 0x1A)
+        bs >> mRelativeParent;
+    SetRelativeMotion(mRelativeMotion, mRelativeParent);
+    if (gRev > 0x12)
+        bs >> mMesh;
+    if (gRev > 0x1E || gRev == 0x15)
+        bs >> mSubSamples;
+    SetSubSamples(mSubSamples);
+    if (gRev > 0x1B) {
+        LOAD_BITFIELD(bool, mFrameDrive);
+    } else
+        mFrameDrive = true;
+    if (gRev > 0x22) {
+        LOAD_BITFIELD(bool, mPauseOffscreen);
+    } else
+        mPauseOffscreen = false;
+    if (gRev > 0x1C) {
+        LOAD_BITFIELD(bool, mFastForward);
+    } else
+        mFastForward = false;
+    mNeedForward = mFastForward;
+    if (gRev > 0xA) {
+        bs >> mPreserveParticles;
+        if (mPreserveParticles) {
+            int count;
+            bs >> count;
+            SetPool(mMaxParticles, mType);
+            for (int i = 0; i < count; i++) {
+                RndParticle *p = AllocParticle();
+                if (p) {
+                    p->angle = 0;
+                    p->swingArm = 0;
+                    p->vel.Set(0, 0, 0, 0);
+                    bs >> *p;
+                } else {
+                    MILO_NOTIFY_ONCE_BETA(
+                        "Unable to allocate all particles for %s\n", PathName(this)
+                    );
+                    RndParticle pp;
+                    bs >> pp;
+                }
+            }
+        } else
+            SetPool(mMaxParticles, mType);
+    } else
+        SetPool(mMaxParticles, mType);
+
+    unkec = 0;
+    unke4 = GetFrame();
 END_LOADS
+
+RndParticle *RndParticleSys::AllocParticle() {
+    RndParticle *p;
+    if (mPreserveParticles) {
+        p = mFreeParticles;
+        if (!mFreeParticles)
+            return nullptr;
+        mFreeParticles = p->next;
+    } else {
+        p = gParticlePool->AllocateParticle();
+        if (!p) {
+            ParticlePoolSize();
+            return nullptr;
+        }
+    }
+    p->prev = p;
+    if (mActiveParticles) {
+        mActiveParticles->prev = p;
+    }
+    p->next = mActiveParticles;
+    mActiveParticles = p;
+    mNumActive++;
+    return p;
+}
+
+void RndParticleSys::InitParticle(RndParticle *p, const Transform *t) {
+    InitParticle(CalcFrame(), p, t, gNoPartOverride);
+}
+
+void RndParticleSys::InitParticle(
+    float frame, RndParticle *particle, const Transform *tf, PartOverride &partOverride
+) {
+    particle->birthFrame = frame;
+    if (partOverride.mask & 1) {
+        particle->deathFrame = particle->birthFrame + partOverride.life;
+    } else {
+        particle->deathFrame = particle->birthFrame + RandomFloat(mLife.x, mLife.y);
+    }
+
+    particle->pos.w = particle->deathFrame > particle->birthFrame
+        ? 1.0f / (particle->deathFrame - particle->birthFrame)
+        : 0;
+
+    RndMesh *mesh = mMesh;
+    if (partOverride.mask & 0x100) {
+        mesh = partOverride.mesh;
+    }
+
+    if (mesh && !mesh->Faces().empty()) {
+        RandomPointOnMesh(mesh, particle->Pos3(), particle->Vel3());
+    } else {
+        if (partOverride.mask & 0x200) {
+            particle->pos.x =
+                RandomFloat(partOverride.box.mMin.x, partOverride.box.mMax.x);
+            particle->pos.y =
+                RandomFloat(partOverride.box.mMin.y, partOverride.box.mMax.y);
+            particle->pos.z =
+                RandomFloat(partOverride.box.mMin.z, partOverride.box.mMax.z);
+        } else {
+            particle->pos.x = RandomFloat(mBoxExtent1.x, mBoxExtent2.x);
+            particle->pos.y = RandomFloat(mBoxExtent1.y, mBoxExtent2.y);
+            particle->pos.z = RandomFloat(mBoxExtent1.z, mBoxExtent2.z);
+        }
+        float f8, f9;
+        if (partOverride.mask & 0x80) {
+            f8 = RandomFloat(partOverride.pitch.x, partOverride.pitch.y);
+            f9 = RandomFloat(partOverride.yaw.x, partOverride.yaw.y);
+        } else {
+            f8 = RandomFloat(mPitch.x, mPitch.y);
+            f9 = RandomFloat(mYaw.x, mYaw.y);
+        }
+
+        float cosPitch = FastCos(f8);
+        float sinPitch = FastSin(f9);
+        particle->vel.x = -cosPitch * sinPitch;
+        particle->vel.y = cosPitch * FastCos(f9);
+        particle->vel.z = FastSin(f8);
+    }
+
+    particle->Vel3() *=
+        partOverride.mask & 2 ? partOverride.speed : RandomFloat(mSpeed.x, mSpeed.y);
+    float f11 = particle->deathFrame != particle->birthFrame
+        ? 1.0f / (particle->deathFrame - particle->birthFrame)
+        : 0;
+    if (mRotate) {
+        particle->angle = RandomFloat(0, PI * 2);
+        particle->swingArm = RandomFloat(mStartOffset.x, mStartOffset.y);
+    } else {
+        particle->angle = 0;
+        particle->swingArm = 0;
+    }
+    if (partOverride.mask & 0x10) {
+        particle->col = partOverride.startColor;
+    } else {
+        particle->col.red = RandomFloat(mStartColorLow.red, mStartColorHigh.red);
+        particle->col.green = RandomFloat(mStartColorLow.green, mStartColorHigh.green);
+        particle->col.blue = RandomFloat(mStartColorLow.blue, mStartColorHigh.blue);
+        particle->col.alpha = RandomFloat(mStartColorLow.alpha, mStartColorHigh.alpha);
+    }
+    if (partOverride.mask & 4) {
+        particle->size = partOverride.size;
+    } else {
+        particle->size = RandomFloat(mStartSize.x, mStartSize.y);
+    }
+    if (partOverride.mask & 8) {
+        particle->sizeVel = partOverride.deltaSize;
+    } else {
+        particle->sizeVel = RandomFloat(mDeltaSize.x, mDeltaSize.y);
+    }
+    if (particle->sizeVel < -particle->size) {
+        particle->sizeVel = -particle->size;
+    }
+    if (partOverride.mask & 0x40) {
+        particle->colVel = partOverride.endColor;
+    } else {
+        particle->colVel.red = RandomFloat(mEndColorLow.red, mEndColorHigh.red);
+        particle->colVel.green = RandomFloat(mEndColorLow.green, mEndColorHigh.green);
+        particle->colVel.blue = RandomFloat(mEndColorLow.blue, mEndColorHigh.blue);
+        particle->colVel.alpha = RandomFloat(mEndColorLow.alpha, mEndColorHigh.alpha);
+    }
+
+    if (mType == kFancy) {
+        RndFancyParticle *fancyParticle = static_cast<RndFancyParticle *>(particle);
+        if (mBubble) {
+            fancyParticle->bubbleFreq =
+                (PI * 2) / RandomFloat(mBubblePeriod.x, mBubblePeriod.y);
+            fancyParticle->bubblePhase = RandomFloat(0, PI * 2);
+            float f8 = RandomFloat(0, PI * 2);
+            Scale(
+                Vector3(FastSin(f8), 0, FastCos(f8)),
+                RandomFloat(mBubbleSize.x, mBubbleSize.y),
+                fancyParticle->Bubble3()
+            );
+            Vector3 vac;
+            Scale(fancyParticle->Bubble3(), FastSin(fancyParticle->bubblePhase), vac);
+            Add(fancyParticle->Pos3(), vac, fancyParticle->Pos3());
+            fancyParticle->bubblePhase =
+                -(frame * fancyParticle->bubbleFreq - fancyParticle->bubblePhase);
+        }
+        if (mRotate) {
+            fancyParticle->RPF = RandomFloat(mRPM.x, mRPM.y) * 0.003490658709779382f;
+            if (mRotRandomDir && RandomInt() & 0x100000) {
+                fancyParticle->RPF = -fancyParticle->RPF;
+            }
+            fancyParticle->swingArmVel =
+                f11 * (RandomFloat(mEndOffset.x, mEndOffset.y) - fancyParticle->swingArm);
+        } else {
+            fancyParticle->RPF = 0;
+            fancyParticle->swingArmVel = 0;
+        }
+        if (mGrowRatio) {
+            fancyParticle->growFrame =
+                Interp(fancyParticle->birthFrame, fancyParticle->deathFrame, mGrowRatio);
+            fancyParticle->growVel = fancyParticle->growFrame != fancyParticle->birthFrame
+                ? fancyParticle->size
+                    / (fancyParticle->growFrame - fancyParticle->birthFrame)
+                : 0;
+
+        } else {
+            fancyParticle->growFrame = fancyParticle->birthFrame;
+            fancyParticle->growVel = 0;
+        }
+        if (mShrinkRatio != 1) {
+            fancyParticle->shrinkFrame = Interp(
+                fancyParticle->birthFrame, fancyParticle->deathFrame, mShrinkRatio
+            );
+            fancyParticle->shrinkVel =
+                fancyParticle->shrinkFrame != fancyParticle->deathFrame
+                ? (fancyParticle->size + fancyParticle->sizeVel)
+                    / (fancyParticle->shrinkFrame - fancyParticle->deathFrame)
+                : 0;
+        } else {
+            fancyParticle->shrinkFrame = fancyParticle->deathFrame;
+            fancyParticle->shrinkVel = 0;
+        }
+
+        fancyParticle->beginGrow = fancyParticle->growFrame > fancyParticle->birthFrame
+            ? 1.0f / (fancyParticle->growFrame - fancyParticle->birthFrame)
+            : 0;
+
+        fancyParticle->midGrow = fancyParticle->shrinkFrame > fancyParticle->growFrame
+            ? 1.0f / (fancyParticle->shrinkFrame - fancyParticle->growFrame)
+            : 0;
+
+        fancyParticle->endGrow = fancyParticle->deathFrame > fancyParticle->shrinkFrame
+            ? 1.0f / (fancyParticle->deathFrame - fancyParticle->shrinkFrame)
+            : 0;
+
+        if (mGrowRatio) {
+            fancyParticle->size = 0;
+        }
+        if (fancyParticle->shrinkFrame != fancyParticle->growFrame) {
+            f11 = 1.0f / (fancyParticle->shrinkFrame - fancyParticle->growFrame);
+        }
+        fancyParticle->midcolFrame =
+            Interp(fancyParticle->birthFrame, fancyParticle->deathFrame, mMidColorRatio);
+        if (partOverride.mask & 0x20) {
+            fancyParticle->midcolVel = partOverride.midColor;
+        } else {
+            fancyParticle->midcolVel.red =
+                RandomFloat(mMidColorLow.red, mMidColorHigh.red);
+            fancyParticle->midcolVel.green =
+                RandomFloat(mMidColorLow.green, mMidColorHigh.green);
+            fancyParticle->midcolVel.blue =
+                RandomFloat(mMidColorLow.blue, mMidColorHigh.blue);
+            fancyParticle->midcolVel.alpha =
+                RandomFloat(mMidColorLow.alpha, mMidColorHigh.alpha);
+        }
+        fancyParticle->vel.w = fancyParticle->midcolFrame > fancyParticle->birthFrame
+            ? 1.0f / (fancyParticle->midcolFrame - fancyParticle->birthFrame)
+            : 0;
+        fancyParticle->bubbleDir.w =
+            fancyParticle->deathFrame > fancyParticle->midcolFrame
+            ? 1.0f / (fancyParticle->deathFrame - fancyParticle->midcolFrame)
+            : 0;
+        Subtract(fancyParticle->colVel, fancyParticle->midcolVel, fancyParticle->colVel);
+        if (fancyParticle->deathFrame != fancyParticle->midcolFrame) {
+            Multiply(
+                fancyParticle->colVel,
+                1.0f / (fancyParticle->deathFrame - fancyParticle->midcolFrame),
+                fancyParticle->colVel
+            );
+        }
+        if (fancyParticle->midcolFrame != fancyParticle->birthFrame) {
+            Subtract(
+                fancyParticle->midcolVel, fancyParticle->col, fancyParticle->midcolVel
+            );
+            if (fancyParticle->midcolFrame != fancyParticle->birthFrame) {
+                Multiply(
+                    fancyParticle->colVel,
+                    1.0f / (fancyParticle->midcolFrame - fancyParticle->birthFrame),
+                    fancyParticle->colVel
+                );
+            }
+        }
+    } else {
+        Subtract(particle->colVel, particle->col, particle->colVel);
+        Multiply(particle->colVel, f11, particle->colVel);
+    }
+
+    particle->sizeVel *= f11;
+    Transform tfa0;
+    if (!tf) {
+        MakeLocToRel(tfa0);
+        tf = &tfa0;
+    }
+    Multiply(particle->Pos3(), *tf, particle->Pos3());
+    Multiply(particle->Vel3(), *tf, particle->Vel3());
+    if (mBubble && mType == kFancy) {
+        RndFancyParticle *fancyParticle = static_cast<RndFancyParticle *>(particle);
+        Multiply(fancyParticle->Bubble3(), *tf, fancyParticle->Bubble3());
+    }
+}
 
 RndParticle *RndParticleSys::FreeParticle(RndParticle *p) {
     if (!p)
         return nullptr;
     else {
-        if (p == unkd8) {
-            unkd8 = p->next;
+        if (p == mActiveParticles) {
+            mActiveParticles = p->next;
         } else {
             p->prev->next = p->next;
         }
@@ -140,36 +714,321 @@ RndParticle *RndParticleSys::FreeParticle(RndParticle *p) {
         RndParticle *ret = nullptr;
         if (mPreserveParticles) {
             ret = p->next;
-            p->next = unkd4;
-            unkd4 = p;
+            p->next = mFreeParticles;
+            mFreeParticles = p;
         } else {
             ret = gParticlePool->FreeParticle(p);
         }
-        unkdc--;
+        mNumActive--;
         return ret;
     }
 }
 
-BinStream &operator>>(BinStream &, RndParticle &);
+void RndParticleSys::SetSubSamples(int num) {
+    mSubSamples = num;
+    Transpose(mRelativeXfm, mSubSampleXfm);
+    Multiply(WorldXfm(), mSubSampleXfm, mSubSampleXfm);
+}
+
+void RndParticleSys::SetRelativeMotion(float motion, RndTransformable *parent) {
+    mRelativeParent = parent ? parent : this;
+    mRelativeMotion = motion;
+    if (motion == 1) {
+        mRelativeXfm = mRelativeParent->WorldXfm();
+    } else {
+        mLastWorldXfm = mRelativeParent->WorldXfm();
+        mRelativeXfm.Reset();
+    }
+}
+
+void RndParticleSys::DrawShowing() {
+    if (mFrameDrive) {
+        UpdateRelativeXfm();
+    } else {
+        if (unke8 > 1) {
+            UpdateRelativeXfm();
+            UpdateParticles();
+        } else if (mRelativeMotion == 1) {
+            UpdateRelativeXfm();
+        }
+        unke8 = 0;
+    }
+}
+
+void RndParticleSys::UpdateSphere() {
+    Sphere s;
+    MakeWorldSphere(s, true);
+    Transform tf;
+    FastInvert(WorldXfm(), tf);
+    Multiply(s, tf, s);
+    SetSphere(s);
+}
+
+bool RndParticleSys::MakeWorldSphere(Sphere &s, bool b2) {
+    if (b2) {
+        s.Zero();
+        for (RndParticle *p = mActiveParticles; p != nullptr; p = p->next) {
+            Sphere s38;
+            Multiply(p->Pos3(), mRelativeXfm, s38.center);
+            s38.radius = p->size * 0.5f;
+            s.GrowToContain(s38);
+        }
+        return true;
+    } else {
+        Sphere &mySphere = mSphere;
+        if (mySphere.GetRadius()) {
+            Multiply(mySphere, WorldXfm(), s);
+            return true;
+        } else
+            return false;
+    }
+}
+
+void RndParticleSys::SetFrameDrive(bool b) {
+    mFrameDrive = b;
+    if (mFrameDrive) {
+        unke4 = GetFrame();
+    } else
+        unke8 = 0;
+    unkec = 0;
+}
+
+void RndParticleSys::SetPauseOffscreen(bool b) {
+    mPauseOffscreen = b;
+    unkec = 0;
+}
+
+void RndParticleSys::SetFrame(float frame, float blend) {
+    RndAnimatable::SetFrame(frame, blend);
+    if (mFrameDrive) {
+        UpdateParticles();
+        unke4 = frame;
+        unkec = 0;
+    }
+}
+
+float RndParticleSys::EndFrame() {
+    if (mFrameDrive) {
+        return Max(mLife.x, mLife.y);
+    } else
+        return 0;
+}
+
+void RndParticleSys::Poll() {
+    if (!mFrameDrive) {
+        mElapsedTime += (GetRate() == k30_fps_ui ? TheTaskMgr.DeltaUISeconds()
+                                                 : TheTaskMgr.DeltaSeconds())
+            * 30.0f;
+        if (unke8 == 0) {
+            if (Showing()
+                && (mActiveParticles || mExplicitParts || mEmitRate.x > 0
+                    || mEmitRate.y > 0 || mMaxBurst > 0)) {
+                UpdateRelativeXfm();
+                UpdateParticles();
+            } else
+                unke4 = CalcFrame();
+        } else if (mActiveParticles && unke8 % 60 == 0 && !mPreserveParticles) {
+            float calced = CalcFrame();
+            RndParticle *p = mActiveParticles;
+            while (p) {
+                if (CheckParticleLife(calced, p)) {
+                    p = FreeParticle(p);
+                } else
+                    p = p->next;
+            }
+        }
+        if (mSubSamples > 0 && Dirty()) {
+            MakeLocToRel(mSubSampleXfm);
+        }
+        unke8++;
+    }
+}
+
+void RndParticleSys::MakeLocToRel(Transform &tf) {
+    if (mRelativeMotion == 1) {
+        if (mRelativeParent == this) {
+            tf.Reset();
+            return;
+        }
+    }
+    Transpose(mRelativeXfm, tf);
+    Multiply(WorldXfm(), tf, tf);
+}
+
+void RndParticleSys::CreateParticles(float f1, float f2, const Transform &tf) {
+    if (f2 <= 0 || mNumActive >= mMaxParticles)
+        return;
+    else {
+        mEmitCount += f2 * RandomFloat(mEmitRate.x, mEmitRate.y);
+        mEmitCount += CheckBursts(f2) + (float)mExplicitParts;
+        mExplicitParts = 0;
+        while (mEmitCount >= 1.0f && mNumActive < mMaxParticles) {
+            RndParticle *p = AllocParticle();
+            if (!p) {
+                mEmitCount = 0;
+                return;
+            }
+            InitParticle(f1, p, &tf, gNoPartOverride);
+            mEmitCount -= 1.0f;
+        }
+    }
+}
+
+void RndParticleSys::UpdateRelativeXfm() {
+    if (mRelativeMotion == 1) {
+        mRelativeXfm = mRelativeParent->WorldXfm();
+    } else if (mRelativeMotion) {
+        Transform &worldXfm = mRelativeParent->WorldXfm();
+        Invert(mLastWorldXfm.m, mLastWorldXfm.m);
+        Multiply(mLastWorldXfm.m, worldXfm.m, mLastWorldXfm.m);
+        Hmx::Quat q28(0, 0, 0, 1);
+        FastInterp(q28, Hmx::Quat(mLastWorldXfm.m), mRelativeMotion, q28);
+        MakeRotMatrix(q28, mLastWorldXfm.m);
+        Subtract(mRelativeXfm.v, mLastWorldXfm.v, mRelativeXfm.v);
+        Multiply(mRelativeXfm, mLastWorldXfm.m, mRelativeXfm);
+        Normalize(mRelativeXfm.m, mRelativeXfm.m);
+        Interp(mLastWorldXfm.v, worldXfm.v, mRelativeMotion, mLastWorldXfm.v);
+        Add(mRelativeXfm.v, mLastWorldXfm.v, mRelativeXfm.v);
+        mLastWorldXfm = worldXfm;
+    }
+}
+
+void RndParticleSys::Enter() {
+    mElapsedTime = 0;
+    mNeedForward = mFastForward;
+    RndPollable::Enter();
+}
+
+void RndParticleSys::RunFastForward() {
+    mNeedForward = false;
+    float f1 = (mEmitRate.x + mEmitRate.y) * 0.5f;
+    if (f1 < 0.0001f)
+        return;
+    else {
+        float f6 = 1.0f / f1;
+        float f3 = Min(f6 * (float)MaxParticles(), (mLife.x + mLife.y) * 0.5f);
+        f6 = Max(1.0f, f6);
+        float f4 = CalcFrame();
+        Transform tf78;
+        MakeLocToRel(tf78);
+        for (float f5 = f4 - f3; f5 <= f4; f5 += f6) {
+            MoveParticles(f5, f6);
+            CreateParticles(f5, f6, tf78);
+        }
+    }
+}
+
+void RndParticleSys::ExplicitParticles(int i1, bool b2, PartOverride &partOverride) {
+    if (b2) {
+        float calced = CalcFrame();
+        Transform tf48;
+        MakeLocToRel(tf48);
+        for (int i = 0; i < i1 && mNumActive < mMaxParticles; i++) {
+            RndParticle *p = AllocParticle();
+            if (!p)
+                break;
+            InitParticle(calced, p, &tf48, partOverride);
+        }
+    } else
+        mExplicitParts += i1;
+}
+
+void RndParticleSys::FreeAllParticles() {
+    for (RndParticle *p = mActiveParticles; p != nullptr; p = FreeParticle(p))
+        ;
+    mEmitCount = 0;
+}
+
+bool RndParticleSys::Burst::Set(float f1, float f2) {
+    if (f2 > 0) {
+        unk0 = f1;
+        unk4 = f2 * 0.5f;
+        unkc = f2;
+        unk8 = 1.0f / unk4;
+        return true;
+    } else
+        return false;
+}
+
+float RndParticleSys::Burst::Emit(float f1) {
+    unkc -= f1;
+    if (unkc < 0)
+        return -1;
+    float ret = unkc;
+    if (ret > unk4) {
+        ret = unk4 * 2.0f - ret;
+    }
+    ret *= unk8;
+    return ret * ret * 3.0f - ret * ret * ret * 2.0f * unk0 * f1;
+}
+
+float RndParticleSys::CheckBursts(float f1) {
+    if (f1 > 1)
+        f1 = 1;
+    float sum = 0;
+    for (std::vector<Burst>::iterator it = mBursts.begin(); it != mBursts.end();) {
+        float emit = it->Emit(f1);
+        if (emit < 0)
+            it = mBursts.erase(it);
+        else {
+            sum += emit;
+            ++it;
+        }
+    }
+    if (mBursts.size() < mMaxBurst) {
+        mTimeTillBurst -= f1;
+        if (mTimeTillBurst <= 0) {
+            Burst burst;
+            if (burst.Set(
+                    RandomFloat(mBurstPeak.x, mBurstPeak.y),
+                    RandomFloat(mBurstLength.x, mBurstLength.y)
+                )) {
+                mBursts.push_back(burst);
+            }
+            mTimeTillBurst = RandomFloat(mBurstInterval.x, mBurstInterval.y);
+        }
+    }
+    return sum;
+}
 
 void RndParticleSys::MoveParticles(float, float) { START_AUTO_TIMER("psysmove"); }
 
-RndParticleSys::~RndParticleSys() {}
+RndParticleSys::~RndParticleSys() {
+    if (mPreserveParticles) {
+        if (mPersistentParticles)
+            delete[] mPersistentParticles;
+    } else if (mActiveParticles) {
+        for (RndParticle *p = mActiveParticles; p != nullptr; p = FreeParticle(p))
+            ;
+    }
+}
 
 RndParticleSys::RndParticleSys()
-    : mType(t0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f),
-      unke4(0.0f), unke8(0), unkec(0.0f), mBubblePeriod(10.0f, 10.0f),
-      mBubbleSize(1.0f, 1.0f), mLife(100.0f, 100.0f), mBoxExtent1(0.0f, 0.0f, 0.0f),
-      mBoxExtent2(0.0f, 0.0f, 0.0f), mSpeed(1.0f, 1.0f), mPitch(0.0f, 0.0f),
-      mYaw(0.0f, 0.0f), mEmitRate(1.0f, 1.0f), mStartSize(1.0f, 1.0f),
-      mDeltaSize(0.0f, 0.0f), mMesh(this), mMat(this), mPreserveParticles(0),
-      mRelativeParent(this), mBounce(this), mForceDir(0.0f, 0.0f, 0.0f), mDrag(0.0f),
-      mRPM(0.0f, 0.0f), mRPMDrag(0.0f), mStartOffset(0.0f, 0.0f), mEndOffset(0.0f, 0.0f),
-      mStretchScale(1.0f), mScreenAspect(1.0f), mSubSamples(0), mGrowRatio(0.0f),
-      mShrinkRatio(1.0f), mMidColorRatio(0.5f), mMaxBurst(0), unk2c8(0.0f),
-      mTimeBetween(15.0f, 35.0f), mPeakRate(4.0f, 8.0f), mDuration(20.0f, 30.0f),
-      unk2e4(0), unk2e8(0.0f) {
-    SetRelativeMotion(0.0f, this);
+    : mType(kBasic), mMaxParticles(0), mPersistentParticles(0), mFreeParticles(0),
+      mActiveParticles(0), mNumActive(0), mEmitCount(0), unke4(0), unke8(0), unkec(0),
+      mBubblePeriod(10, 10), mBubbleSize(1, 1), mLife(100, 100), mBoxExtent1(0, 0, 0),
+      mBoxExtent2(0, 0, 0), mSpeed(1, 1), mPitch(0, 0), mYaw(0, 0), mEmitRate(1, 1),
+      mStartSize(1, 1), mDeltaSize(0, 0), mStartColorLow(1, 1, 1),
+      mStartColorHigh(1, 1, 1), mEndColorLow(1, 1, 1), mEndColorHigh(1, 1, 1),
+      mMesh(this), mMat(this), mPreserveParticles(0), mRelativeParent(this),
+      mBounce(this), mForceDir(0, 0, 0), mDrag(0), mRPM(0, 0), mRPMDrag(0),
+      mStartOffset(0, 0), mEndOffset(0, 0), mStretchScale(1), mScreenAspect(1),
+      mSubSamples(0), mGrowRatio(0), mShrinkRatio(1), mMidColorRatio(0.5),
+      mMidColorLow(1, 1, 1), mMidColorHigh(1, 1, 1), mMaxBurst(0), mTimeTillBurst(0),
+      mBurstInterval(15, 35), mBurstPeak(4, 8), mBurstLength(20, 30), mExplicitParts(0),
+      mElapsedTime(0) {
+    mFrameDrive = false;
+    mBubble = false;
+    mRotate = false;
+    mRotRandomDir = true;
+    mAlignWithVelocity = false;
+    mStretchWithVelocity = false;
+    mPauseOffscreen = false;
+    mFastForward = false;
+    mNeedForward = false;
+    mConstantArea = false;
+    mPerspectiveStretch = false;
+    SetRelativeMotion(0, this);
     SetSubSamples(0);
 }
 
@@ -266,7 +1125,7 @@ DataNode RndParticleSys::OnSetStartColor(const DataArray *da) {
         Hmx::Color(arr1->Float(0), arr1->Float(1), arr1->Float(2), arr1->Float(3)),
         Hmx::Color(arr2->Float(0), arr2->Float(1), arr2->Float(2), arr2->Float(3))
     );
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetStartColorInt(const DataArray *da) {
@@ -275,12 +1134,31 @@ DataNode RndParticleSys::OnSetStartColorInt(const DataArray *da) {
     col1.alpha = da->Float(4);
     col2.alpha = da->Float(5);
     SetStartColor(col1, col2);
-    return DataNode(0);
+    return 0;
+}
+
+DataNode RndParticleSys::OnSetEndColor(const DataArray *da) {
+    DataArray *arr1 = da->Array(2);
+    DataArray *arr2 = da->Array(3);
+    SetEndColor(
+        Hmx::Color(arr1->Float(0), arr1->Float(1), arr1->Float(2), arr1->Float(3)),
+        Hmx::Color(arr2->Float(0), arr2->Float(1), arr2->Float(2), arr2->Float(3))
+    );
+    return 0;
+}
+
+DataNode RndParticleSys::OnSetEndColorInt(const DataArray *da) {
+    Hmx::Color col1(da->Int(2));
+    Hmx::Color col2(da->Int(3));
+    col1.alpha = da->Float(4);
+    col2.alpha = da->Float(5);
+    SetEndColor(col1, col2);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetEmitRate(const DataArray *da) {
     SetEmitRate(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnAddEmitRate(const DataArray *da) {
@@ -293,22 +1171,22 @@ DataNode RndParticleSys::OnAddEmitRate(const DataArray *da) {
 DataNode RndParticleSys::OnSetBurstInterval(const DataArray *da) {
     SetMaxBurst(da->Int(2));
     SetTimeBetweenBursts(da->Float(3), da->Float(4));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetBurstPeak(const DataArray *da) {
     SetPeakRate(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetBurstLength(const DataArray *da) {
     SetDuration(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnExplicitPart(const DataArray *da) {
     ExplicitParticles(1, false, gNoPartOverride);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnExplicitParts(const DataArray *da) {
@@ -316,53 +1194,53 @@ DataNode RndParticleSys::OnExplicitParts(const DataArray *da) {
     if (da->Size() >= 4 && da->Int(3) != 0)
         b = true;
     ExplicitParticles(da->Int(2), b, gNoPartOverride);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetLife(const DataArray *da) {
     SetLife(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetSpeed(const DataArray *da) {
     SetSpeed(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetRotate(const DataArray *da) {
-    SetSpin(da->Int(2));
+    SetRotate(da->Int(2));
     SetRPM(da->Float(3), da->Float(4));
     SetRPMDrag(da->Float(4));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetSwingArm(const DataArray *da) {
     SetStartOffset(da->Float(2), da->Float(3));
     SetEndOffset(da->Float(4), da->Float(5));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetDrag(const DataArray *da) {
     SetDrag(da->Float(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetAlignment(const DataArray *da) {
-    SetVelocityAlign(da->Int(2));
+    SetAlignWithVelocity(da->Int(2));
     SetStretchWithVelocity(da->Int(3));
     SetConstantArea(da->Int(4));
     SetStretchScale(da->Float(5));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetStartSize(const DataArray *da) {
     SetStartSize(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetMat(const DataArray *da) {
     SetMat(da->Obj<RndMat>(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetPos(const DataArray *da) {
@@ -370,11 +1248,11 @@ DataNode RndParticleSys::OnSetPos(const DataArray *da) {
         Vector3(da->Float(2), da->Float(3), da->Float(4)),
         Vector3(da->Float(5), da->Float(6), da->Float(7))
     );
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnActiveParticles(const DataArray *da) {
-    return DataNode(unkd8 != 0);
+    return mActiveParticles != nullptr;
 }
 
 BinStream &operator>>(BinStream &bs, RndParticle &part) {
@@ -387,18 +1265,24 @@ bool AngleVectorSync(Vector2 &vec, DataNode &_val, DataArray *_prop, int _i, Pro
         return true;
     else {
         Symbol sym = _prop->Sym(_i);
+        float *coord = nullptr;
         if (sym == x) {
-            if (_op == kPropSet)
-                vec.x = DegreesToRadians(_val.Float());
-            else if (_op == kPropGet)
-                _val = DataNode(RadiansToDegrees(vec.x));
-            else
-                return false;
+            coord = &vec.x;
+            goto sync;
         } else if (sym == y) {
-            vec.x = vec.y;
+            coord = &vec.y;
+            goto sync;
         } else
             return false;
+    sync:
+        if (_op == kPropSet)
+            *coord = DegreesToRadians(_val.Float());
+        else if (_op == kPropGet)
+            _val = RadiansToDegrees(*coord);
+        else
+            return false;
     }
+    return true;
 }
 
 #pragma push
@@ -437,22 +1321,22 @@ BEGIN_PROPSYNCS(RndParticleSys)
             if (_op == kPropSet) {
                 mBubble = _val.Int();
             } else
-                _val = DataNode(mBubble);
+                _val = mBubble;
             return true;
         }
     }
     SYNC_PROP(bubble_period, mBubblePeriod)
     SYNC_PROP(bubble_size, mBubbleSize)
     SYNC_PROP(max_burst, mMaxBurst)
-    SYNC_PROP(time_between, mTimeBetween)
-    SYNC_PROP(peak_rate, mPeakRate)
-    SYNC_PROP(duration, mDuration) {
+    SYNC_PROP(time_between, mBurstInterval)
+    SYNC_PROP(peak_rate, mBurstPeak)
+    SYNC_PROP(duration, mBurstLength) {
         static Symbol _s("spin");
         if (sym == _s) {
             if (_op == kPropSet) {
-                mSpin = _val.Int();
+                mRotate = _val.Int();
             } else
-                _val = DataNode(mSpin);
+                _val = mRotate;
             return true;
         }
     }
@@ -463,9 +1347,9 @@ BEGIN_PROPSYNCS(RndParticleSys)
         static Symbol _s("random_direction");
         if (sym == _s) {
             if (_op == kPropSet) {
-                mRandomDirection = _val.Int();
+                mRotRandomDir = _val.Int();
             } else
-                _val = DataNode(mRandomDirection);
+                _val = mRotRandomDir;
             return true;
         }
     }
@@ -473,9 +1357,9 @@ BEGIN_PROPSYNCS(RndParticleSys)
         static Symbol _s("velocity_align");
         if (sym == _s) {
             if (_op == kPropSet) {
-                mVelocityAlign = _val.Int();
+                mAlignWithVelocity = _val.Int();
             } else
-                _val = DataNode(mVelocityAlign);
+                _val = mAlignWithVelocity;
             return true;
         }
     }
@@ -485,7 +1369,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
             if (_op == kPropSet) {
                 mStretchWithVelocity = _val.Int();
             } else
-                _val = DataNode(mStretchWithVelocity);
+                _val = mStretchWithVelocity;
             return true;
         }
     }
@@ -495,7 +1379,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
             if (_op == kPropSet) {
                 mConstantArea = _val.Int();
             } else
-                _val = DataNode(mConstantArea);
+                _val = mConstantArea;
             return true;
         }
     }
@@ -503,9 +1387,9 @@ BEGIN_PROPSYNCS(RndParticleSys)
         static Symbol _s("perspective");
         if (sym == _s) {
             if (_op == kPropSet) {
-                mPerspective = _val.Int();
+                mPerspectiveStretch = _val.Int();
             } else
-                _val = DataNode(mPerspective);
+                _val = mPerspectiveStretch;
             return true;
         }
     }
@@ -538,9 +1422,9 @@ BEGIN_PROPSYNCS(RndParticleSys)
         static Symbol _s("pre_spawn");
         if (sym == _s) {
             if (_op == kPropSet) {
-                mPreSpawn = _val.Int();
+                mFastForward = _val.Int();
             } else
-                _val = DataNode(mPreSpawn);
+                _val = mFastForward;
             return true;
         }
     }

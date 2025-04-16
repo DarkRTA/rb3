@@ -1,17 +1,25 @@
 #pragma once
 #include "math/Color.h"
+#include "math/Mtx.h"
 #include "math/Vec.h"
 #include "obj/ObjMacros.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Anim.h"
+#include "utl/BinStream.h"
+#include "utl/MemMgr.h"
 
 class RndMesh;
 class RndMat;
 
-struct RndParticle {
-    RndParticle() {}
+class RndParticle {
+public:
+    NEW_ARRAY_OVERLOAD;
+    DELETE_ARRAY_OVERLOAD;
+
+    Vector3 &Pos3() { return reinterpret_cast<Vector3 &>(pos); }
+    Vector3 &Vel3() { return reinterpret_cast<Vector3 &>(vel); }
 
     Hmx::Color col; // 0x0
     Hmx::Color colVel; // 0x10
@@ -27,23 +35,26 @@ struct RndParticle {
     RndParticle *next; // 0x5c
 };
 
-struct RndFancyParticle : RndParticle {
-    RndFancyParticle() {}
+BinStream &operator>>(BinStream &, RndParticle &);
 
-    float growFrame;
-    float growVel;
-    float shrinkFrame;
-    float shrinkVel;
-    Hmx::Color midcolVel;
-    float midcolFrame;
-    float beginGrow;
-    float midGrow;
-    float endGrow;
-    Vector4 bubbleDir;
-    float bubbleFreq;
-    float bubblePhase;
-    float RPF;
-    float swingArmVel;
+class RndFancyParticle : public RndParticle {
+public:
+    Vector3 &Bubble3() { return reinterpret_cast<Vector3 &>(bubbleDir); }
+
+    float growFrame; // 0x60
+    float growVel; // 0x64
+    float shrinkFrame; // 0x68
+    float shrinkVel; // 0x6c
+    Hmx::Color midcolVel; // 0x70
+    float midcolFrame; // 0x80
+    float beginGrow; // 0x84
+    float midGrow; // 0x88
+    float endGrow; // 0x8c
+    Vector4 bubbleDir; // 0x90
+    float bubbleFreq; // 0xa0
+    float bubblePhase; // 0xa4
+    float RPF; // 0xa8
+    float swingArmVel; // 0xac
 };
 
 class ParticleCommonPool {
@@ -52,10 +63,14 @@ public:
         : mPoolParticles(0), mPoolFreeParticles(0), mNumActiveParticles(0),
           mHighWaterMark(0) {}
     void InitPool();
+    RndParticle *AllocateParticle();
     RndParticle *FreeParticle(RndParticle *);
 
-    RndFancyParticle *mPoolParticles; // 0x0
-    RndFancyParticle *mPoolFreeParticles; // 0x4
+    int NumActiveParticles() const { return mNumActiveParticles; }
+    int HighWaterMark() const { return mHighWaterMark; }
+
+    RndParticle *mPoolParticles; // 0x0
+    RndParticle *mPoolFreeParticles; // 0x4
     int mNumActiveParticles; // 0x8
     int mHighWaterMark; // 0xc
 };
@@ -103,12 +118,20 @@ class RndParticleSys : public RndAnimatable,
                        public RndDrawable {
 public:
     enum Type {
-        t0,
-        t1,
-        t2
+        kBasic = 0,
+        kFancy = 1
     };
 
-    struct Burst {};
+    class Burst {
+    public:
+        bool Set(float, float);
+        float Emit(float);
+
+        float unk0;
+        float unk4;
+        float unk8;
+        float unkc;
+    };
 
     RndParticleSys();
     OBJ_CLASSNAME(ParticleSys);
@@ -142,11 +165,18 @@ public:
     void SetFrameDrive(bool);
     void SetPauseOffscreen(bool);
     void InitParticle(RndParticle *, const Transform *);
+    void InitParticle(float, RndParticle *, const Transform *, PartOverride &);
     void ExplicitParticles(int, bool, PartOverride &);
     void FreeAllParticles();
-    int MaxParticles() const;
+    RndParticle *AllocParticle();
     RndParticle *FreeParticle(RndParticle *);
     void MoveParticles(float, float);
+    void MakeLocToRel(Transform &);
+    void UpdateRelativeXfm();
+    void UpdateParticles();
+    void CreateParticles(float, float, const Transform &);
+    float CheckBursts(float);
+    void RunFastForward();
 
     DataNode OnSetStartColor(const DataArray *);
     DataNode OnSetStartColorInt(const DataArray *);
@@ -212,15 +242,15 @@ public:
         mDeltaSize.y = y;
     }
 
-    void SetSpin(bool b) { mSpin = b; }
-    void SetVelocityAlign(bool b) { mVelocityAlign = b; }
+    void SetRotate(bool b) { mRotate = b; }
+    void SetAlignWithVelocity(bool b) { mAlignWithVelocity = b; }
     void SetStretchWithVelocity(bool b) { mStretchWithVelocity = b; }
     void SetConstantArea(bool b) { mConstantArea = b; }
 
     void SetMaxBurst(int i) { mMaxBurst = i; }
-    void SetTimeBetweenBursts(float f1, float f2) { mTimeBetween.Set(f1, f2); }
-    void SetPeakRate(float f1, float f2) { mPeakRate.Set(f1, f2); }
-    void SetDuration(float f1, float f2) { mDuration.Set(f1, f2); }
+    void SetTimeBetweenBursts(float f1, float f2) { mBurstInterval.Set(f1, f2); }
+    void SetPeakRate(float f1, float f2) { mBurstPeak.Set(f1, f2); }
+    void SetDuration(float f1, float f2) { mBurstLength.Set(f1, f2); }
     void SetRPM(float f1, float f2) { mRPM.Set(f1, f2); }
     void SetRPMDrag(float f) { mRPMDrag = f; }
     void SetStartOffset(float f1, float f2) { mStartOffset.Set(f1, f2); }
@@ -230,25 +260,40 @@ public:
     RndMesh *GetMesh() const { return mMesh; }
     Type GetType() const { return mType; }
     RndMat *GetMat() const { return mMat; }
+    int MaxParticles() const { return mMaxParticles; }
+
+    float CalcFrame() {
+        if (mFrameDrive)
+            return GetFrame();
+        else
+            return mElapsedTime;
+    }
+
+    bool CheckParticleLife(float frame, RndParticle *particle) {
+        bool ret = false;
+        if (frame >= particle->deathFrame || frame < particle->birthFrame)
+            ret = true;
+
+        return ret;
+    }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndParticleSys)
     static void Init() { REGISTER_OBJ_FACTORY(RndParticleSys) }
-    static RndParticle *AllocParticle();
 
-    Type mType; // fancy?
+    Type mType; // 0xc8
     /** "maximum number of particles". Ranges from 0 to 3072. */
     int mMaxParticles; // 0xcc
-    int unkd0;
-    RndParticle *unkd4;
-    RndParticle *unkd8;
-    int unkdc;
-    float unke0;
-    float unke4;
-    int unke8;
-    float unkec;
+    RndParticle *mPersistentParticles; // 0xd0
+    RndParticle *mFreeParticles; // 0xd4
+    RndParticle *mActiveParticles; // 0xd8
+    int mNumActive; // 0xdc
+    float mEmitCount; // 0xe0
+    float unke4; // 0xe4
+    int unke8; // 0xe8
+    float unkec; // 0xec
     Vector2 mBubblePeriod; // 0xf0
     Vector2 mBubbleSize; // 0xf8
     /** "Frame range of particle life." */
@@ -282,7 +327,7 @@ public:
     ObjPtr<RndMat> mMat; // 0x19c
     bool mPreserveParticles; // 0x1a8
     Transform mRelativeXfm; // 0x1ac
-    Transform mLastWorldXfm; // 0x1ec
+    Transform mLastWorldXfm; // 0x1dc
     float mRelativeMotion; // 0x20c
     ObjOwnerPtr<RndTransformable> mRelativeParent; // 0x210
     /** "Specify a collide plane to reflect particles. Used to bounce particles off
@@ -306,14 +351,14 @@ public:
     float mMidColorRatio; // 0x298
     Hmx::Color mMidColorLow; // 0x29c
     Hmx::Color mMidColorHigh; // 0x2ac
-    std::vector<int> unk2bc;
+    std::vector<Burst> mBursts; // 0x2bc
     int mMaxBurst; // 0x2c4
-    float unk2c8;
-    Vector2 mTimeBetween; // 0x2cc
-    Vector2 mPeakRate; // 0x2d4
-    Vector2 mDuration; // 0x2dc
-    int unk2e4;
-    float unk2e8;
+    float mTimeTillBurst; // 0x2c8
+    Vector2 mBurstInterval; // 0x2cc
+    Vector2 mBurstPeak; // 0x2d4
+    Vector2 mBurstLength; // 0x2dc
+    int mExplicitParts; // 0x2e4
+    float mElapsedTime; // 0x2e8
 };
 
 extern ParticleCommonPool *gParticlePool;

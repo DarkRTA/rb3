@@ -145,15 +145,15 @@ public:
 
     bool mPauseOffscreen : 1; // used in RndParticleSys
     bool mBubble : 1; // used in RndParticleSys
-    bool mPreSpawn : 1; // used in RndParticleSys
-    bool unkap3 : 1;
-    bool mSpin : 1; // used in RndParticleSys
-    bool mRandomDirection : 1; // used in RndParticleSys
-    bool mVelocityAlign : 1; // used in RndParticleSys
+    bool mFastForward : 1; // used in RndParticleSys
+    bool mNeedForward : 1; // used in RndParticleSys
+    bool mRotate : 1; // used in RndParticleSys
+    bool mRotRandomDir : 1; // used in RndParticleSys
+    bool mAlignWithVelocity : 1; // used in RndParticleSys
     bool mStretchWithVelocity : 1; // used in RndParticleSys
 
     bool mConstantArea : 1; // used in RndParticleSys
-    bool mPerspective : 1; // used in RndParticleSys
+    bool mPerspectiveStretch : 1; // used in RndParticleSys
     bool unkbp2 : 1;
     bool mTextMarkup : 1; // used in RndText
     bool unkbp4 : 1; // used in RndText

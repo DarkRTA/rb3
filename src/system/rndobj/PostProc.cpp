@@ -384,12 +384,12 @@ void ProcCounter::SetEvenOddDisabled(bool eod) {
         mCount = -1;
 }
 
-int ProcCounter::ProcCommands() {
+ProcessCmd ProcCounter::ProcCommands() {
     int count;
     int retCmd;
 
     if ((this->mProcAndLock != false) && (this->mCount == 0)) {
-        return 0;
+        return kProcessNone;
     }
     if (this->mEvenOddDisabled == false) {
         count = this->mCount;
@@ -414,9 +414,9 @@ int ProcCounter::ProcCommands() {
         if (count > compare_value) {
             this->mCount = 0;
         }
-        return retCmd;
+        return (ProcessCmd)retCmd;
     }
-    return 7;
+    return kProcessAll;
 }
 
 DOFOverrideParams::DOFOverrideParams()

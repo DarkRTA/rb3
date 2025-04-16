@@ -34,17 +34,17 @@ class Scoring {
 public:
     class StreakItem {
     public:
-        StreakItem(int i, float f) : unk0(i), unk4(f) {}
-        int unk0;
-        float unk4;
+        StreakItem(int i, float f) : streakThreshold(i), multiplier(f) {}
+        int streakThreshold;
+        float multiplier;
     };
 
     class StreakList {
     public:
-        StreakList(Symbol s) : unk0(s) {}
+        StreakList(Symbol s) : streakType(s) {}
 
-        Symbol unk0;
-        std::vector<StreakItem> unk4;
+        Symbol streakType;
+        std::vector<StreakItem> streaks;
     };
 
     Scoring();

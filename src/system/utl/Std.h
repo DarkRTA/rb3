@@ -127,6 +127,11 @@ inline T NextItr(T it, int idx) {
     return it;
 }
 
+template <class T>
+inline T PrevItr(T it) {
+    return --it;
+}
+
 // not sure where else to put this
 inline int atoi_s(char *str) {
     if (str)

@@ -17,7 +17,7 @@ float CalcSpline(float, float *) {}
 BinStream &operator>>(BinStream &bs, ObjectStage &stage) {
     ObjectDir *dir = nullptr;
     if (PropKeys::gRev > 8) {
-        ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), nullptr);
+        ObjPtr<ObjectDir> dirPtr(stage.Owner(), nullptr);
         dirPtr.Load(bs, true, dir);
         dir = dirPtr.Ptr();
     }
@@ -26,11 +26,9 @@ BinStream &operator>>(BinStream &bs, ObjectStage &stage) {
 }
 
 BinStream &operator<<(BinStream &bs, const ObjectStage &stage) {
-    ObjPtr<ObjectDir, ObjectDir> dirPtr(
-        stage.Owner(), (stage.Ptr()) ? stage.Ptr()->Dir() : nullptr
-    );
+    ObjPtr<ObjectDir> dirPtr(stage.Owner(), (stage.Ptr()) ? stage.Ptr()->Dir() : nullptr);
     bs << dirPtr;
-    bs << ObjPtr<Hmx::Object, ObjectDir>(stage.Owner(), stage.Ptr());
+    bs << ObjPtr<Hmx::Object>(stage);
     return bs;
 }
 
@@ -42,7 +40,7 @@ PropKeys::PropKeys(Hmx::Object *targetOwner, Hmx::Object *target)
 PropKeys::~PropKeys() {
     if (mProp) {
         mProp->Release();
-        mProp = 0;
+        mProp = nullptr;
     }
 }
 
@@ -51,7 +49,7 @@ void PropKeys::SetProp(DataNode &node) {
         DataArray *nodeArr = node.Array();
         if (mProp) {
             mProp->Release();
-            mProp = 0;
+            mProp = nullptr;
         }
         mProp = nodeArr->Clone(true, false, 0);
 
@@ -86,7 +84,7 @@ void PropKeys::SetTarget(Hmx::Object *o) {
         if (!o || !b2) {
             if (mProp) {
                 mProp->Release();
-                mProp = 0;
+                mProp = nullptr;
             }
         }
         mTarget = o;
@@ -321,7 +319,7 @@ int FloatKeys::FloatAt(float frame, float &fl) {
             float points[4];
             points[1] = prev->value;
             points[2] = next->value;
-            int idx = prev->value == begin()->value;
+            int idx = (prev - begin());
             if (idx == 0) {
                 points[0] = prev->value;
             } else {
@@ -371,7 +369,7 @@ void FloatKeys::SetFrame(float frame, float blend) {
     } else {
         float val;
         idx = FloatAt(frame, val);
-        mTarget->SetProperty(mProp, DataNode(val));
+        mTarget->SetProperty(mProp, val);
     }
     mLastKeyFrameIndex = idx;
 }
@@ -419,7 +417,7 @@ void ColorKeys::SetFrame(float frame, float blend) {
         return;
     Hmx::Color col;
     int idx = ColorAt(frame, col);
-    mTarget->SetProperty(mProp, DataNode(col.Pack()));
+    mTarget->SetProperty(mProp, col.Pack());
     mLastKeyFrameIndex = idx;
 }
 
@@ -441,14 +439,14 @@ void ObjectKeys::SetFrame(float frame, float blend) {
         float ref = 0.0f;
         idx = AtFrame(frame, prev, next, ref);
         sInterpMessage.SetType(mInterpHandler);
-        sInterpMessage[0] = DataNode(prev->value.Ptr());
-        sInterpMessage[1] = DataNode(next->value.Ptr());
-        sInterpMessage[2] = DataNode(ref);
-        sInterpMessage[3] = DataNode(next->frame);
+        sInterpMessage[0] = prev->value.Ptr();
+        sInterpMessage[1] = next->value.Ptr();
+        sInterpMessage[2] = ref;
+        sInterpMessage[3] = next->frame;
         if (idx >= 1)
-            sInterpMessage[4] = DataNode((*this)[idx - 1].value.Ptr());
+            sInterpMessage[4] = (*this)[idx - 1].value.Ptr();
         else
-            sInterpMessage[4] = DataNode(0);
+            sInterpMessage[4] = 0;
         mTarget->Handle(sInterpMessage, true);
         break;
     }
@@ -456,7 +454,7 @@ void ObjectKeys::SetFrame(float frame, float blend) {
         Hmx::Object *obj;
         idx = ObjectAt(frame, obj);
         if (mInterpolation != kStep || mLastKeyFrameIndex != idx) {
-            mTarget->SetProperty(mProp, DataNode(obj));
+            mTarget->SetProperty(mProp, obj);
         }
         break;
     }
@@ -477,15 +475,15 @@ void BoolKeys::SetFrame(float frame, float blend) {
         bool b;
         idx = BoolAt(frame, b);
         if (mInterpolation != kStep || mLastKeyFrameIndex != idx) {
-            mTarget->SetProperty(mProp, DataNode(b));
+            mTarget->SetProperty(mProp, b);
         }
     } else if (mPropExceptionID == kHandleInterp) {
         bool b;
         idx = BoolAt(frame, b);
         if (mLastKeyFrameIndex != idx) {
             sInterpMessage.SetType(mInterpHandler);
-            sInterpMessage[0] = DataNode(b);
-            sInterpMessage[1] = DataNode(frame);
+            sInterpMessage[0] = b;
+            sInterpMessage[1] = frame;
             mTarget->Handle(sInterpMessage, true);
         }
     }
@@ -646,7 +644,7 @@ void SymbolKeys::SetFrame(float frame, float blend) {
         Symbol s;
         idx = SymbolAt(frame, s);
         if (mInterpolation != kStep || mLastKeyFrameIndex != idx) {
-            mTarget->SetProperty(mProp, DataNode(DataGetMacro(s)->Int(0)));
+            mTarget->SetProperty(mProp, DataGetMacro(s)->Int(0));
         }
         break;
     }
@@ -679,7 +677,7 @@ void SymbolKeys::SetFrame(float frame, float blend) {
     case kLinear: {
         Symbol s;
         idx = SymbolAt(frame, s);
-        mTarget->SetProperty(mProp, DataNode(s));
+        mTarget->SetProperty(mProp, s);
         break;
     }
     default:

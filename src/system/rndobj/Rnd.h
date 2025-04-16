@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_RND_H
-#define RNDOBJ_RND_H
+#pragma once
 #include "math/Color.h"
 #include "obj/Dir.h"
 #include "obj/ObjPtr_p.h"
@@ -9,20 +8,12 @@
 #include "rndobj/Mat.h"
 #include "rndobj/Overlay.h"
 #include "rndobj/PostProc.h"
+#include "rndobj/Tex.h"
 
 class RndCam;
 class RndEnviron;
 class RndFlare;
 class RndLight;
-
-enum ProcessCmd {
-    kProcessNone = 0,
-    kProcessWorld = 1,
-    kProcessPost = 2,
-    kProcessChar = 4,
-    kProcessPostChar = 6,
-    kProcessAll = 7
-};
 
 enum Mode {
     kDrawNormal = 0,
@@ -42,7 +33,8 @@ public:
     };
 
     struct PointTest {
-        int unk_0x0, unk_0x4, unk_0x8, unk_0xC;
+        int unk_0x0, unk_0x4, unk_0x8;
+        RndFlare *unk_0xC;
     };
 
     enum Aspect {
@@ -50,6 +42,18 @@ public:
         kRegular,
         kWidescreen,
         kLetterbox
+    };
+
+    enum DefaultTextureType {
+        kDefaultTex_Black = 0,
+        kDefaultTex_White = 1,
+        kDefaultTex_WhiteTransparent = 2,
+        kDefaultTex_FlatNormal = 3,
+        kDefaultTex_Gradient = 4,
+        kDefaultTex_Hue = 5,
+        kDefaultTex_Error = 6,
+        kUnk7 = 7,
+        kDefaultTex_Max = 8
     };
 
     Rnd();
@@ -129,6 +133,7 @@ public:
     DrawRectScreen(const Hmx::Rect &, const Hmx::Color &, RndMat *, const Hmx::Color *, const Hmx::Color *);
     void ResetProcCounter();
     void UploadDebugStats();
+    RndTex *CreateDefaultTexture(DefaultTextureType);
     Mode DrawMode() const { return mDrawMode; }
     void PreClearDrawAddOrRemove(RndDrawable *, bool, bool);
     bool Unk130() const { return unk130; }
@@ -165,6 +170,7 @@ public:
     int Height() const { return mHeight; }
     int ScreenBpp() const { return mScreenBpp; }
     bool DisablePP() const { return mDisablePostProc; }
+    RndMat *OverlayMat() const { return mOverlayMat; }
     RndTex *GetNullTexture();
 
     Hmx::Color mClearColor; // 0x20
@@ -178,28 +184,28 @@ public:
     RndOverlay *mHeapOverlay; // 0x78
     RndOverlay *mStatsOverlay; // 0x7c
     RndConsole *mConsole; // 0x80
-    RndMat *unk84; // 0x84
-    RndMat *unk88; // 0x88
-    RndMat *unk8c; // 0x8c
+    RndMat *mDefaultMat; // 0x84
+    RndMat *mOverlayMat; // 0x88
+    RndMat *mOverdrawMat; // 0x8c
     RndCam *mDefaultCam; // 0x90
-    RndCam *unk94; // 0x94
-    RndEnviron *unk98; // 0x98
-    RndLight *unk9c; // 0x9c
+    RndCam *mWorldCamCopy; // 0x94
+    RndEnviron *mDefaultEnv; // 0x98
+    RndLight *mDefaultLit; // 0x9c
 
-    int unk_arr[7]; // 0xa0 - 0xb8, inclusive
+    RndTex *mDefaultTex[7]; // 0xa0 - 0xb8, inclusive
 
     RndTex *mNullTex; // 0xbc
-    float unkc0; // 0xc0
+    float mRateTotal; // 0xc0
     int unkc4; // 0xc4
-    int unkc8; // 0xc8
+    int mRateCount; // 0xc8
     unsigned int mFrameID; // 0xcc
-    const char *unkd0; // 0xd0
+    const char *mRateGate; // 0xd0
     DataArray *mFont; // 0xd4
     int mSync; // 0xd8
     bool mGsTiming; // 0xdc
     bool mShowSafeArea; // 0xdd
     bool mDrawing; // 0xde
-    bool unkdf; // 0xdf
+    bool mWorldEnded; // 0xdf
     Aspect mAspect; // 0xE0
     Mode mDrawMode; // 0xe4 referenced in TexMovie - draw mode enum?
     bool unke8; // 0xe8
@@ -211,23 +217,21 @@ public:
     bool unkee; // 0xee
     bool unkef; // 0xef
     bool unkf0; // 0xf0
-    int unkf4; // 0xf4
+    int unkf4; // 0xf4 - funcptr
     int unkf8; // 0xf8
     std::list<PointTest> mPointTests; // 0xfc
     std::list<PostProcessor *> mPostProcessors; // 0x104
     PostProcessor *mPostProcOverride; // 0x10c
-    ObjPtrList<RndDrawable, ObjectDir> unk110; // 0x110
-    ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0x120
+    ObjPtrList<RndDrawable> unk110; // 0x110
+    ObjPtrList<RndDrawable> mDraws; // 0x120
     bool unk130; // 0x130
     bool unk131; // 0x131
     ProcCounter mProcCounter; // 0x134
     ProcessCmd mProcCmds; // 0x14c
     ProcessCmd mLastProcCmds; // 0x150
-    std::list<void *> unk154; // 0x154
+    std::list<CompressTextureCallback *> unk154; // 0x154
     int mForceCharLod; // 0x15c
 };
 
 extern Rnd *TheRnd;
 extern int gSuppressPointTest;
-
-#endif // RNDOBJ_RND_H

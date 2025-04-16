@@ -46,14 +46,14 @@ inline PlayerParams::PlayerParams() {
     mCrowdLossPerMs = crowdcfg->FindFloat("crowd_loss_per_sec") / 1000.0f;
 
     DataArray *unisoncfg = SystemConfig("scoring", "unison_phrase");
-    unk24 = unisoncfg->FindFloat("point_bonus");
+    mPointBonus = unisoncfg->FindFloat("point_bonus");
 
     DataArray *energycfg = SystemConfig("scoring", "band_energy");
-    unkc = 1.0f / energycfg->FindFloat("deploy_beats");
-    unk10 = energycfg->FindFloat("deploy_bonus");
-    unk14 = energycfg->FindFloat("spotlight_phrase");
-    unk18 = energycfg->FindFloat("deploy_threshold");
-    unk1c = energycfg->FindFloat("save_energy");
+    mDeployBeats = 1.0f / energycfg->FindFloat("deploy_beats");
+    mDeployBonus = energycfg->FindFloat("deploy_bonus");
+    mSpotlightPhrase = energycfg->FindFloat("spotlight_phrase");
+    mDeployThreshold = energycfg->FindFloat("deploy_threshold");
+    mSaveEnergy = energycfg->FindFloat("save_energy");
 }
 
 inline void PlayerParams::SetVocals() {
@@ -64,7 +64,7 @@ inline void PlayerParams::SetVocals() {
 Player::Player(BandUser *user, Band *band, int tracknum, BeatMaster *bmaster)
     : Performer(user, band), mParams(new PlayerParams()), mBehavior(new PlayerBehavior()),
       mUser(user), mRemote(0), mTrackNum(tracknum), mTrackType(kTrackNone),
-      mEnabledState(kPlayerEnabled), mTimesFailed(0), unk268(0), mBandEnergy(0),
+      mEnabledState(kPlayerEnabled), mTimesFailed(0), mIsInCoda(0), mBandEnergy(0),
       mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1),
       mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0), unk290(0), unk294(0),
       unk298(0), mDisconnectedAtStart(0), unk2a9(0), unk2ac(0), mPermanentOverdrive(0),
@@ -136,7 +136,7 @@ void Player::Restart(bool b) {
     SetQuarantined(mUser == TheBandUserMgr->GetNullUser());
     unk2c4 = true;
     mTimesFailed = 0;
-    unk268 = false;
+    mIsInCoda = false;
     mBandEnergy = 0;
     mDeployingBandEnergy = false;
     unk28c = 0;
@@ -278,14 +278,14 @@ void Player::BroadcastScore() {
 }
 
 void Player::EnterCoda() {
-    if (!unk268) {
+    if (!mIsInCoda) {
         if (mEnabledState == kPlayerDisabled || mEnabledState == kPlayerBeingSaved
             || mEnabledState == kPlayerDroppingIn) {
             mEnableMs = PollMs();
             mUser->GetTrack()->SetGemsEnabledByPlayer();
             SetEnabledState(kPlayerEnabled, mUser, false);
         }
-        unk268 = true;
+        mIsInCoda = true;
         mStats.mHasCoda = true;
     }
 }
@@ -463,7 +463,7 @@ void Player::SetMultiplierActive(bool b) {
 }
 
 bool Player::CanDeployOverdrive() const {
-    return mBandEnergy >= mParams->unk18 && !mDeployingBandEnergy && unk2b0;
+    return mBandEnergy >= mParams->mDeployThreshold && !mDeployingBandEnergy && unk2b0;
 }
 
 bool Player::IsDeployingBandEnergy() const { return mDeployingBandEnergy; }
@@ -507,7 +507,7 @@ void Player::DisableOverdrivePhrases() {
 void Player::CompleteCommonPhrase(bool b1, bool b2) {
     float energy;
     if (mPhraseBonus)
-        energy = mParams->unk14;
+        energy = mParams->mSpotlightPhrase;
     else
         energy = 0;
     AddEnergy(energy);
@@ -567,24 +567,24 @@ void Player::LoadPersistentData(const PersistentPlayerData &data) {
 DECOMP_FORCEACTIVE(Player, "Non-local player trying to deploy locally\n", "send_deploy")
 
 int Player::LocalDeployBandEnergy() {
-    int energy = mBand->DeployBandEnergy(mUser);
+    int playersSaved = mBand->DeployBandEnergy(mUser);
     mStats.mDeployCount++;
-    mStats.AddToPlayersSaved(energy, mBand->MainPerformer()->Crowd()->GetValue());
-    PerformDeployBandEnergy(energy, true);
-    return energy;
+    mStats.AddToPlayersSaved(playersSaved, mBand->MainPerformer()->Crowd()->GetValue());
+    PerformDeployBandEnergy(playersSaved, true);
+    return playersSaved;
 }
 
-void Player::PerformDeployBandEnergy(int i, bool b) {
-    if (!b)
+void Player::PerformDeployBandEnergy(int playersSaved, bool local) {
+    if (!local)
         mBand->DeployBandEnergy(mUser);
-    if (i == 0) {
+    if (playersSaved == 0) {
         mDeployingBandEnergy = true;
         if (mBand) {
             mBand->UpdateBonusLevel(PollMs());
         }
         Deploy();
     } else
-        SubtractEnergy(mParams->unk1c);
+        SubtractEnergy(mParams->mSaveEnergy);
 }
 
 DECOMP_FORCEACTIVE(Player, "rp_deployed_%s.cue")
@@ -592,7 +592,7 @@ DECOMP_FORCEACTIVE(Player, "rp_deployed_%s.cue")
 void Player::RemoteAlreadySaved(int i) {
     unk294--;
     if (unk294 == 0) {
-        AddEnergy(mParams->unk1c);
+        AddEnergy(mParams->mSaveEnergy);
     }
     unk2b4--;
 }
