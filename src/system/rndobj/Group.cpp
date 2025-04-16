@@ -18,7 +18,7 @@ bool gInReplace;
 RndGroup::RndGroup()
     : mObjects(this, kObjListOwnerControl), mEnv(this), mDrawOnly(this), mLod(this),
       mLodScreenSize(0), mDrawLod(0) {
-    mSortInWorld = 0;
+    mSortInWorld = false;
 }
 
 SAVE_OBJ(RndGroup, 0x30);

@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_GRAPH_H
-#define RNDOBJ_GRAPH_H
+#pragma once
 #include <vector>
 #include "math/Vec.h"
 #include "math/Color.h"
@@ -89,12 +88,15 @@ public:
     static void Init();
     static void Terminate();
     static void ResetAll();
+    static void DrawAll();
     static RndGraph *Get(const void *);
     static void Free(const void *, bool);
     static void SetCamera(RndCam *);
     static RndGraph *GetOneFrame();
 };
 
-class FakeGraph {};
-
-#endif
+class FakeGraph {
+public:
+    void *mId; // 0x0
+    void (*mDrawCallback)(); // 0x4
+};
