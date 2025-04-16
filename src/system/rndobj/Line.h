@@ -82,3 +82,8 @@ public:
     float mFoldCos; // 0xc4
     ObjPtr<RndMat> mMat; // 0xc8
 };
+
+inline BinStream &operator>>(BinStream &bs, RndLine::Point &point) {
+    bs >> point.v >> point.c;
+    return bs;
+}

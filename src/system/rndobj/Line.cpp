@@ -2,6 +2,7 @@
 #include "math/Color.h"
 #include "math/Mtx.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Cam.h"
@@ -210,15 +211,23 @@ void RndLine::SetPointsColor(int start, int end, const Hmx::Color32 &color) {
 
 SAVE_OBJ(RndLine, 535)
 
+void RndLine::SetUpdate(bool b1) {
+    mLineUpdate = b1;
+    if (!mLineUpdate) {
+        Transform xfm(WorldXfm());
+        static Vector3 offset(0, -1, 0);
+        Multiply(offset, xfm, xfm.v);
+        UpdateLine(xfm, 0);
+        mMesh->SetLocalPos(offset);
+    }
+}
+
+void RndLine::UpdateLine(const Transform &, float) {}
+
 void RndLine::UpdateInternal() {
     mFoldCos = cosf(mFoldAngle);
     mMesh->SetMat(mMat);
     SetNumPoints(mPoints.size());
-}
-
-BinStream &operator>>(BinStream &bs, RndLine::Point point) {
-    bs >> point.v >> point.c;
-    return bs;
 }
 
 BEGIN_LOADS(RndLine)
@@ -230,7 +239,7 @@ BEGIN_LOADS(RndLine)
     }
     RndDrawable::Load(bs);
     if (rev < 3) {
-        ObjPtrList<Hmx::Object> list(this, kObjListNoNull);
+        ObjPtrList<Hmx::Object> list(this);
         int _;
         bs >> _ >> list;
     }
@@ -238,15 +247,34 @@ BEGIN_LOADS(RndLine)
     bs >> mMat >> mPoints >> mWidth;
     if (rev > 0) {
         bs >> mFoldAngle;
-        LOAD_BITFIELD(u8, mLineHasCaps)
+        LOAD_BITFIELD(bool, mLineHasCaps)
     }
     if (rev > 1) {
-        LOAD_BITFIELD(u8, mLinePairs)
+        LOAD_BITFIELD(bool, mLinePairs)
     }
     UpdateInternal();
 END_LOADS
 
-TextStream &operator<<(TextStream &, const RndLine::Point &) {}
+BEGIN_COPYS(RndLine)
+    CREATE_COPY_AS(RndLine, d);
+    MILO_ASSERT(d, 0x2C3);
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndDrawable)
+    COPY_SUPERCLASS(RndTransformable)
+    COPY_MEMBER_FROM(d, mMat)
+    COPY_MEMBER_FROM(d, mPoints)
+    COPY_MEMBER_FROM(d, mWidth)
+    COPY_MEMBER_FROM(d, mFoldAngle)
+    COPY_MEMBER_FROM(d, mLineHasCaps)
+    COPY_MEMBER_FROM(d, mLinePairs)
+    UpdateInternal();
+END_COPYS
+
+TextStream &operator<<(TextStream &ts, const RndLine::Point &pt) {
+    Hmx::Color color(pt.c);
+    ts << "\n\tv:" << pt.v << "\n\tc:" << color;
+    return ts;
+}
 
 void RndLine::Print() {
     TheDebug << "   points: " << mPoints << "\n";
@@ -256,31 +284,47 @@ void RndLine::Print() {
     TheDebug << "   linePairs:" << mLinePairs << "\n";
 }
 
-RndLine::RndLine() : mWidth(1.0f), mFoldAngle(1.570796f), mMat(this, 0) {
+RndLine::RndLine() : mWidth(1.0f), mFoldAngle(1.5707964f), mMat(this) {
     mLineHasCaps = true;
     mLinePairs = false;
     mLineUpdate = true;
     mMesh = Hmx::Object::New<RndMesh>();
-    mMesh->mGeomOwner->mMutable = 0x1F;
+    mMesh->SetMutable(0x1F);
     mMesh->SetTransParent(this, false);
     UpdateInternal();
 }
 
-RndLine::~RndLine() {}
+RndLine::~RndLine() { RELEASE(mMesh); }
 
 DataNode RndLine::OnSetMat(const DataArray *array) {
     RndMat *mat = array->Obj<RndMat>(2);
     SetMat(mat);
-    mShowing = mat;
+    SetShowing(mat);
     return 0;
 }
 
 BEGIN_HANDLERS(RndLine)
-    HANDLE_EXPR(num_points, (int)mPoints.size())
-    HANDLE_ACTION(set_point_pos, {
-        Vector3 v(_msg->Float(2), _msg->Float(3), _msg->Float(4));
-        SetPointPos(_msg->Int(1), v);
-    })
+    HANDLE_EXPR(num_points, NumPoints())
+    HANDLE_ACTION(
+        set_point_pos,
+        SetPointPos(_msg->Int(2), Vector3(_msg->Float(3), _msg->Float(4), _msg->Float(5)))
+    )
+    HANDLE_ACTION(
+        set_point_color,
+        SetPointColor(
+            _msg->Int(2),
+            Hmx::Color32(_msg->Float(3), _msg->Float(4), _msg->Float(5), _msg->Float(6)),
+            true
+        )
+    )
+    HANDLE_ACTION(
+        set_points_color,
+        SetPointsColor(
+            _msg->Int(2),
+            _msg->Int(3),
+            Hmx::Color32(_msg->Float(4), _msg->Float(5), _msg->Float(6), _msg->Float(7))
+        )
+    )
     HANDLE_ACTION(set_update, SetUpdate(_msg->Int(2)))
     HANDLE(set_mat, OnSetMat)
     HANDLE_SUPERCLASS(RndDrawable)
