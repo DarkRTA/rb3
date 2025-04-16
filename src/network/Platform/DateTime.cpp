@@ -41,6 +41,5 @@ namespace Quazal {
     }
 
     //! https://decomp.me/scratch/ur8fL
-    void DateTime::GetSystemTime(DateTime &dt) {
-    }
+    // void DateTime::GetSystemTime(DateTime &dt) {}
 }

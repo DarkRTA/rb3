@@ -5,7 +5,6 @@
 #include "Platform/RootObject.h"
 
 namespace Quazal {
-
     class InetAddress : public RootObject {
     public:
         u8 unk0;
@@ -13,23 +12,23 @@ namespace Quazal {
         s16 port;
         s32 address;
         InetAddress();
-        InetAddress(const InetAddress&);
-        InetAddress(const char*, u16);
+        InetAddress(const InetAddress &);
+        InetAddress(const char *, u16);
         ~InetAddress();
 
         void Init();
 
-        s32 SetAddress(const char*);
+        s32 SetAddress(const char *);
         void SetAddress(unsigned int);
         void SetNetworkAddress(unsigned int);
         s32 GetAddress() const;
-        s32 GetAddress(char*, unsigned int) const;
+        s32 GetAddress(char *, unsigned int) const;
 
         void SetPortNumber(u16);
         s16 GetPortNumber() const;
 
-        s32 operator<(const InetAddress&) const;
-        bool operator==(const InetAddress&) const;
-        InetAddress* operator=(const InetAddress&);
+        s32 operator<(const InetAddress &) const;
+        bool operator==(const InetAddress &) const;
+        InetAddress *operator=(const InetAddress &);
     };
 }
