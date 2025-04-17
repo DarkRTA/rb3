@@ -2,17 +2,18 @@
   "[c]": {
     "files.encoding": "utf8",
     "editor.defaultFormatter": "xaver.clang-format",
-    "editor.formatOnSave": "true"
+    "editor.formatOnSave": true
   },
   "[cpp]": {
     "files.encoding": "utf8",
-    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
-    "editor.formatOnSave": "true"
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": true
   },
   "[python]":{
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "files.associations": {
+    "*.cp": "cpp",
     "algorithm": "cpp",
     "bitset": "cpp",
     "cassert": "cpp",
@@ -71,8 +72,8 @@
     "utility": "cpp",
     "valarray": "cpp",
     "vector": "cpp",
-
     ".clangd": "yaml",
+    "string.h": "c"
   },
   "C/C++ Include Guard.Macro Type": "Filepath",
   "C/C++ Include Guard.Prefix": "",

@@ -1,6 +1,7 @@
 #pragma once
 namespace Quazal {
     class BadEvents {
+    public:
         enum _ID {
         };
 

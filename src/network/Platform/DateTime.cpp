@@ -1,4 +1,5 @@
 #include "Platform/DateTime.h"
+#include "revolution/os/OSTime.h"
 
 namespace Quazal {
     const DateTime &DateTime::Never = DateTime(); // yeah sure
@@ -39,5 +40,6 @@ namespace Quazal {
         return m_ui64Value & 0x3F; // seconds: bits 0-5
     }
 
-    void DateTime::GetSystemTime(DateTime &) {}
+    //! https://decomp.me/scratch/ur8fL
+    // void DateTime::GetSystemTime(DateTime &dt) {}
 }
