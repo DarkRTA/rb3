@@ -2,6 +2,7 @@
 #include "milo_types.h"
 #include "math/Mtx.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Highlightable.h"
@@ -177,6 +178,7 @@ public:
 
     NEW_OBJ(RndTransformable)
     static void Register() { REGISTER_OBJ_FACTORY(RndTransformable) }
+    DECLARE_REVS;
 
     /** "Object this is linked to." */
     ObjOwnerPtr<RndTransformable> mParent; // 0x8
@@ -192,8 +194,6 @@ public:
     /** "Target according to the constraint." */
     ObjPtr<RndTransformable> mTarget; // 0x84
 
-    static ushort gRev;
-    static ushort gAltRev;
     static Plane sShadowPlane;
 
     NEW_OVERLOAD

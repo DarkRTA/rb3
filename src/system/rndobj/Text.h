@@ -60,8 +60,8 @@ public:
         Style lineStyle; // 0x0
         const char *unk18;
         const char *unk1c;
-        int startIdx; // 0x20
-        int endIdx; // 0x24
+        unsigned int startIdx; // 0x20
+        unsigned int endIdx; // 0x24
         Transform unk28;
         float unk58;
         Hmx::Color32 color; // 0x5c
@@ -160,6 +160,7 @@ public:
         const String &, const Transform &, const RndText::Style &, float *, bool *, int
     );
     void UpdateLineColor(unsigned int, const Hmx::Color32 &, bool *);
+    void ComputeCharWidths(float *, int, const char *, RndText::Style);
     void ReplaceLineText(
         unsigned int,
         const String &,
@@ -181,7 +182,7 @@ public:
     DataNode OnSetColor(DataArray *);
 
     std::vector<Line> mLines; // 0xb0
-    ObjOwnerPtr<RndFont, ObjectDir> mFont; // 0xb8
+    ObjOwnerPtr<RndFont> mFont; // 0xb8
     float mWrapWidth; // 0xc4
     float mLeading; // 0xc8
     String mText; // 0xcc - either ASCII or UTF8 text
