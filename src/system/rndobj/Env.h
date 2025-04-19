@@ -25,7 +25,7 @@ public:
     virtual void Load(BinStream &);
     virtual void Select(const Vector3 *);
     virtual void ApplyApproxLighting(const _GXColor *);
-    virtual bool HasPointCubeTex(void) const;
+    virtual bool HasPointCubeTex() const { return mHasPointCubeTex; }
     virtual bool IsFake(RndLight *) const;
     virtual bool IsReal(RndLight *) const;
 
@@ -37,8 +37,7 @@ public:
     DataNode OnAllowableLights_Real(const DataArray *);
     DataNode OnAllowableLights_Approx(const DataArray *);
     bool FogEnable() const;
-    bool
-    IsLightInList(const RndLight *, const ObjPtrList<RndLight, class ObjectDir> &) const;
+    bool IsLightInList(const RndLight *, const ObjPtrList<RndLight> &) const;
     bool IsValidRealLight(const RndLight *) const;
     void UpdateApproxLighting(const Vector3 *, _GXColor *);
     bool GetAnimateFromPreset() const { return mAnimateFromPreset; }
@@ -69,15 +68,18 @@ public:
         SetUseApproxLocal(b);
         SetUseApproxGlobal(b);
     }
+    bool UsesApproxes() const { return mUseApprox_Local || mUseApprox_Global; }
+    bool UsesApproxLocal() const { return mUseApprox_Local; }
+    bool UsesApproxGlobal() const { return mUseApprox_Global; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(RndEnviron)
     static void Init() { REGISTER_OBJ_FACTORY(RndEnviron) }
 
-    ObjPtrList<RndLight, class ObjectDir> mLightsReal; // 0x1c
-    ObjPtrList<RndLight, class ObjectDir> mLightsApprox; // 0x2c
-    ObjPtrList<RndLight, class ObjectDir> mLightsOld; // 0x3c
+    ObjPtrList<RndLight> mLightsReal; // 0x1c
+    ObjPtrList<RndLight> mLightsApprox; // 0x2c
+    ObjPtrList<RndLight> mLightsOld; // 0x3c
     Hmx::Color mAmbientColor; // 0x4c
     int unk5c; // 0x5c
     // mNumLightsReal, mNumLightsApprox, mNumLightsPoint, mNumLightsProj
@@ -86,7 +88,7 @@ public:
     int mNumLightsPoint; // 0x68
     int mNumLightsProj; // 0x6c
     bool mHasPointCubeTex; // 0x70
-    ObjOwnerPtr<RndEnviron, class ObjectDir> mAmbientFogOwner; // 0x74
+    ObjOwnerPtr<RndEnviron> mAmbientFogOwner; // 0x74
     bool mFogEnable; // 0x80
     float mFogStart; // 0x84
     float mFogEnd; // 0x88
@@ -95,7 +97,7 @@ public:
     float mFadeStart; // 0xa0
     float mFadeEnd; // 0xa4
     float mFadeMax; // 0xa8
-    ObjPtr<RndTransformable, class ObjectDir> mFadeRef; // 0xac
+    ObjPtr<RndTransformable> mFadeRef; // 0xac
     Vector4 mLRFade; // 0xb8 - 0xc4, mLeftOut, mLeftOpaque, mRightOpaque, mRightOut
     RndColorXfm mColorXfm; // 0xc8
     bool mUseColorAdjust; // 0x14c

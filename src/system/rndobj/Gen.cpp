@@ -1,5 +1,8 @@
 #include "rndobj/Gen.h"
+#include "math/Mtx.h"
+#include "math/Rand.h"
 #include "math/Rot.h"
+#include "math/Sphere.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
@@ -7,8 +10,10 @@
 #include "rndobj/Anim.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Draw.h"
+#include "rndobj/MultiMesh.h"
 #include "rndobj/Part.h"
 #include "rndobj/Trans.h"
+#include "rndobj/Utl.h"
 #include "types.h"
 #include "utl/Symbols.h"
 
@@ -87,7 +92,7 @@ BEGIN_LOADS(RndGenerator)
         bs >> mScaleGenHigh;
     }
     if (rev < 8) {
-        ObjPtr<RndCam, ObjectDir> cam(this, NULL);
+        ObjPtr<RndCam> cam(this, NULL);
         bool a;
         int b;
         bs >> a;
@@ -117,11 +122,11 @@ BEGIN_LOADS(RndGenerator)
 
     if (rev == 3) {
         int x;
-        ObjPtr<Hmx::Object, ObjectDir> obj(this, NULL);
+        ObjPtr<Hmx::Object> obj(this, NULL);
         bs >> obj >> x;
     }
     if (u32(rev - 4) <= 6) {
-        ObjPtr<Hmx::Object, ObjectDir> obj(this, NULL);
+        ObjPtr<Hmx::Object> obj(this, NULL);
         bs >> obj;
     }
     if (u32(rev - 5) <= 5) {
@@ -162,6 +167,26 @@ void RndGenerator::SetPath(RndTransAnim *path, float start, float end) {
 }
 
 void RndGenerator::Generate(float frame) {
+    Instance inst;
+    inst.unk0 = frame;
+    inst.unk4.Reset();
+    float f3 = 0;
+    if (mPathVarMaxX > 0)
+        f3 = RandomFloat(-mPathVarMaxX, f3);
+    float f4 = 0;
+    if (mPathVarMaxY > 0)
+        f4 = RandomFloat(-mPathVarMaxY, f4);
+    float f6 = 0;
+    if (mPathVarMaxZ > 0)
+        f6 = RandomFloat(-mPathVarMaxZ, f6);
+    Vector3 v88(f3, f4, f6);
+    MakeRotMatrix(v88, inst.unk4.m, true);
+    Multiply(inst.unk4, WorldXfm(), inst.unk4);
+    float f5 = mScaleGenLow;
+    if (f5 < mScaleGenHigh)
+        f5 = RandomFloat(f5, mScaleGenHigh);
+    inst.unk4.v.Set(f5, f5, f5);
+    mInstances.push_back(inst);
     if (mParticleSys) {
         mCurParticle = mParticleSys->AllocParticle();
         mParticleSys->InitParticle(mCurParticle, NULL);
@@ -180,6 +205,47 @@ float RndGenerator::EndFrame() {
     return 0;
 }
 
+void RndGenerator::SetFrame(float frame, float blend) {
+    RndAnimatable::SetFrame(frame, blend);
+    if (mNextFrameGen == -9999999.0f) {
+        mNextFrameGen = frame;
+    } else {
+        int i6 = mPathEndFrame - mPathStartFrame > 0 ? 1 : -1;
+        mCurParticle = mParticleSys ? mParticleSys->ActiveParticles() : nullptr;
+        for (std::list<Instance>::iterator it = mInstances.begin();
+             it != mInstances.end();) {
+            float f1 = frame - it->unk0;
+            if ((float)i6 * (mPathEndFrame - mPathStartFrame) < f1 || (f1 < 0)) {
+                if (f1 < 0)
+                    mNextFrameGen = it->unk0;
+                it = mInstances.erase(it);
+                if (mCurParticle) {
+                    mCurParticle = mParticleSys->FreeParticle(mCurParticle);
+                }
+            } else {
+                ++it;
+                if (mCurParticle)
+                    mCurParticle = mCurParticle->Next();
+            }
+        }
+        if (mRateGenLow < 0)
+            return;
+        else {
+            float fabs = std::fabs(mPathEndFrame - mPathStartFrame);
+            if (frame - fabs > mNextFrameGen) {
+                mNextFrameGen = frame - fabs;
+            }
+            if (frame + mRateGenHigh < mNextFrameGen) {
+                mNextFrameGen = frame + mRateGenHigh;
+            }
+            while (frame >= mNextFrameGen) {
+                Generate(mNextFrameGen);
+                mNextFrameGen += RandomFloat(mRateGenLow, mRateGenHigh);
+            }
+        }
+    }
+}
+
 void RndGenerator::ListAnimChildren(std::list<RndAnimatable *> &list) const {
     if (mPath)
         list.push_back(mPath);
@@ -190,9 +256,57 @@ void RndGenerator::DrawMesh(Transform &t, float) {
     mMesh->Draw();
 }
 
-void RndGenerator::DrawMultiMesh(Transform &t, float f) { t.v.x = mCurMultiMesh->pad[0]; }
+void RndGenerator::DrawMultiMesh(Transform &t, float f) {
+    *mCurMultiMesh++ = RndMultiMesh::Instance(t);
+    return;
+}
 
-void RndGenerator::DrawParticleSys(Transform &, float) {}
+void RndGenerator::DrawParticleSys(Transform &t, float f) {
+    if (mCurParticle) {
+        mCurParticle->Pos3() = t.v;
+        mCurParticle = mCurParticle->Next();
+    }
+}
+
+typedef void (RndGenerator::*DrawFunc)(Transform &, float);
+
+void RndGenerator::DrawShowing() {
+    if (mPath && (mMesh || mMultiMesh || mParticleSys)) {
+        DrawFunc func = nullptr;
+        if (mMesh)
+            func = &RndGenerator::DrawMesh;
+        else if (mMultiMesh) {
+            std::list<RndMultiMesh::Instance> &meshInsts = mMultiMesh->mInstances;
+            if (meshInsts.size() != mInstances.size()) {
+                meshInsts.resize(mInstances.size());
+            }
+            mCurMultiMesh = meshInsts.begin();
+            func = &RndGenerator::DrawMultiMesh;
+        } else if (mParticleSys) {
+            mCurParticle = mParticleSys->ActiveParticles();
+            func = &RndGenerator::DrawParticleSys;
+        }
+
+        if (func) {
+            int i2 = mPathEndFrame - mPathStartFrame > 0 ? 1 : -1;
+            FOREACH (it, mInstances) {
+                Instance &cur = *it;
+                float f1 = GetFrame() - cur.unk0;
+                Transform xfm;
+                mPath->MakeTransform(f1 * i2 + mPathStartFrame, xfm, true, 1);
+                Scale(it->unk34, xfm.m, xfm.m);
+                Multiply(xfm, it->unk4, xfm);
+                (this->*func)(xfm, f1);
+            }
+        }
+
+        if (mMultiMesh) {
+            mMultiMesh->Draw();
+        } else if (mParticleSys) {
+            mParticleSys->Draw();
+        }
+    }
+}
 
 void RndGenerator::ListDrawChildren(std::list<RndDrawable *> &list) {
     if (mMesh)
@@ -201,6 +315,46 @@ void RndGenerator::ListDrawChildren(std::list<RndDrawable *> &list) {
         list.push_back(mMultiMesh);
     if (mParticleSys)
         list.push_back(mParticleSys);
+}
+
+void RndGenerator::UpdateSphere() {
+    Sphere s;
+    MakeWorldSphere(s, true);
+    Transform xfm;
+    FastInvert(WorldXfm(), xfm);
+    Multiply(s, xfm, s);
+    SetSphere(s);
+}
+
+bool RndGenerator::MakeWorldSphere(Sphere &sphere, bool b) {
+    if (b) {
+        sphere.Zero();
+        if (mPath) {
+            CalcSphere(mPath, sphere);
+            if (sphere.GetRadius()) {
+                RndMesh *mesh = mMesh;
+                if (!mesh && mMultiMesh) {
+                    mesh = mMultiMesh->GetMesh();
+                }
+                if (mesh) {
+                    float sum =
+                        (mMesh->mSphere.GetRadius() + Length(mMesh->GetSphere().center));
+                    sphere.radius += mScaleGenHigh * sum;
+                } else if (mParticleSys) {
+                    sphere.radius += mScaleGenHigh
+                        * Max(mParticleSys->mStartSize.x, mParticleSys->mStartSize.y);
+                }
+            }
+        }
+        return true;
+    } else {
+        Sphere &mySphere = mSphere;
+        if (mySphere.GetRadius()) {
+            Multiply(mySphere, WorldXfm(), sphere);
+            return true;
+        } else
+            return false;
+    }
 }
 
 BEGIN_HANDLERS(RndGenerator)

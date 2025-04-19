@@ -1,8 +1,12 @@
 #include "os/Timer.h"
-
+#include "decomp.h"
+#include "obj/Data.h"
+#include "obj/DataFunc.h"
 #include "os/Debug.h"
 #include "math/Utl.h"
+#include "os/System.h"
 #include "revolution/os/OSTime.h"
+#include "stl/_pair.h"
 #include <list>
 
 std::vector<std::pair<Timer, TimerStats> > AutoTimer::sTimers;
@@ -14,9 +18,12 @@ double Timer::sDoubleCycles2Ms;
 
 Timer Timer::sSlowFrameTimer;
 float Timer::sSlowFrameWaiver;
+int AutoSlowFrame::sDepth;
 const char *Timer::sSlowFrameReason;
 
-bool gGlitchCallback = false;
+bool AutoTimer::sCriticalFrame;
+bool AutoTimer::sCollectingStats;
+bool gGlitchCallback;
 
 static DataArray *tempArray = new DataArray(1);
 static std::list<Symbol> sConditionalTimersEnabled;
@@ -83,6 +90,7 @@ TimerStats::TimerStats(DataArray *cfg)
 }
 
 void TimerStats::CollectStats(float ms, bool critical, int critCount) {
+    static int temp;
     if (mCount++ != 0) {
         mAvgMs += (ms - mAvgMs) / mCount;
         mStdDevMs += (ABS(ms - mAvgMs) - mStdDevMs) / mCount;
@@ -125,19 +133,19 @@ void TimerStats::PrintPctile(float pctile) {
 
     int a = std::floor(pctile * 100);
     if (target > MAX_TOP_VALS) {
-        TheDebug << MakeString(
+        MILO_LOG(
             "   %dth pctile:   <%.2f THIS IS AN OVERESTIMATE.  For accurate percentile, increase MAX_TOP_VALS in Timer.h\n",
             a,
             top
         );
     } else {
-        TheDebug << MakeString("   %dth pctile:   %.2f\n", a, top);
+        MILO_LOG("   %dth pctile:   %.2f\n", a, top);
     }
 }
 
 void TimerStats::Dump(const char *tag, int critCount) {
     if (mCount != 0) {
-        TheDebug << MakeString(
+        MILO_LOG(
             "%s\t(%2.2f, %2.2f), %4.2f, [>%.1f] %.2f {%2.2f} %.1f\n",
             tag,
             mAvgMs,
@@ -150,7 +158,7 @@ void TimerStats::Dump(const char *tag, int critCount) {
         );
         PrintPctile(0.99);
     } else {
-        TheDebug << MakeString("s_%s_<no_data>_80bb62eb", tag);
+        MILO_LOG("%s <no data>\n", tag);
     }
 }
 
@@ -167,12 +175,130 @@ void TimerStats::Clear() {
     }
 }
 
+DECOMP_FORCEACTIVE(Timer, "Adding AutoTimer %s\n")
+
+Timer *AutoTimer::GetTimer(Symbol name) {
+    FOREACH (it, sTimers) {
+        if (it->first.mName == name) {
+            return &it->first;
+        }
+    }
+    return nullptr;
+}
+
 void Timer::Init() {
     Timer::sDoubleCycles2Ms = OSTicksToSeconds(1000.0);
     Timer::sLowCycles2Ms = (float)Timer::sDoubleCycles2Ms;
     Timer::sHighCycles2Ms = (float)(Timer::sDoubleCycles2Ms * UINT_MAX);
 }
 
-namespace AutoGlitchReport {
-    void EnableCallback() { gGlitchCallback = true; }
+void AutoTimer::SetCollectStats(bool b1, bool b2) {
+    sCollectingStats = b1;
+    if (b2 && !sCollectingStats) {
+        DumpTimerStats();
+    }
 }
+
+bool AutoTimer::CollectingStats() { return sCollectingStats; }
+
+void AutoTimer::ComputeCriticalFrame() {
+    sCriticalFrame = 0;
+    FOREACH (it, sTimers) {
+        if (it->second.mCritical && it->first.mLastMs > it->first.mBudget) {
+            sCriticalFrame = true;
+            sCritFrameCount++;
+            return;
+        }
+    }
+}
+
+void AutoTimer::CollectTimerStats() {
+    if (sCollectingStats) {
+        ComputeCriticalFrame();
+        FOREACH (it, sTimers) {
+            if (it->first.mDraw) {
+                it->second.CollectStats(
+                    it->first.mLastMs, sCriticalFrame, sCritFrameCount
+                );
+            }
+        }
+    }
+}
+
+void AutoTimer::DumpTimerStats() {
+    if (!sCritFrameCount)
+        sCritFrameCount = true;
+    MILO_LOG(
+        "SONG TIMER STATS: (mean, SD), max, [>budget] pct overbudget {mean in critical frames} pct of crit frames overbudget\n"
+    );
+    FOREACH (it, sTimers) {
+        TimerStats &stats = it->second;
+        if (it->first.mDraw) {
+            stats.Dump(it->first.mName.mStr, sCritFrameCount);
+        }
+        stats.Clear();
+    }
+    sCritFrameCount = 0;
+}
+
+static DataNode OnPrintTimers(DataArray *a) {
+    AutoTimer::PrintTimers(a->Int(1));
+    return 0;
+}
+
+void AutoTimer::PrintTimers(bool worst) {
+    MILO_LOG("%s TIMES:\n", worst ? "WORST" : "LAST");
+    FOREACH (it, sTimers) {
+        if (it->first.mDraw) {
+            const char *msStr =
+                MakeString("%.2f", worst ? it->first.mWorstMs : it->first.mLastMs);
+            MILO_LOG("%s\t%s\n", it->first.mName, msStr);
+        }
+    }
+}
+
+static DataNode ShowTimer(DataArray *arr) {
+    Timer *timer = AutoTimer::GetTimer(arr->Sym(1));
+    if (timer) {
+        timer->mDraw = arr->Int(2);
+    }
+    return 0;
+}
+
+static DataNode SetTimerMs(DataArray *arr) {
+    Timer *timer = AutoTimer::GetTimer(arr->Sym(1));
+    if (timer) {
+        timer->SetLastMs(arr->Float(2));
+    }
+    return 0;
+}
+
+static DataNode TimerMs(DataArray *arr) {
+    Timer *timer = AutoTimer::GetTimer(arr->Sym(1));
+    if (timer)
+        return timer->GetLastMs();
+    else
+        return 0;
+}
+
+void AutoTimer::Init() {
+    DataRegisterFunc("show_tier", ShowTimer);
+    DataRegisterFunc("set_timer_ms", SetTimerMs);
+    DataRegisterFunc("timer_ms", TimerMs);
+    DataRegisterFunc("print_timers", OnPrintTimers);
+    DataArray *cfg = SystemConfig("timer");
+    for (int i = 1; i < cfg->Size(); i++) {
+        DataArray *arr = cfg->Array(i);
+        bool enabled = false;
+        arr->FindData("enable", enabled, false);
+        if (enabled) {
+            sTimers.push_back(std::pair<Timer, TimerStats>(Timer(arr), TimerStats(arr)));
+        }
+    }
+}
+
+void TimerSymbolListPlaceholderFunc(std::list<Symbol> &syms) { syms.sort(); }
+
+void AutoGlitchReport::EnableCallback() { gGlitchCallback = true; }
+
+const char *FormatTime(float f1) { return MakeString("%.2f", f1); }

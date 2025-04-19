@@ -63,14 +63,15 @@ float ComputeAngle(const Vector3 &, const Vector3 &, const Vector3 &);
 
 #pragma push
 #pragma dont_inline on
+#pragma auto_inline on
 void RndTexRenderer::DrawToTexture() {
     if (TheRnd->DrawMode() == 0) {
-        if (((Hmx::Object *)Dir() == (RndDrawable *)mDraw) || !Showing())
+        if (((Hmx::Object *)Dir() == mDraw) || !Showing())
             return;
         else {
-            if (!mDrawWorldOnly || TheRnd->ProcCmds() & 1) {
+            if (!mDrawWorldOnly || TheRnd->ProcCmds() & kProcessWorld) {
                 if (mDirty && mDraw && mOutputTexture) {
-                    if (!(mOutputTexture->GetType() & 2)) {
+                    if (!(mOutputTexture->GetType() & kProcessPost)) {
                         MILO_NOTIFY_ONCE("%s not renderable", mOutputTexture->Name());
                         return;
                     }
@@ -78,28 +79,26 @@ void RndTexRenderer::DrawToTexture() {
                     float f33 = 0;
                     if (!mForce)
                         HandleType(pre_render_msg);
-                    RndDir *rdir = dynamic_cast<RndDir *>(mDraw.Ptr());
                     RndCam *cam;
-                    if (mImposterHeight != 0 && rdir) {
+                    RndDir *rdir = dynamic_cast<RndDir *>(mDraw.Ptr());
+                    if (mImposterHeight && rdir) {
                         cam = RndCam::Current();
                         tf98 = cam->WorldXfm();
                         f33 = cam->YFov();
                         Transform tfc8;
                         Transpose(rdir->WorldXfm().m, tfc8.m);
-                        Multiply(cam->WorldXfm(), tfc8, tfc8);
+                        Multiply(cam->WorldXfm().m, tfc8.m, tfc8.m);
                         Subtract(cam->WorldXfm().v, rdir->WorldXfm().v, tfc8.v);
-                        tfc8.v.z -= mImposterHeight * 0.5f;
+                        tfc8.v.z -= mImposterHeight / 2.0f;
                         float f34 =
                             Max(Length(tfc8.v),
-                                mImposterHeight * 0.5f + cam->NearPlane());
+                                mImposterHeight / 2.0f + cam->NearPlane());
                         Multiply(Vector3(0, -f34, 0), tfc8.m, tfc8.v);
-                        tfc8.v.z += mImposterHeight * 0.5f;
+                        tfc8.v.z += mImposterHeight / 2.0f;
                         cam->SetWorldXfm(tfc8);
+                        float atanned = atanf(mImposterHeight / 2.0f / f34);
                         cam->SetFrustum(
-                            cam->NearPlane(),
-                            cam->FarPlane(),
-                            atanf(mImposterHeight * 0.5f / f34) * 2.0f,
-                            1.0f
+                            cam->NearPlane(), cam->FarPlane(), atanned * 2.0f, 1.0f
                         );
                     } else {
                         cam = mCam;
@@ -241,10 +240,8 @@ void RndTexRenderer::DrawToTexture() {
                     cam->Select();
                     GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
                     WiiMat::SetOverrideAlphaWrite(true);
-                    bool b1 = false;
-                    if (mFirstDraw && mPrimeDraw)
-                        b1 = true;
-                    for (int i = 0; i < b1 + 1; i++) {
+                    int cap = (mFirstDraw && mPrimeDraw) ? 2 : 1;
+                    for (int i = 0; i < cap; i++) {
                         DrawBefore();
                         if (rdir && rdir->ClassName() == "WorldDir") {
                             rdir->RndDir::DrawShowing();

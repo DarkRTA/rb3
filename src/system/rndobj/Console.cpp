@@ -1,4 +1,5 @@
 #include "rndobj/Console.h"
+#include "obj/DataFile.h"
 #include "obj/DataUtl.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
@@ -11,6 +12,8 @@
 #include "os/System.h"
 #include "rndobj/Overlay.h"
 #include "rndobj/Rnd.h"
+#include "utl/Cheats.h"
+#include "utl/Std.h"
 #include <string.h>
 
 static RndConsole *gConsole;
@@ -97,7 +100,7 @@ static DataNode DataHelp(DataArray *da) {
 RndConsole::Breakpoint::~Breakpoint() {
     if (parent) {
         DataArray *cmd = parent->Command(index);
-        cmd->Node(0) = DataNode(DataNop);
+        cmd->Node(0) = DataNop;
     }
 }
 
@@ -114,7 +117,7 @@ void RndConsole::MoveLevel(int level) {
 
 void RndConsole::InsertBreak(DataArray *arr, int i) {
     DataArray *localArr = new DataArray(1);
-    localArr->Node(0) = DataNode(DataBreak);
+    localArr->Node(0) = DataBreak;
     DataArray *cmd = arr->Command(i);
     localArr->SetFileLine(cmd->File(), cmd->Line());
     arr->Insert(i, DataNode(localArr, kDataCommand));
@@ -164,9 +167,7 @@ void RndConsole::SetBreak(DataArray *arr) {
 
 void RndConsole::Clear(int iii) {
     if (iii > 0) {
-        for (std::list<Breakpoint>::iterator it = mBreakpoints.begin();
-             it != mBreakpoints.end();
-             ++it) {
+        FOREACH (it, mBreakpoints) {
             iii--;
             if (iii == 0) {
                 mBreakpoints.erase(it);
@@ -174,9 +175,7 @@ void RndConsole::Clear(int iii) {
             }
         }
     } else if (iii == 0) {
-        for (std::list<Breakpoint>::iterator it = mBreakpoints.begin();
-             it != mBreakpoints.end();
-             ++it) {
+        FOREACH (it, mBreakpoints) {
             if ((*it).parent->UncheckedArray((*it).index) == mDebugging) {
                 mBreakpoints.erase(it);
                 return;
@@ -192,9 +191,7 @@ void RndConsole::Clear(int iii) {
 void RndConsole::Breakpoints() {
     mOutput->Clear();
     int idx = 1;
-    for (std::list<Breakpoint>::iterator it = mBreakpoints.begin();
-         it != mBreakpoints.end();
-         ++it) {
+    FOREACH (it, mBreakpoints) {
         DataArray *cmd = (*it).parent->Command((*it).index);
         MILO_LOG("%d. %s:%d\n", idx++, cmd->File(), cmd->Line());
     }
@@ -293,7 +290,7 @@ void RndConsole::Step(int i) {
 
 void RndConsole::Continue() {
     if (mDebugging)
-        mDebugging = 0;
+        mDebugging = nullptr;
     else
         MILO_FAIL("Can't continue unless debugging");
 }
@@ -452,29 +449,13 @@ int RndConsole::OnMsg(const KeyboardKeyMsg &msg) {
     } else if (msg.GetKey() == 0x143) {
         if (!mBuffer.empty()) {
             if (mBufPtr != mBuffer.end()) {
-                ++mBufPtr;
+                --mBufPtr;
+            } else
+                mBufPtr = mBuffer.begin();
+            if (mBufPtr == mBuffer.begin()) {
+                mBufPtr = PrevItr(mBuffer.begin(), 1);
             }
-            //               fn_8000DBB0(auStack_5c,this + 0x28);
-            //               uVar3 = fn_8000DAFC(auStack_58,auStack_5c);
-            //               iVar1 = ObjPtrList<>::iterator::operator_!=(this +
-            //               0x30,uVar3); if (iVar1 == 0) {
-            //                 fn_8000DB30(auStack_60,this + 0x28);
-            //                 fn_8000F5F0(this + 0x30,auStack_60);
-            //               }
-            //               else {
-            //                 fn_80236B8C(this + 0x30);
-            //               }
-            //               fn_8000DB30(auStack_68,this + 0x28);
-            //               pSVar4 = fn_8000DAFC(auStack_64,auStack_68);
-            //               iVar1 = Symbol::operator_==(this + 0x30,pSVar4);
-            //               if (iVar1 != 0) {
-            //                 fn_8000DB30(auStack_70,this + 0x28);
-            //                 fn_805D1EA4(auStack_6c,auStack_70,1);
-            //                 fn_8000F5F0(this + 0x30,auStack_6c);
-            //               }
-            //               pSVar6 = stlpmtx_std::_List_iterator<>::operator*(this +
-            //               0x30); pSVar2 = RndOverlay::CurrentLine(*(this + 0x24));
-            //               String::operator_=(pSVar2,pSVar6);
+            mInput->CurrentLine() = *mBufPtr;
         }
         MinEq<int>(mCursor, mInput->CurrentLine().length());
     } else if (msg.GetKey() == 8) {
@@ -529,7 +510,30 @@ int RndConsole::OnMsg(const KeyboardKeyMsg &msg) {
 
 void RndConsole::ExecuteLine() {
     String &line_txt = mInput->CurrentLine();
-    DataNode a, b;
+    DataNode n40, n48;
     if (line_txt.empty())
         MILO_FAIL("Empty command");
+    mBuffer.push_front(line_txt);
+    if (line_txt[line_txt.length() - 1] == '/') {
+        line_txt.erase(line_txt.length() - 1, 1);
+        SetShowing(false);
+    }
+    if (mBuffer.size() > mMaxBuffer) {
+        mBuffer.pop_back();
+    }
+    mBufPtr = mBuffer.begin();
+    MILO_LOG("> %s\n", line_txt);
+    n40 = DataNode(DataReadString(line_txt.c_str()), kDataArray);
+    n40.Array()->Release();
+    mInput->CurrentLine().erase();
+    LogCheat(-1, 0, n40.Array());
+    if (n40.Array()->Type(0) == kDataCommand && n40.Array()->Size() == 1) {
+        n48 = n40.Array()->Command(0)->Execute();
+    } else {
+        n48 = n40.Array()->Execute();
+    }
+    String output;
+    output << "Evaluates to " << n48 << "\n";
+    mInput->Print(output.c_str());
+    MILO_LOG("%s", output);
 }

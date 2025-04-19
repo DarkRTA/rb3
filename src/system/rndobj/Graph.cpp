@@ -6,60 +6,86 @@
 #include <list>
 
 RndGraph *sOneFrame;
-std::list<RndGraph> *sGraphs;
+std::list<RndGraph *> *sGraphs;
 std::list<FakeGraph> sFakes;
-ObjPtr<RndCam, ObjectDir> sCam(NULL, NULL);
+ObjPtr<RndCam> sCam(nullptr);
 
 static DataNode OnGraphReset(DataArray *) {
     RndGraph::ResetAll();
-    return DataNode(0);
+    return 0;
 }
 
 void RndGraph::Init() {
-    sGraphs = new std::list<RndGraph>;
+    sGraphs = new std::list<RndGraph *>;
     TheDebug.AddExitCallback(RndGraph::Terminate);
     DataRegisterFunc("graph_reset", OnGraphReset);
 }
 
 void RndGraph::Terminate() {
-    delete sGraphs;
-    sGraphs = 0;
-    delete sOneFrame;
-    sOneFrame = 0;
+    RELEASE(sGraphs);
+    RELEASE(sOneFrame);
 }
 
 void RndGraph::ResetAll() {
-    delete sOneFrame;
-    sOneFrame = NULL;
-    sGraphs->empty();
+    RELEASE(sOneFrame);
+    while (!sGraphs->empty()) {
+        RndGraph *cur = sGraphs->front();
+        sGraphs->pop_front();
+        delete cur;
+    }
 }
 
 void RndGraph::SetCamera(RndCam *c) { sCam = c; }
 
 RndGraph *RndGraph::GetOneFrame() {
-    if (sOneFrame == NULL)
-        sOneFrame = new RndGraph(NULL);
+    if (sOneFrame == nullptr)
+        sOneFrame = new RndGraph(nullptr);
     return sOneFrame;
 }
 
-void RndGraph::Free(const void *id, bool b) {
-    if (sGraphs == NULL)
+void RndGraph::DrawAll() {
+    if (sCam)
+        sCam->Select();
+    FOREACH_PTR (it, sGraphs) {
+        (*it)->Draw();
+    }
+    if (sOneFrame) {
+        sOneFrame->Draw();
+        sOneFrame->Reset();
+    }
+    FOREACH (it, sFakes) {
+        it->mDrawCallback();
+    }
+    sCam = nullptr;
+}
+
+RndGraph *RndGraph::Get(const void *v) {
+    FOREACH_PTR (it, sGraphs) {
+        if ((*it)->mId == v)
+            return *it;
+    }
+    RndGraph *graph = new RndGraph(v);
+    sGraphs->push_back(graph);
+    return graph;
+}
+
+void RndGraph::Free(const void *id, bool warn) {
+    if (sGraphs == nullptr)
         return;
-    for (std::list<RndGraph>::reverse_iterator it = sGraphs->rbegin();
-         it != sGraphs->rend();
-         it++) {
+    FOREACH_PTR (it, sGraphs) {
+        if ((*it)->mId == id) {
+            delete *it;
+            sGraphs->erase(it);
+            return;
+        }
+    }
+    FOREACH (it, sFakes) {
         if (it->mId == id) {
-            delete &(*it);
+            sFakes.erase(it);
             return;
         }
     }
-    for (std::list<FakeGraph>::iterator it = sFakes.begin(); it != sFakes.end(); it++) {
-        if (&(*it) == id) {
-            delete &(*it);
-            return;
-        }
-    }
-    if (b)
+    if (warn)
         MILO_WARN("could not find line graph %x to free\n", (int)id);
 }
 

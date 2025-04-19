@@ -79,6 +79,7 @@ public:
     float CellDiff() const { return mCellSize.y / mCellSize.x; }
     RndFont *TextureOwner() const { return mTextureOwner; }
     float BaseKerning() const { return mBaseKerning; }
+    float DeprecatedSize() const { return mDeprecatedSize; }
     bool HasChar(unsigned short c) const { return mCharInfoMap.count(c) != 0; }
 
     NEW_OVERLOAD

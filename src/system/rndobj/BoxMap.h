@@ -61,6 +61,11 @@ public:
     ApplyLight(Hmx::Color *, const BoxLightArray<BoxMapLighting::LightParams_Spot, 50> &, const Vector3 &)
         const;
 
+    unsigned int NumQueuedLights() const {
+        return mQueued_Directional.NumElements() + mQueued_Point.NumElements()
+            + mQueued_Spot.NumElements();
+    }
+
     bool ParamsAt(LightParams_Directional *&pd) {
         if (mQueued_Directional.CanAddEntry()) {
             pd = mQueued_Directional.AddEntry();

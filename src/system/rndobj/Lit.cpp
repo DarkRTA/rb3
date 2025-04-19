@@ -8,11 +8,11 @@
 INIT_REVS(RndLight)
 
 RndLight::RndLight()
-    : mColor(1.0f, 1.0f, 1.0f), mColorOwner(this, this), mRange(1000.0f),
-      mFalloffStart(0.0f), mType(kPoint), mAnimateColorFromPreset(1),
-      mAnimatePositionFromPreset(1), mAnimateRangeFromPreset(1), mShowing(1),
-      mTexture(this, 0), mShadowOverride(0), mShadowObjects(this, kObjListNoNull),
-      mTopRadius(0.0f), mBotRadius(30.0f), mProjectedBlend(0), mOnlyProjection(0) {
+    : mColor(1, 1, 1), mColorOwner(this, this), mRange(1000.0f), mFalloffStart(0),
+      mType(kPoint), mAnimateColorFromPreset(1), mAnimatePositionFromPreset(1),
+      mAnimateRangeFromPreset(1), mShowing(1), mTexture(this), mShadowOverride(0),
+      mShadowObjects(this), mTopRadius(0), mBotRadius(30.0f), mProjectedBlend(0),
+      mOnlyProjection(0) {
     mTextureXfm.Reset();
 }
 
@@ -63,10 +63,10 @@ BEGIN_LOADS(RndLight)
     if (gRev > 7) {
         bs >> mTexture;
         if (gRev == 9) {
-            ObjPtrList<RndDrawable, ObjectDir> drawList(this, kObjListNoNull);
+            ObjPtrList<RndDrawable> drawList(this);
             bs >> drawList;
         } else if (gRev == 8) {
-            ObjPtr<RndDrawable, ObjectDir> drawPtr(this, 0);
+            ObjPtr<RndDrawable> drawPtr(this);
             bs >> drawPtr;
         }
     }
@@ -78,7 +78,7 @@ BEGIN_LOADS(RndLight)
     if (gRev > 0xC)
         bs >> mTextureXfm;
     if (gRev > 0xD) {
-        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        ObjPtr<RndTex> texPtr(this);
         bs >> texPtr;
     }
     if (gAltRev != 0) {
@@ -152,8 +152,14 @@ float RndLight::Intensity() const {
 
 void RndLight::SetTopRadius(float rad) { mTopRadius = rad; }
 void RndLight::SetBotRadius(float rad) { mBotRadius = rad; }
-void RndLight::SetShadowOverride(ObjPtrList<RndDrawable, ObjectDir> *l) {
-    mShadowOverride = l;
+void RndLight::SetShadowOverride(ObjPtrList<RndDrawable> *l) { mShadowOverride = l; }
+
+#define DIM(x) 4U
+
+const char *RndLight::TypeToStr(Type t) {
+    const char *lightTypes[] = { "Point", "Directional", "Projected", "ShadowRef" };
+    MILO_ASSERT(t < DIM(lightTypes), 0x178);
+    return lightTypes[t];
 }
 
 BEGIN_HANDLERS(RndLight)
