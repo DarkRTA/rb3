@@ -1493,7 +1493,7 @@
             "system/utl/Wav.cpp": "NonMatching",
             "system/utl/WaveFile.cpp": "Matching",
 
-            "system/world/CameraManager.cpp": "NonMatching",
+            "system/world/CameraManager.cpp": "Equivalent",
             "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "Matching",
             "system/world/Crowd.cpp": "NonMatching",

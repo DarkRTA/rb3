@@ -131,7 +131,7 @@ void LightPresetManager::SchedulePstKey(LightPreset::KeyframeCmd cmd) {
 }
 
 #pragma push
-#pragma pool_data off
+#pragma auto_inline on
 void LightPresetManager::Interp(Symbol s1, Symbol s2, float f) {
     mBlend = f;
     if (!mPresetNew) {
@@ -253,10 +253,10 @@ void LightPresetManager::SetLighting(Symbol s, bool b) {
 
 LightPreset *LightPresetManager::PickRandomPreset(Symbol s) {
     int count = mPresets[s].size();
-    if (count != 0) {
-        return mPresets[s][RandomInt(0, count)];
-    } else
+    if (count == 0) {
         return 0;
+    } else
+        return mPresets[s][RandomInt(0, count)];
 }
 
 void LightPresetManager::ReportError() {
