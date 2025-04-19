@@ -1,5 +1,4 @@
-#ifndef OS_TIMER_H
-#define OS_TIMER_H
+#pragma once
 #include "utl/Symbol.h"
 #include "obj/Data.h"
 #include "os/OSFuncs.h"
@@ -23,10 +22,6 @@ public:
     int mRunning; // 0x24
     float mBudget; // 0x28
     bool mDraw; // 0x2c
-
-    // Seems these fields no longer exist
-    // int mCount; // 0x30
-    // int mLastCount; // 0x34
 
     static float sLowCycles2Ms;
     static float sHighCycles2Ms;
@@ -144,14 +139,14 @@ typedef void (*AutoTimerCallback)(float elapsed, void *context);
 
 class AutoTimer {
 public:
-    AutoTimer(Timer *t, float limit, AutoTimerCallback callback, void *context) {
-        mTimer = t;
-        if (!t)
-            return;
-        mTimeLimit = limit;
-        mCallback = callback;
-        mContext = context;
-        mTimer->Start();
+    AutoTimer(Timer *t, float limit, AutoTimerCallback callback, void *context)
+        : mTimer(t) {
+        if (mTimer) {
+            mTimeLimit = limit;
+            mCallback = callback;
+            mContext = context;
+            mTimer->Start();
+        }
     }
 
     ~AutoTimer() {
@@ -165,13 +160,21 @@ public:
     void *mContext;
 
     static int sCritFrameCount;
+    static bool sCriticalFrame;
+    static bool sCollectingStats;
     static std::vector<std::pair<Timer, TimerStats> > sTimers;
 
     static Timer *GetTimer(Symbol);
+    static void DumpTimerStats();
     static void SetCollectStats(bool, bool);
+    static bool CollectingStats();
+    static void ComputeCriticalFrame();
+    static void CollectTimerStats();
+    static void PrintTimers(bool);
+    static void Init();
 };
 
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
 #define START_AUTO_TIMER_CALLBACK(name, func, context)                                   \
     static Timer *_t = AutoTimer::GetTimer(name);                                        \
     AutoTimer _at(_t, 50.0f, func, context)
@@ -212,8 +215,9 @@ public:
     }
 };
 
-namespace AutoGlitchReport {
-    void EnableCallback();
-}
+class AutoGlitchReport {
+public:
+    static void EnableCallback();
+};
 
-#endif
+const char *FormatTime(float);

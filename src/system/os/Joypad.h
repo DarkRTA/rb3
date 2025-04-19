@@ -255,6 +255,13 @@ public:
     int GetPressureBucket(JoypadButton) const;
     bool IsButtonInMask(int i) const { return (mButtons & 1 << i) ? true : false; }
     bool IsButtonNewlyPressed(int i) const { return (mNewPressed & 1 << i); }
+    void SetButtons(unsigned int btns) {
+        unsigned int oldBtns = mButtons;
+        unsigned int mask = oldBtns ^ btns;
+        mButtons = btns;
+        mNewPressed = btns & mask;
+        mNewReleased = oldBtns & mask;
+    }
 
     float GetLX() const { return mSticks[0][0]; }
     float GetLY() const { return mSticks[0][1]; }

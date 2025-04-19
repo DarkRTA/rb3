@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_LIT_H
-#define RNDOBJ_LIT_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "math/Color.h"
 #include "rndobj/Tex.h"
@@ -31,7 +30,7 @@ public:
 
     void SetTopRadius(float);
     void SetBotRadius(float);
-    void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir> *);
+    void SetShadowOverride(ObjPtrList<RndDrawable> *);
     float Range() const { return mRange; }
     float FalloffStart() const { return mFalloffStart; }
     const Hmx::Color &GetColor() const { return mColorOwner->mColor; }
@@ -56,7 +55,7 @@ public:
     static void Init() { REGISTER_OBJ_FACTORY(RndLight) }
 
     Hmx::Color mColor; // 0x90
-    ObjOwnerPtr<RndLight, class ObjectDir> mColorOwner; // 0xA0
+    ObjOwnerPtr<RndLight> mColorOwner; // 0xA0
     float mRange; // 0xAC
     float mFalloffStart; // 0xB0
     Type mType; // 0xB4
@@ -64,15 +63,12 @@ public:
     bool mAnimatePositionFromPreset; // 0xB9
     bool mAnimateRangeFromPreset; // 0xBA
     bool mShowing; // 0xBB
-    ObjPtr<RndTex, class ObjectDir> mTexture; // 0xBC
-    ObjPtrList<RndDrawable, class ObjectDir> *mShadowOverride; // figure this out too -
-                                                               // 0xC8
-    ObjPtrList<RndDrawable, class ObjectDir> mShadowObjects; // 0xCC
+    ObjPtr<RndTex> mTexture; // 0xBC
+    ObjPtrList<RndDrawable> *mShadowOverride; // figure this out too - 0xC8
+    ObjPtrList<RndDrawable> mShadowObjects; // 0xCC
     Transform mTextureXfm; // 0xDC
     float mTopRadius; // 0x10C
     float mBotRadius; // 0x110
     int mProjectedBlend; // 0x114
     bool mOnlyProjection; // 0x118
 };
-
-#endif

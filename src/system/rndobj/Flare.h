@@ -1,4 +1,5 @@
 #pragma once
+#include "math/Geo.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
@@ -39,6 +40,8 @@ public:
     void SetMat(RndMat *);
     void SetPointTest(bool);
     void SetSteps(int);
+    Hmx::Rect &CalcRect(Vector2 &, float &);
+    bool RectOffscreen(const Hmx::Rect &) const;
     void SetTestDone() { mTestDone = true; }
     RndMat *GetMat() const { return mMat; }
     int GetSteps() const { return mSteps; }
@@ -58,7 +61,7 @@ public:
     bool mAreaTest; // 0xB1
     bool mVisible; // 0xB2
     Vector2 mSizes; // 0xB4
-    ObjPtr<RndMat, ObjectDir> mMat; // 0xBC
+    ObjPtr<RndMat> mMat; // 0xBC
     Vector2 mRange; // 0xC8
     float mOffset; // 0xD0
     int mSteps; // 0xD4
