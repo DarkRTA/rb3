@@ -1,10 +1,16 @@
 #include "Platform/Socket.h"
-#include "Platform/IOCompletionContext.h"
+
+typedef struct unkStruct {
+    s32 unk8;
+    char unkC[0x4];
+    s32 unk10;
+    s16 unk14;
+} unkStruct;
 
 namespace Quazal {
-    SocketDriver *g_oBerkeleySocketDriver;
+    IOResult g_oBerkeleySocketDriver;
 
-    SocketDriver *Socket::s_pSocketDriver;
+    IOResult *Socket::s_pSocketDriver = &g_oBerkeleySocketDriver;
 
     Socket::Socket(unsigned int arg0) {
         this->unk0 = 3;
@@ -85,6 +91,120 @@ namespace Quazal {
                 this->unk98->unkC();
                 this->unk0 = 3;
             }
+        }
+    }
+
+    s32 Socket::Send(
+        u8 *arg0, unsigned int arg1, InetAddress *arg2, IOCompletionContext *arg3
+    ) {
+        unkStruct temp;
+        u16 portNum;
+        s32 var_r3;
+        bool var_r4;
+
+        arg3->unk1C = this;
+        arg3->unk15 = 2;
+        arg3->unk0 = arg0;
+        arg3->unk4 = arg1;
+        arg3->unk10 = arg2;
+        arg3->unk8 = 0;
+        if (this->unk98 != nullptr) {
+            portNum = arg2->GetPortNumber();
+            temp.unk10 = arg3->unk10->GetAddress();
+            temp.unk14 = portNum;
+            temp.unk8 = 0;
+            if (this->unk88 != 0) {
+                var_r3 = this->unk98->unk18(arg0, arg1, &temp.unk10, &temp.unk8);
+            } else {
+                var_r3 = this->unk98->unk24(arg0, arg1, &temp.unk8);
+            }
+            arg3->unk8 = temp.unk8;
+            switch (var_r3) {
+            case 2:
+            case 3:
+                arg3->unk14 = 1;
+                var_r4 = 1;
+                break;
+            case 1:
+                arg3->unkC = (IOResult *)-1;
+                arg3->unk14 = 2;
+                arg3->unk15 = 0;
+                var_r4 = 0;
+                break;
+            case 0:
+                arg3->unkC = 0;
+                var_r4 = 1;
+                arg3->unk14 = 2;
+                arg3->unk15 = 0;
+                break;
+            default:
+                var_r4 = 0;
+                break;
+            }
+            return -(!var_r4);
+        }
+        return 0;
+    }
+
+    s32 Socket::Recv(
+        u8 *arg0, unsigned int arg1, InetAddress *arg2, IOCompletionContext *arg3
+    ) {
+        unkStruct sp8;
+        s32 var_r31;
+        bool var_r4;
+        u16 temp_r31;
+
+        arg3->unk15 = 3;
+        arg3->unk0 = arg0;
+        arg3->unk4 = arg1;
+        arg3->unk10 = arg2;
+        arg3->unk8 = 0;
+        arg3->unk1C = this;
+        if (this->unk98 != NULL) {
+            temp_r31 = arg2->GetPortNumber();
+            sp8.unk10 = arg3->unk10->GetAddress();
+            sp8.unk14 = temp_r31;
+            sp8.unk8 = 0;
+            if (this->unk88 != 0) {
+                var_r31 = this->unk98->unk14(arg0, arg1, &sp8.unk10, &sp8.unk8);
+            } else {
+                var_r31 = this->unk98->unk20(arg0, arg1, &sp8.unk8);
+            }
+            arg3->unk8 = sp8.unk8;
+            arg3->unk10->SetAddress(sp8.unk10);
+            arg3->unk10->SetPortNumber(sp8.unk14);
+            switch (var_r31) { /* irregular */
+            case 2:
+            case 3:
+                arg3->unk14 = 1;
+                var_r4 = 1;
+                break;
+            case 1:
+                arg3->unkC = (IOResult *)-1;
+                arg3->unk14 = 2;
+                arg3->unk15 = 0;
+                var_r4 = 0;
+                break;
+            case 0:
+                arg3->unkC = 0;
+                var_r4 = 1;
+                arg3->unk14 = 2;
+                arg3->unk15 = 0;
+                break;
+            default:
+                var_r4 = 0;
+                break;
+            }
+            return -!var_r4;
+        }
+        return 0;
+    }
+
+    IOResult *Socket::GetIOResult(IOCompletionContext *arg0) {
+        if (this->unk98 != nullptr) {
+            return arg0->unkC;
+        } else {
+            return nullptr;
         }
     }
 }
