@@ -1,5 +1,6 @@
 #include "os/Joypad.h"
 #include "os/Debug.h"
+#include "os/User.h"
 #include "utl/Symbols.h"
 #include "math/Utl.h"
 #include "obj/Msg.h"
@@ -24,32 +25,30 @@ namespace {
         return 1;
     }
 
-    static DataNode OnJoypadVibrate(DataArray *arr) {
-        return DataNode(JoypadVibrate(arr->Int(1)));
-    }
+    static DataNode OnJoypadVibrate(DataArray *arr) { return JoypadVibrate(arr->Int(1)); }
 
     static DataNode OnJoypadControllerTypePadNum(DataArray *arr) {
-        return DataNode(JoypadControllerTypePadNum(arr->Int(1)));
+        return JoypadControllerTypePadNum(arr->Int(1));
     }
 
     static DataNode OnJoypadIsConnectedPadNum(DataArray *arr) {
-        return DataNode(JoypadIsConnectedPadNum(arr->Int(1)));
+        return JoypadIsConnectedPadNum(arr->Int(1));
     }
 
     static DataNode OnJoypadIsButtonDownPadNum(DataArray *arr) {
         int pad = arr->Int(1);
         MILO_ASSERT_RANGE(pad, 0, kNumJoypads, 0x80);
         int ret = gJoypadData[pad].mButtons & 1 << arr->Int(2);
-        return DataNode(ret != 0);
+        return ret != 0;
     }
 
     static DataNode OnJoypadIsCalbertGuitar(DataArray *arr) {
-        return DataNode(JoypadIsCalbertGuitar(arr->Int(1)));
+        return JoypadIsCalbertGuitar(arr->Int(1));
     }
 
 #ifdef MILO_DEBUG
 #pragma push
-#pragma pool_data off
+#pragma auto_inline on
 #endif
     bool IsJoypadDetectMatch(DataArray *detect_cfg, const JoypadData &data) {
         static Symbol type("type");
@@ -126,7 +125,7 @@ JoypadData::JoypadData()
 
 #ifdef MILO_DEBUG
 #pragma push
-#pragma pool_data off
+#pragma auto_inline on
 #endif
 float JoypadData::GetAxis(Symbol axis) const {
     static Symbol lx("LX");
@@ -306,6 +305,33 @@ unsigned int JoypadPollForButton(int pad) {
     }
 }
 
+void SendButtonMessages(int pad, unsigned int btns) {
+    JoypadData *theData = &gJoypadData[pad];
+    LocalUser *theUser = gJoypadData[pad].mUser;
+    bool b1 = false;
+    gJoypadData[pad].SetButtons(btns);
+    if (gJoypadData[pad].mIsDrum) {
+        if (gJoypadData[pad].mGreenCymbalMask
+            == (gJoypadData[pad].mGreenCymbalMask & btns)) {
+            gJoypadData[pad].mHasGreenCymbal = true;
+        }
+        if (gJoypadData[pad].mYellowCymbalMask
+            == (gJoypadData[pad].mYellowCymbalMask & btns)) {
+            gJoypadData[pad].mHasYellowCymbal = true;
+        }
+        if (gJoypadData[pad].mBlueCymbalMask
+            == (gJoypadData[pad].mBlueCymbalMask & btns)) {
+            gJoypadData[pad].mHasBlueCymbal = true;
+        }
+        if (gJoypadData[pad].mSecondaryPedalMask & btns) {
+            gJoypadData[pad].mSecondaryPedalMask = true;
+        }
+        if (gJoypadData[pad].mCymbalMask == (gJoypadData[pad].mCymbalMask & btns)) {
+            b1 = true;
+        }
+    }
+}
+
 void JoypadPollCommon() {
     if (!gJoypadLibInitialized) {
         MILO_WARN(" Can't call JoypadPoll before initialization...");
@@ -354,12 +380,12 @@ inline bool JoypadVibrate(int pad) { return JoypadGetPadData(pad)->mVibrateEnabl
 
 void JoypadSubscribe(Hmx::Object *obj) {
     if (gJoypadMsgSource)
-        gJoypadMsgSource->AddSink(obj, Symbol(), Symbol(), MsgSource::kHandle);
+        gJoypadMsgSource->AddSink(obj);
 }
 
 void JoypadUnsubscribe(Hmx::Object *obj) {
     if (gJoypadMsgSource)
-        gJoypadMsgSource->RemoveSink(obj, Symbol());
+        gJoypadMsgSource->RemoveSink(obj);
 }
 
 void JoypadPushThroughMsg(const Message &msg) { JoypadSendMsg(msg); }
@@ -371,7 +397,7 @@ void AssociateUserAndPad(LocalUser *iUser, int iPadNum) {
 
 void ResetAllUsersPads() {
     for (int i = 0; i < 4; i++)
-        AssociateUserAndPad(0, i);
+        AssociateUserAndPad(nullptr, i);
 }
 
 int GetUsersPadNum(LocalUser *user) {

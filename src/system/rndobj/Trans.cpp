@@ -14,16 +14,17 @@
 #include <algorithm>
 #include "utl/Symbols.h"
 
+INIT_REVS(RndTransformable)
 Plane RndTransformable::sShadowPlane;
 
 void RndTransformable::Init() {
     Register();
-    DataArray *dingus_da = SystemConfig("rnd");
-    dingus_da->FindData("shadow_plane", sShadowPlane, true);
+    DataArray *cfg = SystemConfig("rnd");
+    cfg->FindData("shadow_plane", sShadowPlane, true);
 }
 
 RndTransformable::RndTransformable()
-    : mParent(this, NULL), mTarget(this, NULL), mConstraint(kNone), mPreserveScale(0) {
+    : mParent(this), mTarget(this), mConstraint(kNone), mPreserveScale(0) {
     mLocalXfm.Reset();
     mWorldXfm.Reset();
     mCache = new DirtyCache();
@@ -35,10 +36,8 @@ RndTransformable::~RndTransformable() {
         RemoveSwap(mParent->mChildren, this);
         RemoveSwap(mParent->mCache->mChildren, mCache);
     }
-    for (std::vector<RndTransformable *>::iterator it = mChildren.begin();
-         it != mChildren.end();
-         it++) {
-        (*it)->mParent = 0;
+    FOREACH (it, mChildren) {
+        (*it)->mParent = nullptr;
         (*it)->mCache->Set(0);
         (*it)->SetDirty();
     }
@@ -54,12 +53,12 @@ void RndTransformable::TransformTransAnims(const Transform &tf) {
     }
 }
 
-void RndTransformable::SetTransParent(RndTransformable *newParent, bool b) {
+void RndTransformable::SetTransParent(RndTransformable *newParent, bool recalcLocal) {
     MILO_ASSERT(newParent != this, 0xBB);
     if (mParent == newParent)
         SetDirty();
     else {
-        if (b) {
+        if (recalcLocal) {
             Transform tf48;
             Transform tf78;
             if (mParent)
@@ -112,9 +111,7 @@ void RndTransformable::SetWorldXfm(const Transform &tf) {
     mWorldXfm = tf;
     mCache->SetLastBit(0);
     UpdatedWorldXfm();
-    for (std::vector<RndTransformable *>::iterator it = mChildren.begin();
-         it != mChildren.end();
-         it++) {
+    FOREACH (it, mChildren) {
         (*it)->SetDirty();
     }
 }
@@ -122,9 +119,7 @@ void RndTransformable::SetWorldXfm(const Transform &tf) {
 void RndTransformable::SetWorldPos(const Vector3 &vec) {
     mWorldXfm.v = vec;
     UpdatedWorldXfm();
-    for (std::vector<RndTransformable *>::iterator it = mChildren.begin();
-         it != mChildren.end();
-         it++) {
+    FOREACH (it, mChildren) {
         (*it)->SetDirty();
     }
 }
@@ -204,10 +199,12 @@ void RndTransformable::ApplyDynamicConstraint() {
     mCache->SetLastBit(1);
 }
 
-void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable *t, bool b) {
+void RndTransformable::SetTransConstraint(
+    Constraint cst, RndTransformable *t, bool preserveScale
+) {
     MILO_ASSERT(t != this, 0x1C1);
     mConstraint = cst;
-    mPreserveScale = b;
+    mPreserveScale = preserveScale;
     mTarget = t;
     SetDirty();
 }
@@ -224,9 +221,7 @@ namespace {
 
 void RndTransformable::DistributeChildren(bool b, float f) {
     std::vector<RndTransformable *> vec;
-    for (std::vector<RndTransformable *>::iterator it = mChildren.begin();
-         it != mChildren.end();
-         ++it) {
+    FOREACH (it, mChildren) {
         vec.push_back(*it);
     }
     int count = vec.size();
@@ -277,7 +272,7 @@ void RndTransformable::Print() {
 }
 
 void RndTransformable::Highlight() {
-    UtilDrawAxes(WorldXfm(), 3.0f, Hmx::Color(1.0f, 1.0f, 1.0f, 1.0f));
+    UtilDrawAxes(WorldXfm(), 3.0f, Hmx::Color(1, 1, 1, 1));
 }
 
 SAVE_OBJ(RndTransformable, 586)
@@ -287,7 +282,7 @@ BEGIN_LOADS(RndTransformable)
     LOAD_REVS(bs)
     ASSERT_REVS(9, 0)
     if (ClassName() == StaticClassName())
-        Hmx::Object::Load(bs);
+        LOAD_SUPERCLASS(Hmx::Object)
     if (gLoadingProxyFromDisk) {
         Transform t;
         bs >> t >> t;
@@ -295,10 +290,9 @@ BEGIN_LOADS(RndTransformable)
         bs >> mLocalXfm >> mWorldXfm;
     }
     if (gRev < 9) {
-        ObjPtrList<RndTransformable> l(this, kObjListNoNull);
+        ObjPtrList<RndTransformable> l(this);
         bs >> l;
-        ObjPtrList<RndTransformable>::iterator it;
-        for (it = l.begin(); it != l.end(); ++it) {
+        FOREACH (it, l) {
             (*it)->SetTransParent(this, false);
         }
     }
@@ -393,7 +387,7 @@ BEGIN_LOADS(RndTransformable)
     }
     if (gRev > 5) {
         if (gLoadingProxyFromDisk) {
-            ObjPtr<RndTransformable> tPtr(this, 0);
+            ObjPtr<RndTransformable> tPtr(this);
             tPtr.Load(bs, false, 0);
         } else
             bs >> mTarget;
@@ -401,14 +395,14 @@ BEGIN_LOADS(RndTransformable)
     if (gRev > 6)
         bs >> mPreserveScale;
     if (gRev > 8) {
-        ObjPtr<RndTransformable> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this);
         if (!gLoadingProxyFromDisk) {
             bs >> tPtr;
             SetTransParent(tPtr, false);
         } else
             tPtr.Load(bs, false, 0);
     } else if (gRev > 6) {
-        ObjPtr<RndTransformable> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this);
         bs >> tPtr;
         if (tPtr != this) {
             SetTransParent(tPtr, false);
@@ -418,8 +412,6 @@ BEGIN_LOADS(RndTransformable)
         SetTransParent(mTarget, false);
     }
 END_LOADS
-
-DECOMP_FORCEACTIVE(Trans, "Transform origin no longer supported\n")
 
 #pragma push
 #pragma dont_inline on
@@ -449,7 +441,7 @@ BEGIN_HANDLERS(RndTransformable)
             _msg->Obj<RndTransformable>(2), _msg->Size() > 3 ? _msg->Int(3) != 0 : false
         )
     )
-    HANDLE_EXPR(trans_parent, mParent.Ptr())
+    HANDLE_EXPR(trans_parent, (Hmx::Object *)mParent)
     HANDLE_ACTION(reset_xfm, DirtyLocalXfm().Reset())
     HANDLE_ACTION(
         distribute_children, DistributeChildren(_msg->Int(2) != 0, _msg->Float(3))
@@ -625,9 +617,7 @@ DataNode RndTransformable::OnSetTransConstraint(const DataArray *da) {
 DataNode RndTransformable::OnGetChildren(const DataArray *da) {
     DataArray *arr = new DataArray((int)mChildren.size());
     int idx = 0;
-    for (std::vector<RndTransformable *>::iterator it = mChildren.begin();
-         it != mChildren.end();
-         it++) {
+    FOREACH (it, mChildren) {
         arr->Node(idx++) = *it;
     }
     DataNode ret(arr, kDataArray);

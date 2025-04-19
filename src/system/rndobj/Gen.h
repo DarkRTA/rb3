@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_GENERATOR_H
-#define RNDOBJ_GENERATOR_H
+#pragma once
 #include "math/Mtx.h"
 #include "rndobj/Anim.h"
 #include "rndobj/Draw.h"
@@ -13,7 +12,11 @@ class RndGenerator : public RndAnimatable, public RndTransformable, public RndDr
 public:
     class Instance {
     public:
-        int pad[16];
+        Instance() {}
+        Instance(const Transform &t) : unk4(t) {}
+        float unk0;
+        Transform unk4;
+        Vector3 unk34;
     };
 
     RndGenerator();
@@ -74,12 +77,12 @@ public:
     static void Init() { REGISTER_OBJ_FACTORY(RndGenerator) }
 
     std::list<Instance> mInstances; // 0xc0
-    ObjPtr<RndTransAnim, ObjectDir> mPath; // 0xc8
+    ObjPtr<RndTransAnim> mPath; // 0xc8
     float mPathStartFrame; // 0xd4
     float mPathEndFrame; // 0xd8
-    ObjPtr<RndMesh, ObjectDir> mMesh; // 0xdc
-    ObjPtr<RndMultiMesh, ObjectDir> mMultiMesh; // 0xe8
-    ObjPtr<RndParticleSys, ObjectDir> mParticleSys; // 0xf4
+    ObjPtr<RndMesh> mMesh; // 0xdc
+    ObjPtr<RndMultiMesh> mMultiMesh; // 0xe8
+    ObjPtr<RndParticleSys> mParticleSys; // 0xf4
     float mNextFrameGen; // 0x100
     float mRateGenLow; // 0x104
     float mRateGenHigh; // 0x108
@@ -89,7 +92,5 @@ public:
     float mPathVarMaxY; // 0x118
     float mPathVarMaxZ; // 0x11c
     RndParticle *mCurParticle; // 0x120
-    std::list<Instance>::iterator mCurMultiMesh; // 0x124
+    std::list<RndMultiMesh::Instance>::iterator mCurMultiMesh; // 0x124
 };
-
-#endif

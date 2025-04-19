@@ -1,7 +1,9 @@
 #include "rndobj/Flare.h"
 #include "math/Rot.h"
 #include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
+#include "rndobj/Cam.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Rnd.h"
 #include "rndobj/Trans.h"
@@ -15,19 +17,18 @@ INIT_REVS(RndFlare)
 BEGIN_COPYS(RndFlare)
     CREATE_COPY_AS(RndFlare, f)
     MILO_ASSERT(f, 25);
-    Hmx::Object::Copy(o, ty);
-    RndTransformable::Copy(o, ty);
-    RndDrawable::Copy(o, ty);
-    mSizes = f->mSizes;
-    mMat = f->mMat;
-    mVisible = f->mVisible;
-    bool td = f->mLastDone; // ???
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndTransformable)
+    COPY_SUPERCLASS(RndDrawable)
+    COPY_MEMBER_FROM(f, mSizes)
+    COPY_MEMBER_FROM(f, mMat)
+    COPY_MEMBER_FROM(f, mVisible)
+    COPY_MEMBER_FROM(f, mRange)
+    COPY_MEMBER_FROM(f, mOffset)
+    COPY_MEMBER_FROM(f, mSteps)
+    COPY_MEMBER_FROM(f, mPointTest)
     mLastDone = false;
-    mRange = f->mRange;
-    mOffset = f->mOffset;
-    mSteps = f->mSteps;
-    mPointTest = f->mPointTest;
-    mTestDone = td;
+    mTestDone = mLastDone;
 END_COPYS
 
 void RndFlare::Print() {
@@ -46,9 +47,9 @@ BEGIN_LOADS(RndFlare)
     LOAD_REVS(bs)
     ASSERT_REVS(7, 0)
     if (gRev > 3)
-        Hmx::Object::Load(bs);
-    RndTransformable::Load(bs);
-    RndDrawable::Load(bs);
+        LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndTransformable)
+    LOAD_SUPERCLASS(RndDrawable)
     if (gRev != 0) {
         bs >> mMat;
     }
@@ -59,13 +60,10 @@ BEGIN_LOADS(RndFlare)
         mSizes.y = mSizes.x;
     }
     if (gRev > 1) {
-        bs >> mRange;
-        bs >> mSteps;
+        bs >> mRange >> mSteps;
     }
     if (gRev > 4) {
-        bool b;
-        bs >> b;
-        mPointTest = b;
+        bs >> mPointTest;
     }
     if (gRev > 6)
         bs >> mOffset;
@@ -75,9 +73,8 @@ BEGIN_LOADS(RndFlare)
 END_LOADS
 
 RndFlare::RndFlare()
-    : mPointTest(1), mAreaTest(1), mVisible(0), mSizes(0.1f, 0.1f), mMat(this, 0),
-      mRange(0.0f, 0.0f), mOffset(0.0f), mSteps(1), mStep(0), unkec(0.0f),
-      unk114(1.0f, 1.0f) {
+    : mPointTest(1), mAreaTest(1), mVisible(0), mSizes(0.1f, 0.1f), mMat(this),
+      mRange(0, 0), mOffset(0), mSteps(1), mStep(0), unkec(0), unk114(1, 1) {
     mTestDone = 0;
     mLastDone = 0;
     mMatrix.Identity();
@@ -105,14 +102,59 @@ void RndFlare::SetPointTest(bool b) {
     mPointTest = b;
 }
 
+void RndFlare::DrawShowing() {}
+
+Hmx::Rect &RndFlare::CalcRect(Vector2 &vref, float &fref) {
+    float f9 = mSizes.x;
+    if (f9 != mSizes.y) {
+        RndCam *cam = RndCam::sCurrent;
+        float dot = Dot(cam->WorldXfm().m.y, WorldXfm().m.y);
+        float max = Max(0.0f, -dot);
+        f9 = Interp(mSizes.x, mSizes.y, max);
+    }
+    int width = TheRnd->Width();
+    int height = TheRnd->Height();
+    CalcScale();
+    mArea.w = f9 * width * unk114.x;
+    mArea.h = (height * f9 * width * unk114.y) / (width * TheRnd->YRatio());
+    mArea.x = vref.x * width - mArea.w * 0.5f;
+    mArea.y = vref.y * height - mArea.h * 0.5f;
+    float f1 = Min<float>(width, mArea.x + mArea.w) - Max(0.0f, mArea.x);
+    float f2 = Min<float>(height, mArea.y + mArea.h) - Max(0.0f, mArea.y);
+    fref = f1 * f2;
+    return mArea;
+}
+
+bool RndFlare::RectOffscreen(const Hmx::Rect &r) const {
+    if (r.x + r.w < 0)
+        return true;
+    else if (r.y + r.h < 0)
+        return true;
+    else if (r.x > TheRnd->Width())
+        return true;
+    else if (r.y > TheRnd->Height())
+        return true;
+    else
+        return false;
+}
+
 void RndFlare::Mats(std::list<RndMat *> &list, bool) {
     if (mMat) {
-        mMat.mPtr->mShaderOptions = GetDefaultMatShaderOpts(this, mMat);
+        mMat->mShaderOptions = GetDefaultMatShaderOpts(this, mMat);
         list.push_back(mMat);
     }
 }
 
 void RndFlare::SetMat(RndMat *m) { mMat = m; }
+
+void RndFlare::SetSteps(int i1) {
+    int max = Max(1, i1);
+    if (mStep == mSteps) {
+        mStep = max;
+    } else
+        mStep *= ((float)max / mSteps);
+    mSteps = max;
+}
 
 BEGIN_HANDLERS(RndFlare)
     HANDLE_ACTION(set_steps, SetSteps(_msg->Int(2)))

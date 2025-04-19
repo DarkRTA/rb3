@@ -34,16 +34,14 @@ void RndText::Init() {
 }
 
 void RndText::Mats(std::list<class RndMat *> &matList, bool b) {
-    for (RndFont *font = mFont; font != 0; font = font->NextFont()) {
+    for (RndFont *font = mFont; font != nullptr; font = font->NextFont()) {
         if (font->GetMat())
             matList.push_back(font->GetMat());
     }
 }
 
 RndDrawable *RndText::CollideShowing(const Segment &s, float &f, Plane &p) {
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         RndMesh *mesh = it->second.mesh;
         if (mesh && mesh->CollideShowing(s, f, p))
             return this;
@@ -53,20 +51,24 @@ RndDrawable *RndText::CollideShowing(const Segment &s, float &f, Plane &p) {
 
 int RndText::CollidePlane(const Plane &p) {
     int ret = 0;
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         RndMesh *mesh = it->second.mesh;
         if (mesh) {
             int meshCol = mesh->CollidePlane(p);
-            if (meshCol == 0)
+            if (meshCol == 0) {
                 return 0;
+            }
             if (meshCol > 0) {
-                if (ret < 0)
+                if (ret < 0) {
                     return 0;
-            } else if (ret > 0)
+                } else {
+                    ret = meshCol;
+                }
+            } else if (ret > 0) {
                 return 0;
-            ret = meshCol;
+            } else {
+                ret = meshCol;
+            }
         }
     }
     return ret;
@@ -74,9 +76,8 @@ int RndText::CollidePlane(const Plane &p) {
 
 void RndText::Replace(Hmx::Object *from, Hmx::Object *to) {
     RndTransformable::Replace(from, to);
-    RndFont *target = nullptr;
-    for (RndFont *font = mFont; font != nullptr; font = font->NextFont()) {
-        target = font;
+    for (RndFont *font = mFont, *target = nullptr; font != nullptr;
+         target = font, font = font->NextFont()) {
         if (font == from) {
             if (target) {
                 target->SetNextFont(dynamic_cast<RndFont *>(to));
@@ -108,9 +109,8 @@ void RndText::Load(BinStream &bs) {
         LOAD_SUPERCLASS(Hmx::Object);
     LOAD_SUPERCLASS(RndDrawable);
     if (gRev < 7) {
-        ObjPtrList<Hmx::Object, class ObjectDir> dir(this, kObjListNoNull);
-        bs >> dump;
-        bs >> dir;
+        ObjPtrList<Hmx::Object> dir(this);
+        bs >> dump >> dir;
     }
     if (gRev > 1)
         LOAD_SUPERCLASS(RndTransformable);
@@ -128,9 +128,9 @@ void RndText::Load(BinStream &bs) {
         mAlign = align;
     }
     if (gRev < 2) {
-        float new_x, new_z;
-        bs >> new_x >> new_z;
-        SetLocalPos(new_x, 0.0f, -new_z * 0.75f);
+        Vector2 v2;
+        bs >> v2;
+        SetLocalPos(Vector3(v2.x, 0, -v2.y * 0.75f));
     }
     bs >> mText;
     if (gRev < 0x14) {
@@ -145,7 +145,8 @@ void RndText::Load(BinStream &bs) {
         bs >> mWrapWidth;
     else if (gRev > 3) {
         bool b;
-        bs >> b >> mWrapWidth;
+        bs >> b;
+        bs >> mWrapWidth;
         if (!b)
             mWrapWidth = 0.0f;
         if (gRev < 5 && (mWrapWidth < 0.0f || mWrapWidth > 1000.0f))
@@ -155,7 +156,7 @@ void RndText::Load(BinStream &bs) {
         String str;
         bs >> str;
     }
-    if (gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10) {
+    if (gRev >= 5 && gRev <= 10) {
         bool b;
         bs >> b;
         if (mFont && mFont->GetMat()) {
@@ -174,8 +175,9 @@ void RndText::Load(BinStream &bs) {
         bool b;
         bs >> b;
         if (b) {
-            mText.length();
-        }
+            b = mText.length();
+        } else
+            b = false;
     }
     MILO_ASSERT(fixedLength < 65535, 0x13C);
     MILO_ASSERT(fixedLength >= 0, 0x13D);
@@ -186,10 +188,8 @@ void RndText::Load(BinStream &bs) {
         bs >> mStyle.italics;
     if (gRev > 0xC)
         bs >> mStyle.size;
-    else {
-        if (mFont) {
-            mStyle.size = mFont->mDeprecatedSize;
-        }
+    else if (mFont) {
+        mStyle.size = mFont->DeprecatedSize();
     }
     if (gRev < 0xD) {
         mStyle.italics /= mStyle.size;
@@ -204,7 +204,7 @@ void RndText::Load(BinStream &bs) {
         mCapsMode = capsMode;
     } else
         mCapsMode = kCapsModeNone;
-    if (gRev == 0x12 || gRev == 0x13 || gRev == 0x14) {
+    if (gRev >= 0x12 && gRev <= 0x14) {
         bool b;
         bs >> b;
     }
@@ -236,10 +236,11 @@ void RndText::ResolveUpdateText() {
 }
 
 void RndText::CollectGarbage() {
-    for (std::set<RndText *>::iterator it = mTextMeshSet.begin();
-         it != mTextMeshSet.end();
-         it) {
-        RndText *cur = *it++;
+    std::set<RndText *>::iterator it;
+    for (it = mTextMeshSet.begin(); it != mTextMeshSet.end();) {
+        RndText *cur = *it;
+        std::set<RndText *>::iterator toErase = it;
+        it++;
         cur->unk124b4++;
         if (!cur->unkbp7 && cur->unk124b4 > 4) {
             if (cur->mMeshMap.size() != 0) {
@@ -253,18 +254,16 @@ void RndText::CollectGarbage() {
                 }
                 cur->mMeshMap.clear();
             }
-            mTextMeshSet.erase(it);
+            mTextMeshSet.erase(toErase);
         }
     }
 }
 
-void RndText::UpdateText(bool b) {
+void RndText::UpdateText(bool) {
     if (mDeferUpdate > 0) {
         unkbp5 = true;
     } else {
-        for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-             it != mMeshMap.end();
-             ++it) {
+        FOREACH (it, mMeshMap) {
             RndMesh *mesh = it->second.mesh;
             delete mesh;
         }
@@ -277,7 +276,7 @@ void RndText::UpdateText(bool b) {
         WrapText(mText.c_str(), mStyle, mLines);
         unkbp6 = true;
         unk130 = 0;
-        for (std::vector<Line>::iterator it = mLines.begin(); it != mLines.end(); ++it) {
+        FOREACH (it, mLines) {
             MaxEq(unk130, it->unk58);
         }
         unk12c = mLines.front().unk28.v.z - mLines.back().unk28.v.z;
@@ -326,13 +325,11 @@ void RndText::SetColor(const Hmx::Color32 &col) {
         mStyle.color = col;
         bool b1 = false;
         if (!mTextMarkup) {
-            for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-                 it != mMeshMap.end();
-                 ++it) {
+            FOREACH (it, mMeshMap) {
                 RndMesh *mesh = it->second.mesh;
                 if (mesh && mesh->GetMutable()) {
                     RndMesh::VertVector &verts = mesh->Verts();
-                    for (RndMesh::Vert *it = verts.begin(); it != verts.end(); ++it) {
+                    FOREACH (it, verts) {
                         it->color = col;
                     }
                     mesh->Sync(0x1F);
@@ -450,16 +447,16 @@ void RndText::Print() {
     *ts << "   leading: " << mLeading << "\n";
     *ts << "   size: " << mStyle.size << "\n";
     *ts << "   italics: " << mStyle.italics << "\n";
-    *ts << "   color: " << Hmx::Color(mStyle.color) << "\n";
+    *ts << "   color: " << mStyle.color << "\n";
     *ts << "   markup: " << mTextMarkup << "\n";
     *ts << "   capsMode: " << mCapsMode << "\n";
 }
 
 RndText::RndText()
-    : mFont(this), mWrapWidth(0.0f), mLeading(1.0f), mStyle(mFont, 1, 0, -1, 0),
+    : mFont(this), mWrapWidth(0), mLeading(1), mStyle(mFont, 1, 0, -1, 0),
       mAltStyle(nullptr, 1, 0, -1, 0), mAlign(kTopLeft), mCapsMode(kCapsModeNone),
-      mFixedLength(0), mDeferUpdate(0), unk124b4(0), unk124b4p1(0), unk128(0),
-      unk12c(0.0f), unk130(0.0f) {
+      mFixedLength(0), mDeferUpdate(0), unk124b4(0), unk124b4p1(0), unk128(0), unk12c(0),
+      unk130(0) {
     mTextMarkup = false;
     unkbp4 = false;
     unkbp5 = false;
@@ -469,9 +466,7 @@ RndText::RndText()
 
 RndText::~RndText() {
     MILO_ASSERT(mDeferUpdate == 0, 723);
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         RndMesh *mesh = it->second.mesh;
         delete mesh;
     }
@@ -484,9 +479,7 @@ RndText::~RndText() {
 void RndText::SetFont(RndFont *f) {
     if (mFont != f) {
         mFont = f;
-        for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-             it != mMeshMap.end();
-             ++it) {
+        FOREACH (it, mMeshMap) {
             RELEASE(it->second.mesh);
         }
         mMeshMap.clear();
@@ -523,16 +516,10 @@ RndText::ParseMarkup(const char *cc, RndText::Style *style, float f3, float f4) 
     if (b1)
         ptr++;
     if (strnicmp(ptr, "sup", 3) == 0) {
-        if (!b1) {
-            f3 *= gSuperscriptScale;
-        }
-        style->size = f3;
+        style->size = b1 ? f3 : f3 * gSuperscriptScale;
         ptr += 3;
     } else if (strnicmp(ptr, "gtr", 3) == 0) {
-        if (!b1) {
-            f3 *= gGuitarScale;
-        }
-        style->size = f3;
+        style->size = b1 ? f3 : f3 * gGuitarScale;
         style->zOffset = b1 ? f4 : gGuitarZOffset;
         ptr += 3;
     } else if (strnicmp(ptr, "it", 2) == 0) {
@@ -540,11 +527,11 @@ RndText::ParseMarkup(const char *cc, RndText::Style *style, float f3, float f4) 
     } else if (strnicmp(ptr, "pre", 3) == 0) {
         style->pre = !b1;
     } else if (strnicmp(ptr, "color", 5) == 0) {
+        ptr += 5;
         if (b1) {
-            ptr += 5;
             style->color = mStyle.color;
         } else {
-            int colorVals[4] = { 0 };
+            int colorVals[4] = { 0, 0, 0, style->color.color * 256.0f };
             sscanf(
                 ptr, "%d %d %d %d", colorVals[0], colorVals[1], colorVals[2], colorVals[3]
             );
@@ -588,6 +575,48 @@ bool canBreak(const char *cc, int i) {
     if (cc[i] == ' ')
         return true;
     return cc[i] == '\t';
+}
+
+float segmentLength(int i1, int i2, int i3, int i4, float *f5, const char *c6) {
+    float lineLen = 0;
+    for (; c6[i2 - 1] == ' ' && i1 < i2; i2--, i4--)
+        ;
+    for (; i3 < i4; i3++)
+        lineLen += f5[i3];
+    return lineLen;
+}
+
+void RndText::ComputeCharWidths(float *fp, int i2, const char *cc, Style style) {
+    float size = style.size;
+    float f3 = style.zOffset;
+    unsigned short u7 = 0;
+    for (int i = 0; i < i2; i++) {
+        if (*cc == '<' && mTextMarkup) {
+            const char *parsed = ParseMarkup(cc, &style, size, f3);
+            int parseDiff = parsed - cc;
+            for (int n = 0; n < parseDiff; n++) {
+                fp[i++] = 0;
+            }
+            i--;
+            cc = parsed;
+        } else {
+            unsigned short us68;
+            int i6 = DecodeUTF8(us68, cc);
+            RndFont *i4 = SupportChar(us68, style.font);
+            if (i4) {
+                float f9 = i4->CharAdvance(u7, us68);
+                u7 = us68;
+                float fVal = style.size * f9;
+                fp[i] = fVal;
+                if (fVal < 0)
+                    fp[i] = 0;
+                unsigned int key = (unsigned int)i4;
+                mMeshMap[key].displayableChars++;
+            } else
+                fp[i] = 0;
+            cc += i6;
+        }
+    }
 }
 
 DECOMP_FORCEACTIVE(Text, "lineLen >= bestLineLen", "bestWp != -1", "curStyle.brk == false")
@@ -942,9 +971,7 @@ void RndText::ApplyLineText(
         float f26 = GetHorizontalAlignOffset(line, align);
         i7 = 0;
         i23 = 0;
-        for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-             it != mMeshMap.end();
-             ++it) {
+        FOREACH (it, mMeshMap) {
             Style mapStyle(style);
             RndFont *curFontKey = (RndFont *)it->first;
             MeshInfo &meshInfo = it->second;
@@ -1119,7 +1146,7 @@ void RndText::UpdateLineColor(unsigned int idx, const Hmx::Color32 &col, bool *b
     for (int i = 0; i < mMeshMap.size(); i++) {
         RndFont *curFont = (RndFont *)it->first;
         int idx = curLine.startIdx;
-        int min = std::min(curLine.endIdx, (int)mFixedLength);
+        int min = std::min<int>(curLine.endIdx, (int)mFixedLength);
         int i11 = mapInts[i] * 4;
         for (; idx < min;) {
             unsigned short us88;
@@ -1145,10 +1172,44 @@ void RndText::UpdateLineColor(unsigned int idx, const Hmx::Color32 &col, bool *b
         SyncMeshes();
 }
 
+void RndText::ReplaceLineText(
+    unsigned int idx,
+    const String &utf8,
+    const Transform &xfm,
+    const RndText::Style &style,
+    float *fptr,
+    bool *bptr,
+    int fixedLineLength
+) {
+    MILO_ASSERT(idx < mLines.size(), 0x8E5);
+    float f3c = 0;
+    if (!fptr)
+        fptr = &f3c;
+    int newCharsInBytes = NumCharsInBytes(utf8, style, *fptr, fixedLineLength);
+    MILO_ASSERT(newCharsInBytes <= utf8.length(), 0x8EC);
+    Line &line = mLines[idx];
+    line.unk28 = xfm;
+    line.lineStyle = style;
+    MILO_ASSERT(line.endIdx <= mFixedLength, 0x8F2);
+    MILO_ASSERT(line.endIdx - line.startIdx == fixedLineLength, 0x8F3);
+    FOREACH (it, mMeshMap) {
+        MeshInfo &curInfo = it->second;
+        RndMesh *mesh = curInfo.mesh;
+        if (mesh) {
+            RndMesh::Vert *vertIt = &mesh->Verts().mVerts[line.startIdx * 4];
+            RndMesh::Vert *vertEnd = &mesh->Verts().mVerts[line.endIdx * 4];
+            for (; vertIt < vertEnd; vertIt++) {
+                vertIt->pos.Set(0, 0, 0);
+                vertIt->uv.Set(0, 0);
+            }
+            curInfo.syncFlags |= 0x1F;
+        }
+    }
+    ApplyLineText(utf8, style, *fptr, line, newCharsInBytes, fixedLineLength, bptr);
+}
+
 void RndText::SyncMeshes() {
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         MeshInfo &info = it->second;
         if (info.syncFlags) {
             info.mesh->Sync(info.syncFlags);
@@ -1158,9 +1219,7 @@ void RndText::SyncMeshes() {
 }
 
 void RndText::SetMeshForceNoQuantize() {
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         MeshInfo &info = it->second;
         if (info.syncFlags) {
             info.mesh->SetForceNoQuantize(true);
@@ -1197,9 +1256,7 @@ float RndText::MaxLineWidth() const {
 
 void RndText::GetMeshes(std::vector<RndMesh *> &meshes) {
     meshes.clear();
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         meshes.push_back(it->second.mesh);
     }
 }
@@ -1213,7 +1270,7 @@ void RndText::GetStringDimensions(
     theStyle.font = mFont;
     WrapText(cc, theStyle, lines);
     f1 = 0;
-    for (std::vector<Line>::iterator it = lines.begin(); it != lines.end(); ++it) {
+    FOREACH (it, lines) {
         MaxEq(f1, (*it).unk58);
     }
     f2 = lines.front().unk28.v.z - lines.back().unk28.v.z;
@@ -1233,9 +1290,7 @@ void RndText::Draw() {
     if (!mShowing && !unkbp7) {
         if (mMeshMap.size() != 0) {
             unkbp5 = true;
-            for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-                 it != mMeshMap.end();
-                 ++it) {
+            FOREACH (it, mMeshMap) {
                 RndMesh *mesh = it->second.mesh;
                 delete mesh;
             }
@@ -1257,17 +1312,13 @@ void RndText::DrawShowing() {
     if (unkbp6) {
         mTextMeshSet.insert(this);
         unkbp6 = false;
-        for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-             it != mMeshMap.end();
-             ++it) {
+        FOREACH (it, mMeshMap) {
             if (it->second.mesh) {
                 UpdateMesh((RndFont *)it->first);
             }
         }
     }
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         MeshInfo &meshInfo = it->second;
         if (meshInfo.mesh) {
             meshInfo.mesh->DrawShowing();
@@ -1280,9 +1331,7 @@ float RndText::GetDistanceToPlane(const Plane &p, Vector3 &v) {
         return 0;
     else {
         float ret = 0;
-        for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-             it != mMeshMap.end();
-             ++it) {
+        FOREACH (it, mMeshMap) {
             RndMesh *mesh = it->second.mesh;
             if (mesh) {
                 Vector3 vec;
@@ -1296,9 +1345,7 @@ float RndText::GetDistanceToPlane(const Plane &p, Vector3 &v) {
 
 bool RndText::MakeWorldSphere(Sphere &s, bool b) {
     s.Zero();
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         RndMesh *mesh = it->second.mesh;
         if (mesh) {
             Sphere localS;
@@ -1316,9 +1363,7 @@ bool RndText::MakeWorldSphere(Sphere &s, bool b) {
 void RndText::UpdateSphere() {
     Sphere s;
     s.Zero();
-    for (std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin();
-         it != mMeshMap.end();
-         ++it) {
+    FOREACH (it, mMeshMap) {
         RndMesh *mesh = it->second.mesh;
         if (mesh) {
             mesh->UpdateSphere();
@@ -1334,10 +1379,11 @@ RndFont *RndText::SupportChar(unsigned short us, RndFont *font) {
         std::map<unsigned int, MeshInfo>::iterator it =
             mMeshMap.find((unsigned int)defining);
         if (it == mMeshMap.end()) {
-            mMeshMap.insert(
-                std::pair<unsigned int, MeshInfo>((unsigned int)defining, MeshInfo())
-            );
-            // set the iterator to the newly inserted pair here
+            it = mMeshMap
+                     .insert(std::pair<unsigned int, MeshInfo>(
+                         (unsigned int)defining, MeshInfo()
+                     ))
+                     .first;
         }
         MeshInfo &meshInfo = it->second;
         if (!meshInfo.mesh) {
@@ -1352,10 +1398,12 @@ RndFont *RndText::SupportChar(unsigned short us, RndFont *font) {
 }
 
 RndFont *RndText::GetDefiningFont(unsigned short &us, RndFont *font) const {
-    if (us != 10) {
-        for (RndFont *it = font; it != nullptr; it = it->NextFont()) {
-            if (it->CharDefined(us)) {
-                return it;
+    if (us == 10)
+        return nullptr;
+    else {
+        for (; font != nullptr; font = font->NextFont()) {
+            if (font->CharDefined(us)) {
+                return font;
             }
         }
     }
@@ -1432,7 +1480,6 @@ BEGIN_HANDLERS(RndText)
     HANDLE(set_color, OnSetColor)
     HANDLE_EXPR(get_text_size, Max<int>(mFixedLength, (int)mText.length()))
     HANDLE_EXPR(get_string_width, GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL))
-
     HANDLE_SUPERCLASS(RndDrawable)
     HANDLE_SUPERCLASS(RndTransformable)
     HANDLE_SUPERCLASS(Hmx::Object)

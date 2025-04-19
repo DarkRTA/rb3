@@ -3,6 +3,7 @@
 #include "os/Debug.h"
 #include "math/Trig.h"
 #include "utl/BinStream.h"
+#include "utl/TextStream.h"
 
 class Vector2 {
 public:
@@ -135,6 +136,8 @@ inline BinStream &operator>>(BinStream &bs, Vector3 &vec) {
     bs >> vec.x >> vec.y >> vec.z;
     return bs;
 }
+
+TextStream &operator<<(TextStream &, const Vector3 &);
 
 class Vector4 {
 public:

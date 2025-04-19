@@ -124,6 +124,7 @@ public:
         VertVector &operator=(const VertVector &);
         Vert *begin() { return &mVerts[0]; }
         Vert *end() { return &mVerts[mNumVerts]; }
+        Vert *back() { return &mVerts[mNumVerts - 1]; }
         unsigned short capacity() const { return mCapacity; }
         void clear() { resize(0, true); }
 

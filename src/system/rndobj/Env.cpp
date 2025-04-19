@@ -1,5 +1,7 @@
 #include "Env.h"
 #include "obj/Object.h"
+#include "revolution/gx/GXTypes.h"
+#include "rndobj/BoxMap.h"
 #include "rndobj/Draw.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
@@ -37,23 +39,22 @@ void RndEnviron::Select(const Vector3 *v) {
 }
 
 RndEnviron::RndEnviron()
-    : mLightsReal(this, kObjListNoNull), mLightsApprox(this, kObjListNoNull),
-      mLightsOld(this, kObjListNoNull), mAmbientColor(0.0f, 0.0f, 0.0f, 1.0f), unk5c(0),
-      mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0), mNumLightsProj(0),
-      mHasPointCubeTex(false), mAmbientFogOwner(this, this), mFogEnable(0),
-      mFogStart(0.0f), mFogEnd(1.0f), mFogColor(1.0f, 1.0f, 1.0f), mFadeOut(0),
-      mFadeStart(0.0f), mFadeEnd(1000.0f), mFadeMax(1.0f), mFadeRef(this, NULL),
-      mLRFade(0.0f, 0.0f, 0.0f, 0.0f), mColorXfm(), mUseColorAdjust(0),
-      mAnimateFromPreset(1), mAOEnabled(1), mAOStrength(1.0f), mUpdateTimer(),
-      mIntensityAverage(0.0f), mIntensityRate(0.1f), mExposure(1.0f), mWhitePoint(1.0f),
-      mUseToneMapping(0), mUseApprox_Local(1), mUseApprox_Global(1) {
+    : mLightsReal(this), mLightsApprox(this), mLightsOld(this), mAmbientColor(0, 0, 0, 1),
+      unk5c(0), mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0),
+      mNumLightsProj(0), mHasPointCubeTex(false), mAmbientFogOwner(this, this),
+      mFogEnable(0), mFogStart(0), mFogEnd(1), mFogColor(1, 1, 1), mFadeOut(0),
+      mFadeStart(0), mFadeEnd(1000), mFadeMax(1), mFadeRef(this), mLRFade(0, 0, 0, 0),
+      mColorXfm(), mUseColorAdjust(0), mAnimateFromPreset(1), mAOEnabled(1),
+      mAOStrength(1), mUpdateTimer(), mIntensityAverage(0), mIntensityRate(0.1f),
+      mExposure(1), mWhitePoint(1), mUseToneMapping(0), mUseApprox_Local(1),
+      mUseApprox_Global(1) {
     mUpdateTimer.Restart();
 }
 
 RndEnviron::~RndEnviron() {
     if (sCurrent == this) {
-        sCurrent = NULL;
-        sCurrentPosSet = NULL;
+        sCurrent = nullptr;
+        sCurrentPosSet = nullptr;
         sCurrentPos.Zero();
     }
 }
@@ -173,10 +174,9 @@ bool RndEnviron::IsValidRealLight(const RndLight *l) const {
 }
 
 // fn_805D7EB8 - actually calls ObjPtrList::find
-bool RndEnviron::IsLightInList(
-    const RndLight *light, const ObjPtrList<RndLight, class ObjectDir> &pList
-) const {
-    if (light == 0)
+bool RndEnviron::IsLightInList(const RndLight *light, const ObjPtrList<RndLight> &pList)
+    const {
+    if (light == nullptr)
         return 0;
     return pList.find(light) != pList.end();
 }
@@ -217,12 +217,12 @@ void RndEnviron::RemoveLight(RndLight *l) {
 
 // fn_805D81CC
 #pragma push
-#pragma pool_data off
+#pragma auto_inline on
 const Transform &RndEnviron::ColorXfm() const {
-    static Vector3 x(1.0f, 0.0f, 0.0f);
-    static Vector3 y(0.0f, 1.0f, 0.0f);
-    static Vector3 z(0.0f, 0.0f, 1.0f);
-    static Transform ident(Hmx::Matrix3(x, y, z), Vector3(0.0f, 0.0f, 0.0f));
+    static Vector3 x(1, 0, 0);
+    static Vector3 y(0, 1, 0);
+    static Vector3 z(0, 0, 1);
+    static Transform ident(Hmx::Matrix3(x, y, z), Vector3(0, 0, 0));
     if (mUseColorAdjust)
         return mColorXfm.mColorXfm;
     else
@@ -232,9 +232,7 @@ const Transform &RndEnviron::ColorXfm() const {
 
 void RndEnviron::ReclassifyLights() {
     if (!mLightsOld.empty()) {
-        for (ObjPtrList<RndLight, ObjectDir>::iterator it = mLightsOld.begin();
-             it != mLightsOld.end();
-             ++it) {
+        FOREACH (it, mLightsOld) {
             AddLight(*it);
         }
         mLightsOld.clear();
@@ -247,7 +245,7 @@ BEGIN_HANDLERS(RndEnviron)
     HANDLE_ACTION(remove_light, RemoveLight(_msg->Obj<RndLight>(2)))
     HANDLE(allowable_lights_real, OnAllowableLights_Real)
     HANDLE(allowable_lights_approx, OnAllowableLights_Approx)
-    HANDLE_ACTION(select, Select(NULL))
+    HANDLE_ACTION(select, Select(nullptr))
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(582)
 END_HANDLERS
@@ -261,10 +259,10 @@ void RndEnviron::OnRemoveAllLights() {
 // fn_805D86B8
 DataNode RndEnviron::OnAllowableLights_Real(const DataArray *da) {
     DataArrayPtr ptr;
-    for (ObjDirItr<RndLight> it(Dir(), true); it != 0; ++it) {
+    for (ObjDirItr<RndLight> it(Dir(), true); it != nullptr; ++it) {
         if (!IsLightInList(it, mLightsReal) && !IsLightInList(it, mLightsApprox)
             && IsValidRealLight(it) == 1U) {
-            ptr->Insert(ptr->Size(), DataNode(it));
+            ptr->Insert(ptr->Size(), &*it);
         }
     }
     static DataNode &milo_prop_path = DataVariable("milo_prop_path");
@@ -275,14 +273,14 @@ DataNode RndEnviron::OnAllowableLights_Real(const DataArray *da) {
             );
         }
     }
-    return DataNode(ptr);
+    return ptr;
 }
 
 DataNode RndEnviron::OnAllowableLights_Approx(const DataArray *da) {
     DataArrayPtr ptr;
     for (ObjDirItr<RndLight> it(Dir(), true); it != 0; ++it) {
         if (!IsLightInList(it, mLightsReal) && !IsLightInList(it, mLightsApprox)) {
-            ptr->Insert(ptr->Size(), DataNode(it));
+            ptr->Insert(ptr->Size(), &*it);
         }
     }
     static DataNode &milo_prop_path = DataVariable("milo_prop_path");
@@ -294,8 +292,47 @@ DataNode RndEnviron::OnAllowableLights_Approx(const DataArray *da) {
             );
         }
     }
-    return DataNode(ptr);
+    return ptr;
 }
+
+#pragma push
+#pragma auto_inline on
+void RndEnviron::UpdateApproxLighting(const Vector3 *v3, _GXColor *gxColor) {
+    mNumLightsApprox = 0;
+    if (UsesApproxes()) {
+        static BoxMapLighting boxLight;
+        static Hmx::Color boxResults[6];
+        for (int i = 0; i < 6; i++) {
+            boxResults[i].Set(0, 0, 0);
+        }
+        if (UsesApproxLocal()) {
+            boxLight.Clear();
+            FOREACH (it, mLightsReal) {
+                if (boxLight.QueueLight(*it, 1))
+                    mNumLightsApprox++;
+            }
+            boxLight.ApplyQueuedLights(boxResults, v3);
+        }
+        if (UsesApproxGlobal()) {
+            unsigned int num = sGlobalLighting.NumQueuedLights();
+            if (num != 0) {
+                mNumLightsApprox += num;
+                sGlobalLighting.ApplyQueuedLights(boxResults, v3);
+            }
+        }
+        if (gxColor) {
+            for (int i = 0; i < 6; i++) {
+            }
+            ApplyApproxLighting(gxColor);
+        } else {
+            _GXColor color;
+            for (int i = 0; i < 6; i++) {
+            }
+            ApplyApproxLighting(&color);
+        }
+    }
+}
+#pragma pop
 
 void RndEnviron::ApplyApproxLighting(const _GXColor *) {}
 
@@ -335,5 +372,3 @@ BEGIN_PROPSYNCS(RndEnviron)
     SYNC_PROP_MODIFY_ALT(out_hi, mColorXfm.mLevelOutHi, mColorXfm.AdjustColorXfm())
     SYNC_PROP(animate_from_preset, mAnimateFromPreset)
 END_PROPSYNCS
-
-bool RndEnviron::HasPointCubeTex() const { return mHasPointCubeTex; }

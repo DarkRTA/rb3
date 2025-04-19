@@ -5,6 +5,7 @@
 #include "math/Mtx.h"
 #include "math/Vec.h"
 #include "math/strips/Striper.h"
+#include "obj/Data.h"
 #include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
@@ -60,15 +61,16 @@ RndDrawable *RndMesh::CollideShowing(const Segment &seg, float &f, Plane &pl) {
         if (GetVolume() == kVolumeTriangles) {
             bool b1 = false;
             f = 1.0f;
-            for (std::vector<Face>::iterator it = Faces().begin(); it != Faces().end();
-                 ++it) {
+            FOREACH (it, Faces()) {
                 const Vert &vert0 = Verts(it->v1);
                 const Vert &vert1 = Verts(it->v2);
                 const Vert &vert2 = Verts(it->v3);
                 Triangle tri;
                 if (IsSkinned() && !sRawCollide) {
                     tri.Set(
-                        SkinVertex(vert0, 0), SkinVertex(vert1, 0), SkinVertex(vert2, 0)
+                        SkinVertex(vert0, nullptr),
+                        SkinVertex(vert1, nullptr),
+                        SkinVertex(vert2, nullptr)
                     );
                 } else
                     tri.Set(vert0.pos, vert1.pos, vert2.pos);
@@ -155,7 +157,7 @@ float RndMesh::GetDistanceToPlane(const Plane &p, Vector3 &v) {
         Multiply(Verts()[0].pos, world, v58);
         v = v58;
         float dot = p.Dot(v);
-        for (Vert *it = Verts().begin(); it != Verts().end(); ++it) {
+        FOREACH (it, Verts()) {
             Multiply(it->pos, world, v58);
             float dotted = p.Dot(v58);
             if (std::fabs(dotted) < std::fabs(dot)) {
@@ -175,7 +177,7 @@ bool RndMesh::MakeWorldSphere(Sphere &s, bool b) {
         CalcBoxCenter(v68, box);
         s.Set(v68, 0);
         const Transform &worldXfm = WorldXfm();
-        for (Vert *it = Verts().begin(); it != Verts().end(); ++it) {
+        FOREACH (it, Verts()) {
             Vector3 v50;
             Multiply(it->pos, worldXfm, v50);
             Vector3 v5c;
@@ -202,7 +204,7 @@ void RndMesh::SetVolume(RndMesh::Volume vol) {
         else {
             if (mVolume == kVolumeBox) {
                 Box box;
-                for (Vert *it = mVerts.begin(); it != mVerts.end(); ++it) {
+                FOREACH (it, mVerts) {
                     box.GrowToContain(it->pos, &it->pos == &mVerts.begin()->pos);
                 }
                 mBSPTree = new BSPNode();
@@ -236,7 +238,7 @@ void RndMesh::SetVolume(RndMesh::Volume vol) {
                 }
                 if (mBSPTree) {
                     Box boxa0;
-                    for (Vert *it = mVerts.begin(); it != mVerts.end(); ++it) {
+                    FOREACH (it, mVerts) {
                         boxa0.GrowToContain(it->pos, &it->pos == &mVerts.begin()->pos);
                     }
                     if (!CheckBSPTree(mBSPTree, boxa0)) {
@@ -266,7 +268,7 @@ void RndMesh::SetGeomOwner(RndMesh *m) {
 }
 
 void RndMesh::ScaleBones(float f) {
-    for (std::vector<RndBone>::iterator it = mBones.begin(); it != mBones.end(); it++) {
+    FOREACH (it, mBones) {
         it->mOffset.v *= f;
     }
 }
@@ -522,7 +524,7 @@ void RndMesh::PreLoad(BinStream &bs) {
     LOAD_SUPERCLASS(RndDrawable)
     if (gRev < 15) {
         int i;
-        ObjPtrList<Hmx::Object> l(this, kObjListNoNull);
+        ObjPtrList<Hmx::Object> l(this);
         bs >> i >> l;
     }
     int zmode = 0;
@@ -560,20 +562,20 @@ void RndMesh::PreLoad(BinStream &bs) {
         }
     }
     if (gRev < 0xD) {
-        ObjOwnerPtr<RndMesh> meshOwner(this, 0);
+        ObjOwnerPtr<RndMesh> meshOwner(this);
         bs >> meshOwner;
         if (meshOwner != mGeomOwner)
             MILO_WARN("Combining face and vert owner of %s", Name());
     }
     if (gRev < 0xF) {
-        ObjPtr<RndTransformable> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this);
         bs >> tPtr;
         SetTransParent(tPtr, false);
-        SetTransConstraint(RndTransformable::kParentWorld, 0, false);
+        SetTransConstraint(RndTransformable::kParentWorld, nullptr, false);
     }
     if (gRev < 0xE) {
-        ObjPtr<RndTransformable> tPtr(this, 0);
-        ObjPtr<RndTransformable> tPtr2(this, 0);
+        ObjPtr<RndTransformable> tPtr(this);
+        ObjPtr<RndTransformable> tPtr2(this);
         bs >> tPtr >> tPtr2;
     }
     if (gRev < 3) {
@@ -585,13 +587,11 @@ void RndMesh::PreLoad(BinStream &bs) {
         bs >> s;
         SetSphere(s);
     }
-    if (gRev == 5 || gRev == 6 || gRev == 7) {
+    if (gRev >= 5 && gRev <= 7) {
         bool b;
         bs >> b;
     }
-    if (gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11
-        || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16
-        || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20) {
+    if (gRev >= 6 && gRev <= 20) {
         String str;
         bs >> str;
         int i;
@@ -629,10 +629,7 @@ void RndMesh::PreLoad(BinStream &bs) {
 void RndMesh::PostLoad(BinStream &bs) {
     PostLoadVertices(bs);
     bs >> mFaces;
-    if (gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10
-        || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15
-        || gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20
-        || gRev == 21 || gRev == 22 || gRev == 23) {
+    if (gRev >= 5 && gRev <= 23) {
         int count;
         unsigned short s1, s2;
         bs >> count;
@@ -658,11 +655,13 @@ void RndMesh::PostLoad(BinStream &bs) {
 
     if (gRev > 0x1C) {
         bs >> mBones;
+#ifdef MILO_DEBUG
         int max = MaxBones();
         if (mBones.size() > max)
             mBones.resize(MaxBones());
+#endif
     } else if (gRev > 0xD) {
-        ObjPtr<RndTransformable> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this);
         bs >> tPtr;
         if (tPtr) {
             mBones.resize(4);
@@ -672,7 +671,7 @@ void RndMesh::PostLoad(BinStream &bs) {
                 bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset
                     >> mBones[3].mOffset;
                 if (gRev < 0x19) {
-                    for (Vert *it = mVerts.begin(); it != mVerts.end(); ++it) {
+                    FOREACH (it, mVerts) {
                         it->boneWeights.Set(
                             ((1.0f - it->boneWeights.GetX()) - it->boneWeights.GetY())
                                 - it->boneWeights.GetZ(),
@@ -684,7 +683,8 @@ void RndMesh::PostLoad(BinStream &bs) {
                 }
             } else {
                 if (TransConstraint() == RndTransformable::kParentWorld) {
-                    mBones[0].mBone = TransParent();
+                    ObjPtr<RndTransformable> &bone = mBones[0].mBone;
+                    bone = TransParent();
                 } else {
                     mBones[0].mBone = this;
                 }
@@ -702,14 +702,14 @@ void RndMesh::PostLoad(BinStream &bs) {
         } else
             mBones.clear();
     }
+#ifdef MILO_DEBUG
     RemoveInvalidBones();
+#endif
     if (gAltRev > 5 && CacheStrips(bs)) {
         MemDoTempAllocations m(true, false);
         MILO_ASSERT(mStriperResults.empty(), 0x5BA);
         mStriperResults.resize(mPatches.size());
-        for (std::vector<STRIPERRESULT>::iterator it = mStriperResults.begin();
-             it != mStriperResults.end();
-             ++it) {
+        FOREACH (it, mStriperResults) {
             bs >> *it;
         }
     }
@@ -733,7 +733,7 @@ void RndMesh::PostLoad(BinStream &bs) {
         mKeepMeshData = keep;
     }
     if (gRev < MESH_REV_SEP_COLOR && IsSkinned()) {
-        for (Vert *it = mVerts.begin(); it != mVerts.end(); ++it) {
+        FOREACH (it, mVerts) {
             Hmx::Color32 &col = it->color;
             it->boneWeights.Set(col.fr(), col.fg(), col.fb(), col.fa());
             col.Clear();
@@ -784,6 +784,41 @@ void RndMesh::CopyGeometryFromOwner() {
     }
 }
 
+BinStream &operator>>(BinStream &bs, RndMesh::Vert &v) {
+    float f34, f38;
+    bs >> v.pos;
+    if (RndMesh::gRev != 10 && RndMesh::gRev < 23) {
+        bs >> f34 >> f38;
+    }
+    bs >> v.norm;
+    if (RndMesh::gRev < MESH_REV_SEP_COLOR)
+        bs >> v.color;
+    else
+        bs >> v.color;
+    bs >> v.uv;
+    if (RndMesh::gRev >= MESH_REV_SEP_COLOR) {
+        Vector4 v4;
+        bs >> v4;
+        v.boneWeights.Set(v4.x, v4.y, v4.z, v4.w);
+    }
+    if (RndMesh::gRev != 10 && RndMesh::gRev < 23) {
+        v.boneWeights.Set((1.0f - f34) - f38, f34, f38, 0);
+    }
+    if (RndMesh::gRev < 0xB) {
+        Vector2 v2;
+        bs >> v2;
+    }
+    if (RndMesh::gRev > 0x1C) {
+        bs >> v.boneIndices[0] >> v.boneIndices[1] >> v.boneIndices[2]
+            >> v.boneIndices[3];
+    }
+    if (RndMesh::gRev > 0x1D) {
+        Vector4 v4;
+        bs >> v4;
+    }
+    return bs;
+}
+
 void RndMesh::CopyBones(const RndMesh *mesh) {
     if (mesh)
         mBones = mesh->mBones;
@@ -826,9 +861,7 @@ void RndMesh::CopyGeometry(const RndMesh *mesh, bool b) {
     if (b)
         SetVolume(mesh->mGeomOwner->mVolume);
     mBones = mesh->mBones;
-    // some operation on mStriperResults that sets every member to 0
-    mStriperResults = std::vector<STRIPERRESULT>();
-    // ClearAndShrink(mStriperResults);
+    ClearAndShrink(mStriperResults);
     if (mStriperResults.size() != 0) {
         MemDoTempAllocations m(true, false);
         mStriperResults.resize(mStriperResults.size());
@@ -838,41 +871,6 @@ void RndMesh::CopyGeometry(const RndMesh *mesh, bool b) {
             mStriperResults[i] = mesh->mStriperResults[i];
         }
     }
-}
-
-BinStream &operator>>(BinStream &bs, RndMesh::Vert &v) {
-    float f34, f38;
-    bs >> v.pos;
-    if (RndMesh::gRev != 10 && RndMesh::gRev < 23) {
-        bs >> f34 >> f38;
-    }
-    bs >> v.norm;
-    if (RndMesh::gRev < MESH_REV_SEP_COLOR)
-        bs >> v.color;
-    else
-        bs >> v.color;
-    bs >> v.uv;
-    if (RndMesh::gRev >= MESH_REV_SEP_COLOR) {
-        Vector4 v4;
-        bs >> v4;
-        v.boneWeights.Set(v4.x, v4.y, v4.z, v4.w);
-    }
-    if (RndMesh::gRev != 10 && RndMesh::gRev < 23) {
-        v.boneWeights.Set((1.0f - f34) - f38, f34, f38, 0);
-    }
-    if (RndMesh::gRev < 0xB) {
-        Vector2 v2;
-        bs >> v2;
-    }
-    if (RndMesh::gRev > 0x1C) {
-        bs >> v.boneIndices[0] >> v.boneIndices[1] >> v.boneIndices[2]
-            >> v.boneIndices[3];
-    }
-    if (RndMesh::gRev > 0x1D) {
-        Vector4 v4;
-        bs >> v4;
-    }
-    return bs;
 }
 
 TextStream &operator<<(TextStream &ts, RndMesh::Volume v) {
@@ -900,6 +898,17 @@ void RndMesh::Print() {
 #ifdef MILO_DEBUG
 int RndMesh::NumFaces() const { return mFaces.size(); }
 int RndMesh::NumVerts() const { return mVerts.size(); }
+
+int RndMesh::EstimatedSizeKb() const {
+    int striperSum = 0;
+    FOREACH (it, mStriperResults) {
+        if (it->StripLengths) {
+            striperSum += it->NbStrips * sizeof(it->NbStrips)
+                + (it->StripLengths[it->NbStrips - 1]) * 2;
+        }
+    }
+    return (NumVerts() * sizeof(Vert) + NumFaces() * sizeof(Face) + striperSum) >> 10;
+}
 #endif
 
 void RndMesh::Replace(Hmx::Object *from, Hmx::Object *to) {
@@ -942,7 +951,7 @@ void RndMesh::OnSync(int flags) {
         int u13 = 0xFFFF;
         int i4 = 0;
         int i12 = 0;
-        for (std::vector<Face>::iterator it = mFaces.begin(); it != mFaces.end(); ++it) {
+        FOREACH (it, mFaces) {
             i12 = Max(Max<u16>(i12, it->v1, it->v2), it->v3);
             u13 = Min(Min<u16>(u13, it->v1, it->v2), it->v3);
             if (!PatchOkay((i12 - u13) + 1, i4 + 1)) {
@@ -1114,7 +1123,7 @@ BEGIN_HANDLERS(RndMesh)
 #ifdef MILO_DEBUG
     HANDLE_EXPR(estimated_size_kb, EstimatedSizeKb())
 #endif
-    HANDLE_ACTION(clear_bones, CopyBones(NULL))
+    HANDLE_ACTION(clear_bones, CopyBones(nullptr))
     HANDLE_ACTION(copy_geom_from_owner, CopyGeometryFromOwner())
     HANDLE_SUPERCLASS(RndDrawable)
     HANDLE_SUPERCLASS(RndTransformable)
@@ -1128,6 +1137,81 @@ DataNode RndMesh::OnPointCollide(const DataArray *da) {
     Vector3 v(da->Float(2), da->Float(3), da->Float(4));
     Multiply(WorldXfm(), v, v);
     return tree && Intersect(v, tree);
+}
+
+DataNode RndMesh::OnCompareEdgeVerts(const DataArray *da) {
+    std::vector<int> vec20(Verts().size(), -1);
+    std::list<int> vec28;
+    std::vector<std::list<int> > vec30(Verts().size());
+    for (int i = 0; i < Verts().size(); i++) {
+        if (vec20[i] == -1) {
+            vec20[i] = i;
+            for (int j = i; j < Verts().size(); j++) {
+                if (Verts(j).pos == Verts(i).pos) {
+                    vec20[j] = i;
+                }
+            }
+        }
+    }
+    FOREACH (it, Faces()) {
+        int i40 = vec20[it->v1];
+        int i44 = vec20[it->v2];
+        int i48 = vec20[it->v3];
+        vec30[i40].push_back(i44);
+        vec30[i40].push_back(i48);
+        vec30[i44].push_back(i40);
+        vec30[i44].push_back(i48);
+        vec30[i48].push_back(i40);
+        vec30[i48].push_back(i44);
+    }
+    for (int i = 0; i < Verts().size(); i++) {
+        vec30[i].sort();
+        vec30[i].unique();
+    }
+    for (int i = 0; i < Verts().size(); i++) {
+        FOREACH (it, vec30[i]) {
+            int i10 = 0;
+            FOREACH (it2, vec30[*it]) {
+                FOREACH (it3, vec30[i]) {
+                    if (*it3 != *it) {
+                        if (*it3 == *it2) {
+                            i10++;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (i10 < 2) {
+                vec28.push_back(i);
+                break;
+            }
+        }
+    }
+    DataArray *array = da->Array(2);
+    for (int i = 0; i < array->Size(); i++) {
+        RndMesh *curMesh = array->Obj<RndMesh>(i);
+        MILO_LOG("testing %s\n", curMesh->Name());
+        FOREACH (it, vec28) {
+            if (Verts(*it).pos == curMesh->Verts(*it).pos)
+                continue;
+            else
+                MILO_LOG("   %d doesn't match position\n", *it);
+        }
+    }
+    if (mGeomOwner != this && (mVerts.size() != 0 || mFaces.size() != 0)) {
+#ifdef MILO_DEBUG
+        MILO_WARN(
+            "%s has geomowner %s but still has its own verts and faces, which wastes RAM",
+            PathName(this),
+            mGeomOwner ? mGeomOwner->Name() : "NULL"
+        );
+#else
+        if (mGeomOwner)
+            mGeomOwner->Name();
+        PathName(this);
+#endif
+    }
+    return 0;
 }
 
 DataNode RndMesh::OnAttachMesh(const DataArray *da) {
@@ -1228,7 +1312,7 @@ DataNode RndMesh::OnSetFace(const DataArray *da) {
 }
 
 DataNode RndMesh::OnUnitizeNormals(const DataArray *da) {
-    for (Vert *it = Verts().begin(); it != Verts().end(); ++it) {
+    FOREACH (it, Verts()) {
         Normalize(it->norm, it->norm);
     }
     return 0;
@@ -1299,7 +1383,7 @@ BEGIN_PROPSYNCS(RndMesh)
             if (_op == kPropSet)
                 mHasAOCalc = _val.Int();
             else
-                _val = DataNode(mHasAOCalc);
+                _val = mHasAOCalc;
             return true;
         }
     }
@@ -1309,11 +1393,11 @@ BEGIN_PROPSYNCS(RndMesh)
             if (_op == kPropSet)
                 mForceNoQuantize = _val.Int();
             else
-                _val = DataNode(mForceNoQuantize);
+                _val = mForceNoQuantize;
             return true;
         }
     }
-    SYNC_PROP_SET(keep_mesh_data, mKeepMeshData, SetKeepMeshData(_val.Int()))
+    SYNC_PROP_SET(keep_mesh_data, mKeepMeshData, SetKeepMeshData(_val.Int() > 0))
     SYNC_SUPERCLASS(RndTransformable)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS

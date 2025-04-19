@@ -20,6 +20,7 @@ public:
 
     Vector3 &Pos3() { return reinterpret_cast<Vector3 &>(pos); }
     Vector3 &Vel3() { return reinterpret_cast<Vector3 &>(vel); }
+    RndParticle *Next() const { return next; }
 
     Hmx::Color col; // 0x0
     Hmx::Color colVel; // 0x10
@@ -261,6 +262,7 @@ public:
     Type GetType() const { return mType; }
     RndMat *GetMat() const { return mMat; }
     int MaxParticles() const { return mMaxParticles; }
+    RndParticle *ActiveParticles() const { return mActiveParticles; }
 
     float CalcFrame() {
         if (mFrameDrive)
