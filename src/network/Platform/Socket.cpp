@@ -8,9 +8,9 @@ typedef struct unkStruct {
 } unkStruct;
 
 namespace Quazal {
-    IOResult g_oBerkeleySocketDriver;
+    BerkeleySocketDriver g_oBerkeleySocketDriver;
 
-    IOResult *Socket::s_pSocketDriver = &g_oBerkeleySocketDriver;
+    BerkeleySocketDriver *Socket::s_pSocketDriver = &g_oBerkeleySocketDriver;
 
     Socket::Socket(unsigned int arg0) {
         this->unk0 = 3;
@@ -126,7 +126,7 @@ namespace Quazal {
                 var_r4 = 1;
                 break;
             case 1:
-                arg3->unkC = (IOResult *)-1;
+                arg3->unkC = (BerkeleySocketDriver *)-1;
                 arg3->unk14 = 2;
                 arg3->unk15 = 0;
                 var_r4 = 0;
@@ -180,7 +180,7 @@ namespace Quazal {
                 var_r4 = 1;
                 break;
             case 1:
-                arg3->unkC = (IOResult *)-1;
+                arg3->unkC = (BerkeleySocketDriver *)-1;
                 arg3->unk14 = 2;
                 arg3->unk15 = 0;
                 var_r4 = 0;
@@ -200,7 +200,7 @@ namespace Quazal {
         return 0;
     }
 
-    IOResult *Socket::GetIOResult(IOCompletionContext *arg0) {
+    BerkeleySocket *Socket::GetIOResult(IOCompletionContext *arg0) {
         if (this->unk98 != nullptr) {
             return arg0->unkC;
         } else {
