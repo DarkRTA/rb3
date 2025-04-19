@@ -162,7 +162,7 @@ namespace Quazal {
 
     void InetAddress::SetPortNumber(u16 port) { this->port = htons(port); }
 
-    s16 InetAddress::GetPortNumber() const { return ntohs(this->port); }
+    u16 InetAddress::GetPortNumber() const { return ntohs(this->port); }
 
     // Nonmatching: https://decomp.me/scratch/IYV0H
     s32 InetAddress::operator<(const Quazal::InetAddress &b) const {
