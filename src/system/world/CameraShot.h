@@ -149,11 +149,18 @@ public:
                   std::pair<RndMultiMesh *, std::list<RndMultiMesh::Instance>::iterator> >
                       &);
 
+    void
+    AddCrowdChars(const std::list<
+                  std::pair<RndMultiMesh *, std::list<RndMultiMesh::Instance>::iterator> >
+                      *);
+
     // add 3d crowd: "Adds the selected crowd characters to be 3D for this shot"
     // clear 3d crowd: "Clears the list of 3D crowd characters for this shot"
     // set all to 3d: "Sets all crowd characters to 3D for this shot"
     // gen hide list: "Append occluded objects to this cam shot's hide list"
     // clear hide list: "Clear this cam shot's hide list"
+
+    WorldCrowd *Crowd() const { return mCrowd; }
 
     /** "The crowd to show for this shot" */
     ObjPtr<WorldCrowd> mCrowd; // 0x0
