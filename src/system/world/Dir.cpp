@@ -42,7 +42,7 @@ WorldDir::WorldDir()
 #pragma pool_data off
 void SetTheWorld(WorldDir *dir) {
     static DataNode &world = DataVariable("world");
-    world = DataNode(dir);
+    world = dir;
     TheWorld = dir;
     if (dir)
         gLastWorld = dir;
@@ -51,7 +51,7 @@ void SetTheWorld(WorldDir *dir) {
 
 void WorldDir::Init() {
     Register();
-    SetTheWorld(0);
+    SetTheWorld(nullptr);
 }
 
 WorldDir::~WorldDir() {
@@ -59,14 +59,14 @@ WorldDir::~WorldDir() {
     delete mGlowMat;
     SpotlightDrawer::sCurrent->ClearLights();
     if (TheWorld == this)
-        SetTheWorld(0);
+        SetTheWorld(nullptr);
 }
 
 void WorldDir::Enter() {
     if (!TheWorld) {
         SetTheWorld(this);
         static DataNode &n = DataVariable("world.last_entered");
-        n = DataNode(this);
+        n = this;
     }
     mPresetManager.Enter();
     mCameraManager.Enter();
@@ -77,7 +77,7 @@ void WorldDir::Enter() {
     TheRnd->ResetProcCounter();
     mDrawItr = mDraws.begin();
     if (TheWorld == this)
-        SetTheWorld(0);
+        SetTheWorld(nullptr);
 }
 
 void WorldDir::ClearDeltas() {
@@ -114,7 +114,7 @@ void WorldDir::Poll() {
         float deltas[4];
         AccumulateDeltas(deltas);
         bool b = true;
-        if (!mFirstPoll && !(TheRnd->ProcCmds() & 2))
+        if (!mFirstPoll && !(TheRnd->ProcCmds() & kProcessPost))
             b = false;
         mFirstPoll = false;
         if (b) {
@@ -128,7 +128,7 @@ void WorldDir::Poll() {
                 mCameraManager.Poll();
             RestoreDeltas(deltas);
         }
-        SetTheWorld(0);
+        SetTheWorld(nullptr);
     }
 }
 
@@ -189,7 +189,7 @@ BinStream &operator>>(BinStream &bs, WorldDir::BitmapOverride &c) {
                 MILO_ASSERT(c.replacement->File() == bitmap, 0x152);
             }
         } else
-            c.replacement = 0;
+            c.replacement = nullptr;
     } else
         bs >> c.replacement;
     return bs;
@@ -200,7 +200,7 @@ void WorldDir::PreLoad(BinStream &bs) {
     ASSERT_REVS(0x19, 0);
     MILO_ASSERT(gRev >= 4, 0x163);
     if (gRev != 0 && gRev < 5) {
-        ObjPtr<RndCam> ptr(this, 0);
+        ObjPtr<RndCam> ptr(this);
         bs >> ptr;
     }
     if (gRev >= 2 && gRev <= 20) {
@@ -226,7 +226,7 @@ void WorldDir::PostLoad(BinStream &bs) {
     gRev = getHmxRev(revs);
     gAltRev = getAltRev(revs);
     if (gRev == 5) {
-        ObjPtr<RndCam> camPtr(this, 0);
+        ObjPtr<RndCam> camPtr(this);
         bs >> camPtr;
         SetCam(camPtr);
     }
@@ -291,7 +291,7 @@ void WorldDir::PostLoad(BinStream &bs) {
     if (gRev > 0x10 && gRev != 0x17) {
         bs >> mPS3PerPixelHides >> mPS3PerPixelShows;
     }
-    if (gRev == 0x12 || gRev == 0x13 || gRev == 0x14 || gRev == 0x15) {
+    if (gRev >= 0x12 && gRev <= 0x15) {
         Symbol s;
         bs >> s;
     }
@@ -311,8 +311,7 @@ void WorldDir::SyncObjects() {
     for (ObjDirItr<WorldCrowd> it(this, true); it; ++it) {
         mCrowds.push_back(it);
     }
-    for (ObjPtrList<WorldCrowd>::iterator it = mCrowds.begin(); it != mCrowds.end();
-         ++it) {
+    FOREACH (it, mCrowds) {
         (*it)->CleanUpCrowdFloor();
     }
     if (mHud)
@@ -321,8 +320,8 @@ void WorldDir::SyncObjects() {
 }
 
 CamShotCrowd *FindCrowd(ObjVector<CamShotCrowd> &vec, WorldCrowd *crowd) {
-    for (ObjVector<CamShotCrowd>::iterator it = vec.begin(); it != vec.end(); it++) {
-        if (crowd == (*it).mCrowd)
+    FOREACH (it, vec) {
+        if (crowd == it->mCrowd)
             return it;
     }
     return vec.end();
@@ -330,8 +329,7 @@ CamShotCrowd *FindCrowd(ObjVector<CamShotCrowd> &vec, WorldCrowd *crowd) {
 
 void WorldDir::SetCrowds(ObjVector<CamShotCrowd> &crowdvec) {
     bool found = false;
-    for (ObjPtrList<WorldCrowd>::iterator it = mCrowds.begin(); it != mCrowds.end();
-         ++it) {
+    FOREACH (it, mCrowds) {
         WorldCrowd *curWorldCrowd = *it;
         CamShotCrowd *curCrowd = FindCrowd(crowdvec, curWorldCrowd);
         if (curCrowd != crowdvec.end()) {
@@ -343,9 +341,7 @@ void WorldDir::SetCrowds(ObjVector<CamShotCrowd> &crowdvec) {
         }
     }
     if (!found) {
-        for (ObjVector<CamShotCrowd>::iterator it = crowdvec.begin();
-             it != crowdvec.end();
-             ++it) {
+        FOREACH (it, crowdvec) {
             WorldCrowd *crowd = it->mCrowd;
             if (crowd) {
                 MILO_FAIL(
@@ -357,7 +353,7 @@ void WorldDir::SetCrowds(ObjVector<CamShotCrowd> &crowdvec) {
 }
 
 #pragma push
-#pragma pool_data off
+#pragma auto_inline on
 void WorldDir::DrawShowing() {
     START_AUTO_TIMER("world_draw");
     if (TheWorld) {
@@ -378,17 +374,15 @@ void WorldDir::DrawShowing() {
         }
         RndEnviron *env = GetEnv() ? GetEnv() : TheUI.GetEnv();
         env->Select(0);
-        if (TheRnd->ProcCmds() & 1 && shot && !shot->mDrawOverrides.empty()) {
-            for (ObjPtrList<RndDrawable>::iterator it = shot->mDrawOverrides.begin();
-                 it != shot->mDrawOverrides.end();
-                 ++it) {
+        if (TheRnd->ProcCmds() & kProcessWorld && shot && !shot->mDrawOverrides.empty()) {
+            FOREACH (it, shot->mDrawOverrides) {
                 (*it)->DrawShowing();
             }
         }
         if (!shot || shot->mDrawOverrides.empty()) {
             RndDir::DrawShowing();
         }
-        if (TheRnd->ProcCmds() & 1 && shot) {
+        if (TheRnd->ProcCmds() & kProcessWorld && shot) {
             Spotlight *spot = shot->GlowSpot();
             if (spot && spot->Showing() && spot->Intensity() > 0) {
                 Hmx::Rect rect(0, 0, TheRnd->Width(), TheRnd->Height());
@@ -402,9 +396,7 @@ void WorldDir::DrawShowing() {
         if (shot) {
             cam7->Select();
             env->Select(0);
-            for (ObjPtrList<RndDrawable>::iterator it = shot->mPostProcOverrides.begin();
-                 it != shot->mPostProcOverrides.end();
-                 ++it) {
+            FOREACH (it, shot->mPostProcOverrides) {
                 (*it)->DrawShowing();
             }
         }
@@ -414,7 +406,7 @@ void WorldDir::DrawShowing() {
             START_AUTO_TIMER("hud_draw");
             mHud->DrawShowing();
         }
-        if (TheRnd->ProcCmds() & 2 && SpotlightDrawer::sCurrent) {
+        if (TheRnd->ProcCmds() & kProcessPost && SpotlightDrawer::sCurrent) {
             SpotlightDrawer::sCurrent->DeSelect();
         }
         SetTheWorld(0);
@@ -426,12 +418,12 @@ bool WorldDir::DrawShowingBudget(float fff) {
     Timer timer;
     timer.Start();
     RndEnvironTracker tracker(mEnv, &WorldXfm().v);
-    if (TheRnd->ProcCmds() & 1) {
+    if (TheRnd->ProcCmds() & kProcessWorld) {
         mDrawItr = mDraws.begin();
     }
     for (; mDrawItr != mDraws.end(); ++mDrawItr) {
         float f1 = kHugeFloat;
-        if (TheRnd->ProcCmds() & 1) {
+        if (TheRnd->ProcCmds() & kProcessWorld) {
             float split = timer.SplitMs() - 0.0f;
             f1 = fff - split;
             if (split > fff || std::fabs(f1) <= 1.0f)
@@ -445,17 +437,17 @@ bool WorldDir::DrawShowingBudget(float fff) {
 
 void WorldDir::DrawSplitWorld() {
     static Timer *worldTimer = AutoTimer::GetTimer("world");
-    if (!worldTimer || TheRnd->ProcCmds() == 7) {
+    if (!worldTimer || TheRnd->ProcCmds() == kProcessAll) {
         RndDir::DrawShowing();
         return;
     }
-    if (TheRnd->LastProcCmds() & 1) {
+    if (TheRnd->LastProcCmds() & kProcessWorld) {
         mLastRndTimeWorld = worldTimer->GetLastMs();
     }
-    if (TheRnd->LastProcCmds() & 4) {
+    if (TheRnd->LastProcCmds() & kProcessChar) {
         mLastRndTimeChar = worldTimer->GetLastMs();
     }
-    if (TheRnd->ProcCmds() == 2)
+    if (TheRnd->ProcCmds() == kProcessPost)
         return;
     float f1 = (mLastRndTimeWorld + mLastRndTimeChar) / 2.0f;
     if (f1 < 1.0f)
@@ -466,49 +458,40 @@ void WorldDir::DrawSplitWorld() {
 void WorldDir::SyncHUD() {
     RELEASE(mFakeHudDir);
     if (mShowFakeHud && !mFakeHudFilename.empty()) {
-        mFakeHudDir =
-            dynamic_cast<RndDir *>(DirLoader::LoadObjects(mFakeHudFilename, 0, 0));
+        mFakeHudDir = dynamic_cast<RndDir *>(
+            DirLoader::LoadObjects(mFakeHudFilename, nullptr, nullptr)
+        );
         if (mFakeHudDir)
             mFakeHudDir->Enter();
     }
 }
 
 void WorldDir::SyncHides(bool b) {
-    for (ObjPtrList<RndDrawable>::iterator it = mHideOverrides.begin();
-         it != mHideOverrides.end();
-         ++it) {
+    FOREACH (it, mHideOverrides) {
         (*it)->SetShowing(!b);
     }
 }
 
 void WorldDir::SyncBitmaps(bool b) {
-    for (ObjList<BitmapOverride>::iterator it = mBitmapOverrides.begin();
-         it != mBitmapOverrides.end();
-         ++it) {
-        (*it).Sync(b);
+    FOREACH (it, mBitmapOverrides) {
+        it->Sync(b);
     }
 }
 
 void WorldDir::SyncMats(bool b) {
-    for (ObjList<MatOverride>::iterator it = mMatOverrides.begin();
-         it != mMatOverrides.end();
-         it++) {
-        (*it).Sync(b);
+    FOREACH (it, mMatOverrides) {
+        it->Sync(b);
     }
 }
 
 void WorldDir::SyncPresets(bool b) {
-    for (ObjList<PresetOverride>::iterator it = mPresetOverrides.begin();
-         it != mPresetOverrides.end();
-         it++) {
-        (*it).Sync(b);
+    FOREACH (it, mPresetOverrides) {
+        it->Sync(b);
     }
 }
 
 void WorldDir::SyncCamShots(bool b) {
-    for (ObjPtrList<CamShot>::iterator it = mCamShotOverrides.begin();
-         it != mCamShotOverrides.end();
-         it++) {
+    FOREACH (it, mCamShotOverrides) {
         (*it)->Disable(b, 1);
     }
 }
