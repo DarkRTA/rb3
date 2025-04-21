@@ -1504,7 +1504,7 @@
             "system/world/LightHue.cpp": "Equivalent",
             "system/world/LightPreset.cpp": "NonMatching",
             "system/world/LightPresetManager.cpp": "NonMatching",
-            "system/world/Reflection.cpp": "NonMatching",
+            "system/world/Reflection.cpp": "Equivalent",
             "system/world/Spotlight.cpp": "NonMatching",
             "system/world/SpotlightDrawer.cpp": "NonMatching",
             "system/world/SpotlightEnder.cpp": "Matching",

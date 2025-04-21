@@ -15,7 +15,7 @@ LightPresetManager::~LightPresetManager() {}
 // fn_805B0898 ?
 void LightPresetManager::SyncObjects() {
     mPresets.clear();
-    for (ObjDirItr<LightPreset> it(mParent, true); it != 0; ++it) {
+    for (ObjDirItr<LightPreset> it(mParent, true); it != nullptr; ++it) {
         if (it->PlatformOk()) {
             mPresets[it->Category()].push_back(it);
         }

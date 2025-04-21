@@ -1,5 +1,4 @@
-#ifndef WORLD_REFLECTION_H
-#define WORLD_REFLECTION_H
+#pragma once
 #include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 #include "char/Character.h"
@@ -30,16 +29,14 @@ public:
     NEW_OBJ(WorldReflection)
     static void Init() { REGISTER_OBJ_FACTORY(WorldReflection) }
 
-    ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0xb0
-    ObjPtrList<Character, ObjectDir> mLodChars; // 0xc0
+    ObjPtrList<RndDrawable> mDraws; // 0xb0
+    ObjPtrList<Character> mLodChars; // 0xc0
     float mVerticalStretch; // 0xd0
     std::list<void *> unkd4; // 0xd4
     RndCam *unkdc; // 0xdc
     bool unke0; // 0xe0
-    ObjPtrList<RndDrawable, ObjectDir> mHideList; // 0xe4
-    ObjPtrList<RndDrawable, ObjectDir> mShowList; // 0xf4
-    ObjPtrList<RndDrawable, ObjectDir> unk104; // 0x104
-    ObjPtrList<RndDrawable, ObjectDir> unk114; // 0x114
+    ObjPtrList<RndDrawable> mHideList; // 0xe4
+    ObjPtrList<RndDrawable> mShowList; // 0xf4
+    ObjPtrList<RndDrawable> unk104; // 0x104
+    ObjPtrList<RndDrawable> unk114; // 0x114
 };
-
-#endif

@@ -145,6 +145,11 @@ public:
     Vector2 &DrawStringScreen(const char *, const Vector2 &, const Hmx::Color &, bool);
     void CompressTextureCancel(CompressTextureCallback *);
     bool UseVerboseTimers() const { return mVerboseTimers; }
+    Mode SetDrawMode(Mode m) {
+        Mode old = mDrawMode;
+        mDrawMode = m;
+        return old;
+    }
 
     DataNode OnShowConsole(const DataArray *);
     DataNode OnToggleTimers(const DataArray *);
