@@ -80,7 +80,10 @@ public:
         void Load(BinStream &);
         void CalculateDirection(Spotlight *, Hmx::Quat &) const;
         void Animate(Spotlight *, const SpotlightEntry &, float);
-        bool operator!=(const SpotlightEntry &) const;
+        bool operator!=(const SpotlightEntry &e) const {
+            return mIntensity != e.mIntensity || unk8 != e.unk8 || mTarget != e.mTarget
+                || (uint)mColor != (uint)e.mColor || unk10 != e.unk10;
+        }
 
         float mIntensity; // 0x0
         int mColor; // 0x4 - packed color

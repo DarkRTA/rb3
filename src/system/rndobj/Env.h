@@ -71,6 +71,7 @@ public:
     bool UsesApproxes() const { return mUseApprox_Local || mUseApprox_Global; }
     bool UsesApproxLocal() const { return mUseApprox_Local; }
     bool UsesApproxGlobal() const { return mUseApprox_Global; }
+    bool SetFogEnable(bool enable) { mAmbientFogOwner->mFogEnable = enable; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD

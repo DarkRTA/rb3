@@ -1,9 +1,13 @@
 #include "world/LightPreset.h"
 #include "decomp.h"
+#include "math/Color.h"
+#include "math/Mtx.h"
+#include "math/Rot.h"
 #include "obj/Object.h"
 #include "obj/Task.h"
 #include "os/System.h"
 #include "rndobj/Anim.h"
+#include "rndobj/Cam.h"
 #include "rndobj/Lit.h"
 #include "utl/Loader.h"
 #include "utl/Messages3.h"
@@ -14,6 +18,7 @@
 #include <algorithm>
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+#include <cfloat>
 
 INIT_REVS(LightPreset)
 LightPreset *gEditPreset;
@@ -851,9 +856,23 @@ void LightPreset::AnimateSpotFromPreset(
     }
     if (spot->AnimateOrientationFromPreset()) {
         Hmx::Quat q50(0, 0, 0, 0);
-        if (entry.unk8 & 2) {
+        Hmx::Quat q60;
+        if (!(entry.unk8 & 2)) {
+            spot->unk286 = false;
+            q60.Reset();
         } else {
+            if (entry.unk10 != q50) {
+                q60 = entry.unk10;
+            } else {
+                entry.CalculateDirection(spot, q60);
+            }
         }
+        Interp(spot->unk274, q60, f3, q60);
+        spot->unk274 = q60;
+        if (f3 == 1) {
+            spot->mTarget = entry.mTarget;
+        }
+        spot->unk28c = true;
     }
 }
 
@@ -865,12 +884,62 @@ void LightPreset::FillLightPresetData(RndLight *light, LightPreset::EnvLightEntr
     entry.mLightType = light->GetType();
 }
 
+void LightPreset::AnimateLightFromPreset(
+    RndLight *light, const LightPreset::EnvLightEntry &entry, float f3
+) {
+    if (light->Showing()) {
+        Hmx::Color c90;
+        TranslateColor(entry.mColor, c90);
+        Interp(light->GetColor(), c90, f3, c90);
+        light->SetColor(c90);
+    }
+    if (light->AnimateRangeFromPreset()) {
+        float fa8;
+        Interp(light->Range(), entry.mRange, f3, fa8);
+        light->SetRange(fa8);
+    }
+    if (light->AnimatePosFromPreset()) {
+        Hmx::Matrix3 m50;
+        MakeRotMatrix(entry.unk0, m50);
+        Transform tf80;
+        Interp(light->WorldXfm().v, entry.mPosition, f3, tf80.v);
+        Interp(light->WorldXfm().m, m50, f3, tf80.m);
+        light->SetWorldXfm(tf80);
+    }
+}
+
 void LightPreset::FillEnvPresetData(RndEnviron *env, LightPreset::EnvironmentEntry &e) {
     e.mColor = env->AmbientColor().Pack();
     e.mFogColor = env->FogColor().Pack();
     e.mFogEnable = env->FogEnable();
     e.mFogStart = env->GetFogStart();
     e.mFogEnd = env->GetFogEnd();
+}
+
+void LightPreset::AnimateEnvFromPreset(
+    RndEnviron *env, const LightPreset::EnvironmentEntry &entry, float f3
+) {
+    Hmx::Color c40;
+    TranslateColor(entry.mColor, c40);
+    Interp(env->AmbientColor(), c40, f3, c40);
+    env->SetAmbientColor(c40);
+    float f74, f78;
+    if (entry.mFogEnable) {
+        Hmx::Color c50;
+        TranslateColor(entry.mFogColor, c50);
+        Interp(env->FogColor(), c50, f3, c50);
+        env->SetFogColor(c50);
+        Interp(env->GetFogStart(), entry.mFogStart, f3, f74);
+        Interp(env->GetFogEnd(), entry.mFogEnd, f3, f78);
+    } else {
+        float far = RndCam::sCurrent ? RndCam::sCurrent->FarPlane() : FLT_MAX;
+        Interp(env->GetFogStart(), far, f3, f74);
+        Interp(env->GetFogEnd(), far, f3, f78);
+    }
+    env->SetFogRange(f74, f78);
+    if (f3 == 1) {
+        env->SetFogEnable(entry.mFogEnable);
+    }
 }
 
 void LightPreset::FillSpotlightDrawerPresetData(
@@ -1023,12 +1092,33 @@ void LightPreset::SpotlightEntry::Load(BinStream &bs) {
 void LightPreset::SpotlightEntry::CalculateDirection(Spotlight *s, Hmx::Quat &q) const {
     q = unk10;
     RndTransformable *target = mTarget;
-    Hmx::Matrix3 m38;
-    if ((unk8 & 2) && target)
+    if ((unk8 & 2) && target) {
+        Hmx::Matrix3 m38;
         s->CalculateDirection(target, m38);
-    Hmx::Quat qloc;
-    qloc.Set(m38);
-    q = qloc;
+        q = Hmx::Quat(m38);
+    }
+}
+
+void LightPreset::SpotlightEntry::Animate(
+    Spotlight *spot, const LightPreset::SpotlightEntry &entry, float f3
+) {
+    float fout;
+    Interp(mIntensity, entry.mIntensity, f3, fout);
+    Hmx::Color c38;
+    Hmx::Color c48;
+    c38.Unpack(mColor);
+    c48.Unpack(entry.mColor);
+    Interp(c38, c48, f3, c38);
+    mColor = c38.Pack();
+    Hmx::Quat q58;
+    CalculateDirection(spot, q58);
+    Hmx::Quat q68;
+    entry.CalculateDirection(spot, q68);
+    Interp(q58, q68, f3, unk10);
+    if (f3 == 1) {
+        unk8 = entry.unk8;
+        mTarget = entry.mTarget;
+    }
 }
 
 LightPreset::EnvironmentEntry::EnvironmentEntry()
@@ -1046,6 +1136,27 @@ void LightPreset::EnvironmentEntry::Load(BinStream &bs) {
     bs >> mFogEnd;
     bs >> col;
     mFogColor = col.Pack();
+}
+
+void LightPreset::EnvironmentEntry::Animate(
+    const LightPreset::EnvironmentEntry &entry, float f2
+) {
+    Hmx::Color c38 = mColor;
+    Hmx::Color c48 = entry.mColor;
+    Interp(c38, c48, f2, c38);
+    if (entry.mFogEnable) {
+        c38.Unpack(mFogColor);
+        c48.Unpack(entry.mFogColor);
+        Interp(c38, c48, f2, c38);
+        Interp(mFogStart, entry.mFogStart, f2, mFogStart);
+        Interp(mFogEnd, entry.mFogEnd, f2, mFogEnd);
+    } else {
+        float far = RndCam::sCurrent ? RndCam::sCurrent->FarPlane() : FLT_MAX;
+        Interp(mFogStart, far, f2, mFogStart);
+        Interp(mFogEnd, far, f2, mFogEnd);
+    }
+    if (f2 == 1)
+        mFogEnable = entry.mFogEnable;
 }
 
 bool LightPreset::EnvironmentEntry::operator!=(const LightPreset::EnvironmentEntry &e
@@ -1076,6 +1187,17 @@ void LightPreset::EnvLightEntry::Load(BinStream &bs) {
     mColor = col.Pack();
     bs >> mRange;
     bs >> (int &)mLightType;
+}
+
+void LightPreset::EnvLightEntry::Animate(
+    const LightPreset::EnvLightEntry &entry, float f2
+) {
+    Hmx::Color c28(mColor);
+    Hmx::Color c38(entry.mColor);
+    Interp(c28, c38, f2, c28);
+    Interp(mRange, entry.mRange, f2, mRange);
+    Interp(unk0, entry.unk0, f2, unk0);
+    Interp(mPosition, entry.mPosition, f2, mPosition);
 }
 
 bool LightPreset::EnvLightEntry::operator!=(const LightPreset::EnvLightEntry &e) const {
