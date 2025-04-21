@@ -28,7 +28,7 @@ public:
         ~BeamDef();
         void OnSetMat(RndMat *);
         void Load(BinStream &);
-        const Vector2 &NGRadii() const;
+        Vector2 NGRadii() const;
 
         RndMesh *mBeam; // 0x0
         /** "Whether this is a beam or a cone" */

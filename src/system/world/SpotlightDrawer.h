@@ -86,6 +86,7 @@ public:
 
     static void Init();
     static void RemoveFromLists(Spotlight *);
+    static void DrawLight(Spotlight *);
 
     SpotDrawParams mParams; // 0x24
 };
