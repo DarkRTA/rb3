@@ -30,6 +30,7 @@ public:
         EnvironmentEntry();
         void Load(BinStream &);
         bool operator!=(const EnvironmentEntry &) const;
+        void Animate(const EnvironmentEntry &, float);
 
         /** "Ambient color" */
         int mColor; // 0x0 - ambient color
@@ -78,14 +79,9 @@ public:
 
         float mIntensity; // 0x0
         int mColor; // 0x4 - packed color
-        bool unk8p7 : 1;
-        bool unk8p6 : 1;
-        bool unk8p5 : 1;
-        bool unk8p4 : 1;
-        bool unk8p3 : 1;
-        bool unk8p2 : 1;
-        bool unk8p1 : 1;
-        bool mFlareEnabled : 1; // 0x8 & 1
+        unsigned char unk8p2 : 6;
+        unsigned char unk8p1 : 1;
+        unsigned char mFlareEnabled : 1; // 0x8 & 1
         RndTransformable *mTarget; // 0xc
         Hmx::Quat unk10;
 

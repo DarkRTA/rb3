@@ -23,7 +23,7 @@ float ComputeSpotBlend(int i, float f) {
     int min = Min<int>(f * 5.0f, 4);
     if (i % 5 < min)
         return 1.0f;
-    else if (min < i % 5)
+    else if (i % 5 > min)
         return 0.0f;
     else {
         return Min(Max((f - i / 5.0f) * 5.0f, 0.0f), 1.0f);
@@ -42,11 +42,11 @@ LightPreset::KeyframeCmd SymToPstKeyframe(Symbol s) {
 }
 
 LightPreset::LightPreset()
-    : mKeyframes(this), mPlatformOnly(kPlatformNone),
-      mSelectTriggers(this, kObjListNoNull), mLegacyFadeIn(0.0f), mLooping(0), mManual(0),
-      mLocked(0), mSpotlightState(this), mLastKeyframe(0), mLastBlend(-1.0f),
-      mStartBeat(0.0f), mManualFrameStart(0.0f), mManualFrame(0), mLastManualFrame(-1),
-      mManualFadeTime(0.0f), mCachedDuration(0.0f), mHue(0) {}
+    : mKeyframes(this), mPlatformOnly(kPlatformNone), mSelectTriggers(this),
+      mLegacyFadeIn(0), mLooping(0), mManual(0), mLocked(0), mSpotlightState(this),
+      mLastKeyframe(0), mLastBlend(-1), mStartBeat(0), mManualFrameStart(0),
+      mManualFrame(0), mLastManualFrame(-1), mManualFadeTime(0), mCachedDuration(0),
+      mHue(0) {}
 
 bool LightPreset::PlatformOk() const {
     if (LOADMGR_EDITMODE || !mPlatformOnly || TheLoadMgr.GetPlatform() == kPlatformNone) {
@@ -93,19 +93,19 @@ BEGIN_COPYS(LightPreset)
         Clear();
         COPY_MEMBER(mKeyframes)
         COPY_MEMBER(mSpotlights)
-        for (int i = 0; i != mSpotlights.size(); i++) {
+        for (uint i = 0; i != mSpotlights.size(); i++) {
             mSpotlights[i]->AddRef(this);
         }
         COPY_MEMBER(mEnvironments)
-        for (int i = 0; i != mEnvironments.size(); i++) {
+        for (uint i = 0; i != mEnvironments.size(); i++) {
             mEnvironments[i]->AddRef(this);
         }
         COPY_MEMBER(mLights)
-        for (int i = 0; i != mLights.size(); i++) {
+        for (uint i = 0; i != mLights.size(); i++) {
             mLights[i]->AddRef(this);
         }
         COPY_MEMBER(mSpotlightDrawers)
-        for (int i = 0; i != mSpotlightDrawers.size(); i++) {
+        for (uint i = 0; i != mSpotlightDrawers.size(); i++) {
             mSpotlightDrawers[i]->AddRef(this);
         }
         mSpotlightState.resize(mSpotlights.size());
@@ -198,7 +198,7 @@ BEGIN_LOADS(LightPreset)
             MILO_WARN("%s: %s", Name(), str154);
         }
     } else if (gRev < 0x15) {
-        ObjPtr<EventTrigger, ObjectDir> trigPtr(this, 0);
+        ObjPtr<EventTrigger> trigPtr(this, 0);
         bs >> trigPtr;
         if (trigPtr)
             mSelectTriggers.push_back(trigPtr);
@@ -213,7 +213,7 @@ BEGIN_LOADS(LightPreset)
         int dummy;
         if (gRev != 0 && gRev < 0x11)
             bs >> dummy;
-        if (gRev - 3 < 0xE)
+        if (gRev >= 3 && gRev <= 16)
             bs >> dummy;
     }
     if (gRev > 3) {
@@ -240,9 +240,9 @@ BEGIN_LOADS(LightPreset)
             bs >> dummy;
     }
     mSpotlightState.resize(mSpotlights.size());
-    mEnvironmentState.resize(mEnvironments.size(), EnvironmentEntry());
-    mLightState.resize(mLights.size(), EnvLightEntry());
-    mSpotlightDrawerState.resize(mSpotlightDrawers.size(), SpotlightDrawerEntry());
+    mEnvironmentState.resize(mEnvironments.size());
+    mLightState.resize(mLights.size());
+    mSpotlightDrawerState.resize(mSpotlightDrawers.size());
     for (int i = 0; i != mSpotlights.size(); i++) {
         if (!mSpotlights[i] || !mSpotlights[i]->GetAnimateFromPreset()) {
             RemoveSpotlight(i);
@@ -297,9 +297,7 @@ RndPostProc *LightPreset::GetCurrentPostProc() const {
 
 void LightPreset::Replace(Hmx::Object *from, Hmx::Object *to) {
     Hmx::Object::Replace(from, to);
-
-    int idx;
-    for (idx = 0; idx != mSpotlights.size(); idx++) {
+    for (uint idx = 0; idx != mSpotlights.size(); idx++) {
         if (mSpotlights[idx] == from) {
             if (to) {
                 from->Release(this);
@@ -311,7 +309,7 @@ void LightPreset::Replace(Hmx::Object *from, Hmx::Object *to) {
             return;
         }
     }
-    for (idx = 0; idx != mEnvironments.size(); idx++) {
+    for (uint idx = 0; idx != mEnvironments.size(); idx++) {
         if (mEnvironments[idx] == from) {
             if (to) {
                 from->Release(this);
@@ -323,7 +321,7 @@ void LightPreset::Replace(Hmx::Object *from, Hmx::Object *to) {
             return;
         }
     }
-    for (idx = 0; idx != mLights.size(); idx++) {
+    for (uint idx = 0; idx != mLights.size(); idx++) {
         if (mLights[idx] == from) {
             if (to) {
                 from->Release(this);
@@ -335,7 +333,7 @@ void LightPreset::Replace(Hmx::Object *from, Hmx::Object *to) {
             return;
         }
     }
-    for (idx = 0; idx != mSpotlightDrawers.size(); idx++) {
+    for (uint idx = 0; idx != mSpotlightDrawers.size(); idx++) {
         if (mSpotlightDrawers[idx] == from) {
             if (to) {
                 from->Release(this);
@@ -350,7 +348,7 @@ void LightPreset::Replace(Hmx::Object *from, Hmx::Object *to) {
 }
 
 void LightPreset::RemoveSpotlight(int idx) {
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         Keyframe &cur = mKeyframes[i];
         cur.mSpotlightEntries.erase(cur.mSpotlightEntries.begin() + idx);
     }
@@ -362,7 +360,7 @@ void LightPreset::RemoveSpotlight(int idx) {
 }
 
 void LightPreset::RemoveEnvironment(int idx) {
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         Keyframe &cur = mKeyframes[i];
         cur.mEnvironmentEntries.erase(cur.mEnvironmentEntries.begin() + idx);
     }
@@ -374,7 +372,7 @@ void LightPreset::RemoveEnvironment(int idx) {
 }
 
 void LightPreset::RemoveLight(int idx) {
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         Keyframe &cur = mKeyframes[i];
         cur.mLightEntries.erase(cur.mLightEntries.begin() + idx);
     }
@@ -386,7 +384,7 @@ void LightPreset::RemoveLight(int idx) {
 }
 
 void LightPreset::RemoveSpotlightDrawer(int idx) {
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         Keyframe &cur = mKeyframes[i];
         cur.mSpotlightDrawerEntries.erase(cur.mSpotlightDrawerEntries.begin() + idx);
     }
@@ -406,9 +404,7 @@ void LightPreset::StartAnim() {
     mLastKeyframe = 0;
     mLastBlend = -1.0f;
     Handle(start_anim_msg, false);
-    for (ObjPtrList<EventTrigger, ObjectDir>::iterator it = mSelectTriggers.begin();
-         it != mSelectTriggers.end();
-         ++it) {
+    FOREACH (it, mSelectTriggers) {
         (*it)->Trigger();
     }
 }
@@ -482,9 +478,7 @@ void LightPreset::SetFrameEx(float frame, float blend, bool b) {
             Animate(blend);
         }
         if (kf5 != last) {
-            for (ObjPtrList<EventTrigger>::iterator it = mLastKeyframe->mTriggers.begin();
-                 it != mLastKeyframe->mTriggers.end();
-                 ++it) {
+            FOREACH (it, mLastKeyframe->mTriggers) {
                 (*it)->Trigger();
             }
         }
@@ -493,7 +487,7 @@ void LightPreset::SetFrameEx(float frame, float blend, bool b) {
 }
 
 void LightPreset::OnKeyframeCmd(LightPreset::KeyframeCmd cmd) {
-    sManualEvents.push_back(std::pair<KeyframeCmd, float>(cmd, TheTaskMgr.Beat() + 4.0f));
+    sManualEvents.push_back(std::make_pair(cmd, TheTaskMgr.Beat() + 4.0f));
 }
 
 int LightPreset::NextManualFrame(LightPreset::KeyframeCmd cmd) const {
@@ -529,7 +523,7 @@ void LightPreset::GetKey(float frame, int &iref1, int &iref2, float &fref) const
     } else {
         if (mLooping) {
             float theframe = std::fmod(frame, mCachedDuration);
-            if (mKeyframes.back().mFrame <= frame) {
+            if (frame >= mKeyframes.back().mFrame) {
                 if (mKeyframes.back().mFadeOutTime <= 0.0f) {
                     iref1 = -1;
                     iref2 = mKeyframes.size() - 1;
@@ -537,7 +531,7 @@ void LightPreset::GetKey(float frame, int &iref1, int &iref2, float &fref) const
                     return;
                 }
                 float framedur = mKeyframes.back().mFrame + mKeyframes.back().mDuration;
-                if (framedur < theframe) {
+                if (theframe > framedur) {
                     MILO_ASSERT(mKeyframes.back().mFadeOutTime > 0, 0x358);
                     iref1 = mKeyframes.size() - 1;
                     iref2 = 0;
@@ -549,7 +543,7 @@ void LightPreset::GetKey(float frame, int &iref1, int &iref2, float &fref) const
                 fref = 1.0f;
                 return;
             }
-        } else if (mKeyframes.back().mFrame <= frame) {
+        } else if (frame >= mKeyframes.back().mFrame) {
             iref1 = -1;
             iref2 = mKeyframes.size() - 1;
             fref = 1.0f;
@@ -557,7 +551,7 @@ void LightPreset::GetKey(float frame, int &iref1, int &iref2, float &fref) const
         }
         int cap = mKeyframes.size() - 1;
         int i;
-        for (i = 0; i + 1 < cap - 1; i) {
+        for (i = 0; i + 1 < cap - 1;) {
             i = (i + cap) >> 1;
             const Keyframe &kf = mKeyframes[i];
             if (theframe == kf.mFrame) {
@@ -600,11 +594,38 @@ void LightPreset::ApplyState(const LightPreset::Keyframe &k) {
     mSpotlightDrawerState = k.mSpotlightDrawerEntries;
 }
 
+void LightPreset::AnimateState(
+    const LightPreset::Keyframe &k1, const LightPreset::Keyframe &k2, float f3
+) {
+    if (f3 < 1.1920929E-7f)
+        return;
+    for (uint i = 0; i != mSpotlightState.size(); i++) {
+        if (k2.mSpotlightChanges[i]) {
+            mSpotlightState[i].Animate(mSpotlights[i], k1.mSpotlightEntries[i], f3);
+        }
+    }
+    for (uint i = 0; i != mEnvironmentState.size(); i++) {
+        if (k2.mEnvironmentChanges[i]) {
+            mEnvironmentState[i].Animate(k1.mEnvironmentEntries[i], f3);
+        }
+    }
+    for (uint i = 0; i != mLightState.size(); i++) {
+        if (k2.mLightChanges[i]) {
+            mLightState[i].Animate(k1.mLightEntries[i], f3);
+        }
+    }
+    for (uint i = 0; i != mSpotlightDrawerState.size(); i++) {
+        if (k2.mSpotlightDrawerChanges[i]) {
+            mSpotlightDrawerState[i].Animate(k1.mSpotlightDrawerEntries[i], f3);
+        }
+    }
+}
+
 void LightPreset::Animate(float f) {
     if (f < 1.1920929E-7f)
         return;
     MILO_ASSERT(mSpotlights.size() == mSpotlightState.size(), 0x3CD);
-    for (int i = 0; i != mSpotlights.size(); i++) {
+    for (uint i = 0; i != mSpotlights.size(); i++) {
         if (mSpotlights[i]->GetAnimateFromPreset()) {
             float blend = ComputeSpotBlend(i, f);
             if (blend >= 1.1920929E-7f) {
@@ -613,19 +634,19 @@ void LightPreset::Animate(float f) {
         }
     }
     MILO_ASSERT(mEnvironments.size() == mEnvironmentState.size(), 0x3DF);
-    for (int i = 0; i != mEnvironments.size(); i++) {
+    for (uint i = 0; i != mEnvironments.size(); i++) {
         if (mEnvironments[i]->GetAnimateFromPreset()) {
             AnimateEnvFromPreset(mEnvironments[i], mEnvironmentState[i], f);
         }
     }
     MILO_ASSERT(mLights.size() == mLightState.size(), 1000);
-    for (int i = 0; i != mLights.size(); i++) {
+    for (uint i = 0; i != mLights.size(); i++) {
         if (mLights[i]->GetAnimateFromPreset()) {
             AnimateLightFromPreset(mLights[i], mLightState[i], f);
         }
     }
     MILO_ASSERT(mSpotlightDrawers.size() == mSpotlightDrawerState.size(), 0x3F1);
-    for (int i = 0; i != mSpotlightDrawers.size(); i++) {
+    for (uint i = 0; i != mSpotlightDrawers.size(); i++) {
         AnimateSpotlightDrawerFromPreset(
             mSpotlightDrawers[i], mSpotlightDrawerState[i], f
         );
@@ -633,22 +654,22 @@ void LightPreset::Animate(float f) {
 }
 
 void LightPreset::SetKeyframe(LightPreset::Keyframe &k) {
-    for (int i = 0; i != k.mSpotlightEntries.size(); i++) {
+    for (uint i = 0; i != k.mSpotlightEntries.size(); i++) {
         FillSpotPresetData(mSpotlights[i], k.mSpotlightEntries[i], -1);
     }
-    for (int i = 0; i != k.mEnvironmentEntries.size(); i++) {
+    for (uint i = 0; i != k.mEnvironmentEntries.size(); i++) {
         FillEnvPresetData(mEnvironments[i], k.mEnvironmentEntries[i]);
     }
-    for (int i = 0; i != k.mLightEntries.size(); i++) {
+    for (uint i = 0; i != k.mLightEntries.size(); i++) {
         FillLightPresetData(mLights[i], k.mLightEntries[i]);
     }
-    for (int i = 0; i != k.mSpotlightDrawerEntries.size(); i++) {
+    for (uint i = 0; i != k.mSpotlightDrawerEntries.size(); i++) {
         FillSpotlightDrawerPresetData(mSpotlightDrawers[i], k.mSpotlightDrawerEntries[i]);
     }
 }
 
 void LightPreset::SyncNewSpotlights() {
-    for (ObjDirItr<Spotlight> it(Dir(), true); it != 0; ++it) {
+    for (ObjDirItr<Spotlight> it(Dir(), true); it != nullptr; ++it) {
         Spotlight *key = it;
         std::vector<Spotlight *>::iterator found =
             std::find(mSpotlights.begin(), mSpotlights.end(), key);
@@ -671,18 +692,13 @@ void LightPreset::SyncKeyframeTargets() {
             == mEnvironments.end()) {
             AddEnvironment(key);
         }
-
-        for (ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsReal.begin();
-             lit != key->mLightsReal.end();
-             ++lit) {
+        FOREACH (lit, key->mLightsReal) {
             RndLight *lkey = *lit;
             if (std::find(mLights.begin(), mLights.end(), lkey) == mLights.end()) {
                 AddLight(lkey);
             }
         }
-        for (ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsApprox.begin();
-             lit != key->mLightsApprox.end();
-             ++lit) {
+        FOREACH (lit, key->mLightsApprox) {
             RndLight *lkey = *lit;
             if (std::find(mLights.begin(), mLights.end(), lkey) == mLights.end()) {
                 AddLight(lkey);
@@ -708,7 +724,7 @@ void LightPreset::AddSpotlight(Spotlight *s, bool b) {
         e.mIntensity = 0;
         e.mColor = 0;
     }
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         mKeyframes[i].mSpotlightEntries.push_back(e);
         MILO_ASSERT(mKeyframes[i].mSpotlightEntries.size() == mSpotlights.size(), 0x46E);
     }
@@ -720,7 +736,7 @@ void LightPreset::AddEnvironment(RndEnviron *env) {
     mEnvironments.push_back(env);
     EnvironmentEntry e;
     FillEnvPresetData(env, e);
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         mKeyframes[i].mEnvironmentEntries.push_back(e);
         MILO_ASSERT(mKeyframes[i].mEnvironmentEntries.size() == mEnvironments.size(), 0x47F);
     }
@@ -732,7 +748,7 @@ void LightPreset::AddLight(RndLight *lit) {
     mLights.push_back(lit);
     EnvLightEntry e;
     FillLightPresetData(lit, e);
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         mKeyframes[i].mLightEntries.push_back(e);
         MILO_ASSERT(mKeyframes[i].mLightEntries.size() == mLights.size(), 0x490);
     }
@@ -744,7 +760,7 @@ void LightPreset::AddSpotlightDrawer(SpotlightDrawer *sd) {
     mSpotlightDrawers.push_back(sd);
     SpotlightDrawerEntry e;
     FillSpotlightDrawerPresetData(sd, e);
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         mKeyframes[i].mSpotlightDrawerEntries.push_back(e);
         MILO_ASSERT(mKeyframes[i].mSpotlightDrawerEntries.size() == mSpotlightDrawers.size(), 0x4A1);
     }
@@ -896,7 +912,7 @@ void LightPreset::SetSpotlight(Spotlight *s, int data) {
 DataNode LightPreset::OnSetKeyframe(DataArray *da) {
     if (mHue) {
         MILO_WARN("Can't set keyframe with hue translation");
-        return DataNode(0);
+        return 0;
     } else {
         int idx = da->Int(2);
         SyncKeyframeTargets();
@@ -908,7 +924,7 @@ DataNode LightPreset::OnSetKeyframe(DataArray *da) {
 DataNode LightPreset::OnViewKeyframe(DataArray *da) {
     ApplyState(mKeyframes[da->Int(2)]);
     Animate(1.0f);
-    return DataNode(0);
+    return 0;
 }
 
 LightPreset::Keyframe::Keyframe(Hmx::Object *o)
@@ -965,7 +981,7 @@ void LightPreset::Keyframe::Load(BinStream &bs) {
 DECOMP_FORCEACTIVE(LightPreset, "0")
 
 LightPreset::SpotlightEntry::SpotlightEntry(Hmx::Object *o)
-    : mIntensity(0), mColor(0), mFlareEnabled(1), mTarget(0) {
+    : mIntensity(0), mColor(0), unk8p1(1), mFlareEnabled(1), mTarget(0) {
     unk10.Reset();
 }
 
@@ -978,8 +994,8 @@ void LightPreset::SpotlightEntry::Load(BinStream &bs) {
     bs >> col;
     col.alpha = 1.0f;
     mColor = col.Pack();
-    ObjPtr<RndTransformable, ObjectDir> tPtr(0, 0);
-    if (!tPtr.Load(bs, false, 0))
+    ObjPtr<RndTransformable> tPtr(nullptr);
+    if (!tPtr.Load(bs, false, nullptr))
         unk8p1 = 0;
     if (gRev < 0x13) {
         Symbol s;
