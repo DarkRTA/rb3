@@ -71,6 +71,11 @@ public:
     // size 0x20
     class SpotlightEntry {
     public:
+        enum {
+            kEnabled = 1
+            // there's a flag for 2 but idk what it is
+        };
+
         SpotlightEntry(Hmx::Object *);
         void Load(BinStream &);
         void CalculateDirection(Spotlight *, Hmx::Quat &) const;
@@ -79,9 +84,7 @@ public:
 
         float mIntensity; // 0x0
         int mColor; // 0x4 - packed color
-        unsigned char unk8p2 : 6;
-        unsigned char unk8p1 : 1;
-        unsigned char mFlareEnabled : 1; // 0x8 & 1
+        unsigned char unk8; // 0x8
         RndTransformable *mTarget; // 0xc
         Hmx::Quat unk10;
 

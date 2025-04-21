@@ -769,7 +769,7 @@ void LightPreset::AddSpotlightDrawer(SpotlightDrawer *sd) {
 
 void LightPreset::CacheFrames() {
     float f1 = 0;
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         Keyframe &curKF = mKeyframes[i];
         curKF.mFrame = f1;
         f1 += curKF.mDuration + curKF.mFadeOutTime;
@@ -783,22 +783,22 @@ void LightPreset::CacheFrames() {
         curKF.mSpotlightDrawerChanges.resize(curKF.mSpotlightDrawerEntries.size());
         if (mLooping || i != 0) {
             Keyframe &kfIter = mKeyframes[i == 0 ? mKeyframes.size() - 1 : i - 1];
-            for (int j = 0; j != curKF.mSpotlightEntries.size(); j++) {
+            for (uint j = 0; j != curKF.mSpotlightEntries.size(); j++) {
                 if (curKF.mSpotlightEntries[j] != kfIter.mSpotlightEntries[j]) {
                     curKF.mSpotlightChanges[j] = true;
                 }
             }
-            for (int j = 0; j != curKF.mEnvironmentEntries.size(); j++) {
+            for (uint j = 0; j != curKF.mEnvironmentEntries.size(); j++) {
                 if (curKF.mEnvironmentEntries[j] != kfIter.mEnvironmentEntries[j]) {
                     curKF.mEnvironmentChanges[j] = true;
                 }
             }
-            for (int j = 0; j != curKF.mLightEntries.size(); j++) {
+            for (uint j = 0; j != curKF.mLightEntries.size(); j++) {
                 if (curKF.mLightEntries[j] != kfIter.mLightEntries[j]) {
                     curKF.mLightChanges[j] = true;
                 }
             }
-            for (int j = 0; j != curKF.mSpotlightDrawerEntries.size(); j++) {
+            for (uint j = 0; j != curKF.mSpotlightDrawerEntries.size(); j++) {
                 if (curKF.mSpotlightDrawerEntries[j]
                     != kfIter.mSpotlightDrawerEntries[j]) {
                     curKF.mSpotlightDrawerChanges[j] = true;
@@ -829,7 +829,7 @@ void LightPreset::FillSpotPresetData(
             entry.mTarget ? Hmx::Quat(0, 0, 0, 0) : Hmx::Quat(spot->mLocalXfm.m);
     }
     if (mask != 0 && spot->IsFlareEnabled()) {
-        entry.mFlareEnabled = true;
+        entry.unk8 |= SpotlightEntry::kEnabled;
     }
 }
 
@@ -846,12 +846,12 @@ void LightPreset::AnimateSpotFromPreset(
         Interp(intensity, entry.mIntensity, f3, intensity);
         spot->SetColorIntensity(spotColor, intensity);
         if (spot->GetFlare() && f3 == 1.0f) {
-            spot->SetFlareEnabled(entry.mFlareEnabled);
+            spot->SetFlareEnabled(entry.unk8 & SpotlightEntry::kEnabled);
         }
     }
     if (spot->AnimateOrientationFromPreset()) {
         Hmx::Quat q50(0, 0, 0, 0);
-        if (entry.unk8p1) {
+        if (entry.unk8 & 2) {
         } else {
         }
     }
@@ -897,14 +897,14 @@ void LightPreset::AnimateSpotlightDrawerFromPreset(
 }
 
 void LightPreset::SetSpotlight(Spotlight *s, int data) {
-    int idx;
+    uint idx;
     for (idx = 0; idx != mSpotlights.size(); idx++) {
         if (mSpotlights[idx] == s)
             break;
     }
     if (idx == mSpotlights.size())
         AddSpotlight(s, false);
-    for (int i = 0; i != mKeyframes.size(); i++) {
+    for (uint i = 0; i != mKeyframes.size(); i++) {
         FillSpotPresetData(s, mKeyframes[i].mSpotlightEntries[idx], data);
     }
 }
@@ -981,7 +981,7 @@ void LightPreset::Keyframe::Load(BinStream &bs) {
 DECOMP_FORCEACTIVE(LightPreset, "0")
 
 LightPreset::SpotlightEntry::SpotlightEntry(Hmx::Object *o)
-    : mIntensity(0), mColor(0), unk8p1(1), mFlareEnabled(1), mTarget(0) {
+    : mIntensity(0), mColor(0), unk8(3), mTarget(0) {
     unk10.Reset();
 }
 
@@ -996,7 +996,7 @@ void LightPreset::SpotlightEntry::Load(BinStream &bs) {
     mColor = col.Pack();
     ObjPtr<RndTransformable> tPtr(nullptr);
     if (!tPtr.Load(bs, false, nullptr))
-        unk8p1 = 0;
+        unk8 &= ~2;
     if (gRev < 0x13) {
         Symbol s;
         bs >> s;
@@ -1005,16 +1005,17 @@ void LightPreset::SpotlightEntry::Load(BinStream &bs) {
     if (gRev > 1) {
         bool b;
         bs >> b;
-        if (b)
-            mFlareEnabled = true;
-        else
-            mFlareEnabled = false;
+        if (b) {
+            unk8 |= kEnabled;
+        } else {
+            unk8 &= ~kEnabled;
+        }
         if (gRev < 9) {
             int i;
             bs >> i;
         }
     }
-    if (mTarget || !unk8p1) {
+    if (mTarget || !(unk8 & 2)) {
         unk10.Set(0, 0, 0, 0);
     }
 }
@@ -1023,7 +1024,7 @@ void LightPreset::SpotlightEntry::CalculateDirection(Spotlight *s, Hmx::Quat &q)
     q = unk10;
     RndTransformable *target = mTarget;
     Hmx::Matrix3 m38;
-    if (unk8p1 && target)
+    if ((unk8 & 2) && target)
         s->CalculateDirection(target, m38);
     Hmx::Quat qloc;
     qloc.Set(m38);
@@ -1158,7 +1159,7 @@ BEGIN_CUSTOM_PROPSYNC(LightPreset::SpotlightEntry)
     SYNC_PROP_SET(intensity, o.mIntensity, )
     SYNC_PROP_SET(color, o.mColor, )
     SYNC_PROP(target, o.mTarget)
-    SYNC_PROP_SET(flare_enabled, o.mFlareEnabled, )
+    SYNC_PROP_SET(flare_enabled, o.unk8 & LightPreset::SpotlightEntry::kEnabled, )
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(LightPreset::SpotlightDrawerEntry)
