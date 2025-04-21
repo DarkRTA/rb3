@@ -714,6 +714,30 @@ DECOMP_FORCEACTIVE(
     "!SpotlightDrawer::DrawNGSpotlights()"
 )
 
+void Spotlight::BuildNGShaft(Spotlight::BeamDef &def) {
+    switch (def.mShape) {
+    case 1:
+        BuildNGCone(def, 4);
+        return;
+    case 2:
+        BuildNGSheet(def);
+        return;
+    case 3:
+        BuildNGQuad(def, RndTransformable::kBillboardXYZ);
+        return;
+    case 4:
+        BuildNGQuad(def, RndTransformable::kBillboardZ);
+        return;
+    default:
+        int num = 10;
+        if (def.mNumSegments > 3) {
+            num = def.mNumSegments;
+        }
+        BuildNGCone(def, num);
+        return;
+    }
+}
+
 void Spotlight::BuildShaft(Spotlight::BeamDef &def) {
     if (def.mIsCone)
         BuildCone(def);
@@ -721,12 +745,52 @@ void Spotlight::BuildShaft(Spotlight::BeamDef &def) {
         BuildBeam(def);
 }
 
+void Spotlight::Mats(std::list<class RndMat *> &mats, bool b2) {
+    if (mLensMaterial && b2) {
+        mats.push_back(mLensMaterial);
+        for (int i = 0; i < 2U; i++) {
+            MatShaderOptions opts;
+            opts.SetLast5(0xC);
+            opts.mTempMat = true;
+            opts.SetHasAOCalc(i);
+            RndMat *mat = Hmx::Object::New<RndMat>();
+            mat->Copy(mLensMaterial, kCopyDeep);
+            mat->SetShaderOpts(opts);
+            mats.push_back(mat);
+        }
+    }
+    if (mDiscMat) {
+        mats.push_back(mDiscMat);
+    }
+    if (mLightCanMesh && mLightCanMesh->Mat()) {
+        MatShaderOptions opts;
+        opts.SetLast5(0xC);
+        RndMat *lightMat = mLightCanMesh->Mat();
+        lightMat->SetShaderOpts(opts);
+        mats.push_back(lightMat);
+        if (b2) {
+            for (int i = 0; i < 2U; i++) {
+                MatShaderOptions opts;
+                opts.SetLast5(0xC);
+                opts.mTempMat = true;
+                opts.SetHasAOCalc(i);
+                RndMat *mat = Hmx::Object::New<RndMat>();
+                mat->Copy(mLightCanMesh->Mat(), kCopyDeep);
+                mat->SetShaderOpts(opts);
+                mats.push_back(mat);
+            }
+        }
+    }
+    if (mBeam.mMat) {
+        mats.push_back(mBeam.mMat);
+    }
+}
+
 Spotlight::BeamDef::BeamDef(Hmx::Object *obj)
     : mBeam(0), mIsCone(0), mLength(100.0f), mTopRadius(4.0f), mBottomRadius(30.0f),
       mTopSideBorder(0.1f), mBottomSideBorder(0.3f), mBottomBorder(0.5f), mOffset(0.0f),
       mTargetOffset(0.0f, 0.0f), mBrighten(1.0f), mExpand(1.0f), mShape(0),
-      mNumSections(0), mNumSegments(0), mXSection(obj, 0), mCutouts(obj, kObjListNoNull),
-      mMat(obj, 0) {}
+      mNumSections(0), mNumSegments(0), mXSection(obj), mCutouts(obj), mMat(obj) {}
 
 Spotlight::BeamDef::BeamDef(const Spotlight::BeamDef &def)
     : mBeam(0), mIsCone(def.mIsCone), mLength(def.mLength), mTopRadius(def.mTopRadius),
