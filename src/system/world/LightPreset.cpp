@@ -829,7 +829,7 @@ void LightPreset::FillSpotPresetData(
         entry.mColor = spot->Color().Opaque();
     }
     if (mask & 2) {
-        entry.mTarget = spot->Target();
+        entry.mTarget = spot->GetTarget();
         entry.unk10 =
             entry.mTarget ? Hmx::Quat(0, 0, 0, 0) : Hmx::Quat(spot->mLocalXfm.m);
     }

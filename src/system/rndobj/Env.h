@@ -68,7 +68,7 @@ public:
         SetUseApproxLocal(b);
         SetUseApproxGlobal(b);
     }
-    bool UsesApproxes() const { return mUseApprox_Local || mUseApprox_Global; }
+    bool GetUseApprox() const { return mUseApprox_Local || mUseApprox_Global; }
     bool UsesApproxLocal() const { return mUseApprox_Local; }
     bool UsesApproxGlobal() const { return mUseApprox_Global; }
     bool SetFogEnable(bool enable) { mAmbientFogOwner->mFogEnable = enable; }

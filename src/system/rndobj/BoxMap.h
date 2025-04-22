@@ -43,10 +43,10 @@ public:
         float unk2c;
         float unk30;
         float unk34;
-        Vector3 unk38;
-        float unk44;
-        float unk48;
-        float unk4c;
+        Vector3 unk38; // 0x38
+        float unk44; // 0x44 - beam length?
+        float unk48; // 0x48 - top beam radius
+        float unk4c; // 0x4c - bottom beam radius
     };
 
     BoxMapLighting();
@@ -76,6 +76,13 @@ public:
     bool ParamsAt(LightParams_Point *&pt) {
         if (mQueued_Point.CanAddEntry()) {
             pt = mQueued_Point.AddEntry();
+            return true;
+        } else
+            return false;
+    }
+    bool ParamsAt(LightParams_Spot *&ps) {
+        if (mQueued_Spot.CanAddEntry()) {
+            ps = mQueued_Spot.AddEntry();
             return true;
         } else
             return false;

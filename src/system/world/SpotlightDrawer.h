@@ -1,7 +1,9 @@
 #pragma once
+#include "obj/ObjMacros.h"
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/PostProc.h"
+#include "world/Spotlight.h"
 
 class RndEnviron;
 class RndTex;
@@ -29,13 +31,20 @@ public:
     // size: 0x40
     class SpotMeshEntry {
     public:
+        SpotMeshEntry() : unk0(0), unk4(0), unk8(0) {}
+        RndMesh *unk0;
+        RndMesh *unk4;
+        Spotlight *unk8;
+        int unkc;
+        Transform unk10;
     };
 
     // size: 0x8
     class SpotlightEntry {
     public:
-        unsigned int unk0;
-        int unk4;
+        SpotlightEntry() : unk0(0), unk4(0) {}
+        unsigned int unk0; // 0x0 - id?
+        Spotlight *unk4; // 0x4 - the spotlight
     };
 
     SpotlightDrawer();
@@ -57,11 +66,11 @@ public:
     virtual void SortLights();
     virtual void DrawWorld();
     virtual void DrawShadow();
-    virtual void DrawMeshVec(std::vector<SpotMeshEntry> &); // change return type
-    virtual void DrawAdditional(SpotlightEntry *, const SpotlightEntry *&);
-    virtual void DrawLenses(SpotlightEntry *, const SpotlightEntry *&);
-    virtual void DrawBeams(SpotlightEntry *, const SpotlightEntry *&);
-    virtual void DrawFlares(SpotlightEntry *, const SpotlightEntry *&);
+    virtual void DrawMeshVec(std::vector<SpotMeshEntry> &);
+    virtual void DrawAdditional(SpotlightEntry *, SpotlightEntry *const &);
+    virtual void DrawLenses(SpotlightEntry *, SpotlightEntry *const &);
+    virtual void DrawBeams(SpotlightEntry *, SpotlightEntry *const &);
+    virtual void DrawFlares(SpotlightEntry *, SpotlightEntry *const &);
     virtual void ClearPostDraw();
     virtual void ClearPostProc() {}
 
@@ -69,6 +78,7 @@ public:
     void ClearLights();
     void Select();
     void DeSelect();
+    void ApplyLightingApprox(BoxMapLighting &, float) const;
 
     static SpotlightDrawer *sCurrent;
     static SpotlightDrawer *sDefault;
@@ -87,6 +97,8 @@ public:
     static void Init();
     static void RemoveFromLists(Spotlight *);
     static void DrawLight(Spotlight *);
+    static void Register() { REGISTER_OBJ_FACTORY(SpotlightDrawer); }
+    NEW_OBJ(SpotlightDrawer);
 
     SpotDrawParams mParams; // 0x24
 };
@@ -101,7 +113,14 @@ struct ByColor {
 };
 
 struct ByEnvMesh {
-    bool
-    operator()(const SpotlightDrawer::SpotMeshEntry &, const SpotlightDrawer::SpotMeshEntry &)
-        const;
+    bool operator()(
+        const SpotlightDrawer::SpotMeshEntry &e1, const SpotlightDrawer::SpotMeshEntry &e2
+    ) const {
+        if (e1.unk4 < e2.unk4)
+            return true;
+        else if (e1.unk4 > e2.unk4)
+            return false;
+        else
+            return e1.unk0 < e2.unk0;
+    }
 };

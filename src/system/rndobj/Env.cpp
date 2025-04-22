@@ -299,7 +299,7 @@ DataNode RndEnviron::OnAllowableLights_Approx(const DataArray *da) {
 #pragma auto_inline on
 void RndEnviron::UpdateApproxLighting(const Vector3 *v3, _GXColor *gxColor) {
     mNumLightsApprox = 0;
-    if (UsesApproxes()) {
+    if (GetUseApprox()) {
         static BoxMapLighting boxLight;
         static Hmx::Color boxResults[6];
         for (int i = 0; i < 6; i++) {

@@ -824,7 +824,7 @@ RndTransformable *Spotlight::ResolveTarget() {
 }
 
 void Spotlight::PropogateToPresets(int i) {
-    for (ObjDirItr<LightPreset> it(Dir(), false); it != 0; ++it) {
+    for (ObjDirItr<LightPreset> it(Dir(), false); it != nullptr; ++it) {
         it->SetSpotlight(this, i);
     }
 }
@@ -877,8 +877,7 @@ BEGIN_PROPSYNCS(Spotlight)
     SYNC_PROP_MODIFY(spot_scale, mSpotScale, UpdateBounds())
     SYNC_PROP_MODIFY(spot_height, mSpotHeight, UpdateBounds())
     SYNC_PROP_MODIFY_ALT(spot_material, mDiscMat, UpdateBounds())
-    SYNC_PROP_SET(color, Color().Opaque(), SetColor(_val.Int())) // there are color32
-                                                                 // inlines here - fix!
+    SYNC_PROP_SET(color, Color().Opaque(), SetColor(_val.Int()))
     SYNC_PROP_SET(intensity, Intensity(), SetIntensity(_val.Float()))
     SYNC_PROP(color_owner, mColorOwner)
     SYNC_PROP(damping_constant, mDampingConstant)
