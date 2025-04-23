@@ -23,9 +23,9 @@ public:
     virtual void Load(BinStream &);
     virtual ~RndLight() {}
     virtual void Replace(Hmx::Object *, Hmx::Object *);
-    virtual void SetColor(const Hmx::Color &);
+    virtual void SetColor(const Hmx::Color &c) { mColorOwner->mColor = c; }
     virtual void SetLightType(Type);
-    virtual void SetRange(float);
+    virtual void SetRange(float r) { mRange = r; }
     virtual void SetFalloffStart(float);
 
     void SetTopRadius(float);
@@ -45,6 +45,8 @@ public:
             || mAnimateRangeFromPreset;
     }
     bool Showing() const { return mShowing; }
+    bool AnimatePosFromPreset() const { return mAnimatePositionFromPreset; }
+    bool AnimateRangeFromPreset() const { return mAnimateRangeFromPreset; }
 
     static const char *TypeToStr(Type);
 

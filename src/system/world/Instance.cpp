@@ -19,8 +19,7 @@ void SharedGroup::TryPoll(WorldInstance *inst) {
         mPollMaster = inst;
     else if (mPollMaster != inst)
         return;
-    for (std::list<RndPollable *>::iterator it = mPolls.begin(); it != mPolls.end();
-         ++it) {
+    FOREACH (it, mPolls) {
         (*it)->Poll();
     }
 }
@@ -30,8 +29,7 @@ void SharedGroup::TryEnter(WorldInstance *inst) {
         mPollMaster = inst;
     else if (mPollMaster != inst)
         return;
-    for (std::list<RndPollable *>::iterator it = mPolls.begin(); it != mPolls.end();
-         ++it) {
+    FOREACH (it, mPolls) {
         (*it)->Enter();
     }
     MsgSource *src = dynamic_cast<MsgSource *>(mPollMaster->Dir());
@@ -69,9 +67,7 @@ SharedGroup::SharedGroup(RndGroup *group) : mGroup(group), mPollMaster(this, 0) 
 SharedGroup::~SharedGroup() {}
 
 void SharedGroup::AddPolls(RndGroup *grp) {
-    for (ObjPtrList<Hmx::Object, ObjectDir>::iterator it = grp->mObjects.begin();
-         it != grp->mObjects.end();
-         ++it) {
+    FOREACH (it, grp->mObjects) {
         RndPollable *poll = dynamic_cast<RndPollable *>(*it);
         if (poll)
             mPolls.push_back(poll);
@@ -222,7 +218,7 @@ void WorldInstance::DeleteTransientObjects() {
         || Dir()->InlineSubDirType() != kInlineAlways) {
         DeleteObjects();
     } else
-        for (ObjDirItr<Hmx::Object> obj(this, false); obj != 0; ++obj) {
+        for (ObjDirItr<Hmx::Object> obj(this, false); obj != nullptr; ++obj) {
             if (obj != this) {
                 Hmx::Object *to = mDir->Find<Hmx::Object>(obj->Name(), true);
                 MILO_ASSERT(obj->ClassName() == to->ClassName(), 0x1CB);
@@ -359,14 +355,14 @@ void WorldInstance::SyncDir() {
                 }
             }
 
-            for (std::list<ObjPair>::iterator p = objPairs.begin(); p != objPairs.end();
-                 ++p) {
+            std::list<ObjPair>::const_iterator p = objPairs.begin();
+            for (; p != objPairs.end(); ++p) {
                 MILO_ASSERT(p->from->Dir(), 0x2CA);
                 std::vector<ObjRef *> fromRefs = p->from->Refs();
-                std::vector<ObjRef *>::reverse_iterator it = fromRefs.rbegin();
-                std::vector<ObjRef *>::reverse_iterator itEnd = fromRefs.rend();
+                std::vector<ObjRef *>::const_reverse_iterator it = fromRefs.rbegin();
+                std::vector<ObjRef *>::const_reverse_iterator itEnd = fromRefs.rend();
                 while (it != itEnd) {
-                    if (!(*it)->RefOwner()->Dir()) {
+                    if ((*it)->RefOwner() && !(*it)->RefOwner()->Dir()) {
                         (*it)->Replace(p->from, p->to);
                     }
                     ++it;
@@ -375,8 +371,8 @@ void WorldInstance::SyncDir() {
 
             Reserve(mDir->HashTableSize(), mDir->StrTableSize());
 
-            for (std::list<ObjPair>::iterator p = objPairs.begin(); p != objPairs.end();
-                 ++p) {
+            p = objPairs.begin();
+            for (; p != objPairs.end(); ++p) {
                 if (p->to != this) {
                     p->to->SetName(p->from->Name(), this);
                 }

@@ -94,6 +94,8 @@ public:
     bool Crowd3DExists();
     void Draw3DChars();
     bool IsForced3DCrowd() const { return mForce3DCrowd; }
+    float CharFullness() const { return mCharFullness; }
+    float FlatFullness() const { return mFlatFullness; }
     void SetCrowdRotate(CrowdRotate rot) { mRotate = rot; }
 
     DataNode OnRebuild(DataArray *);

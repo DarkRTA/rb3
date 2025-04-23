@@ -28,7 +28,7 @@ public:
         ~BeamDef();
         void OnSetMat(RndMat *);
         void Load(BinStream &);
-        const Vector2 &NGRadii() const;
+        Vector2 NGRadii() const;
 
         RndMesh *mBeam; // 0x0
         /** "Whether this is a beam or a cone" */
@@ -120,11 +120,14 @@ public:
     Hmx::Color32 Color() const { return mColorOwner->mColor; }
     float Intensity() const { return mColorOwner->mIntensity; }
     bool LightCanSort() const { return mLightCanSort; }
-    RndTransformable *Target() const { return mTarget; }
+    RndTransformable *GetTarget() const { return mTarget; }
     bool IsFlareEnabled() const { return mFlareEnabled; }
     bool AnimateColorFromPreset() const { return mAnimateColorFromPreset; }
     bool AnimateOrientationFromPreset() const { return mAnimateOrientationFromPreset; }
     RndFlare *GetFlare() const { return mFlare; }
+    bool GetCastShadow() const { return mTargetShadow; }
+    RndMat *LensMesh() const { return mLensMaterial; }
+    Hmx::Color IntensifiedColor() const;
 
     RndTransformable *GetFloorSpotTarget() const {
         return mSpotTarget ? mSpotTarget : mTarget;

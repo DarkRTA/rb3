@@ -1,12 +1,22 @@
 #include "world/Spotlight.h"
+#include "char/Character.h"
 #include "decomp.h"
+#include "math/Mtx.h"
+#include "obj/Object.h"
+#include "obj/Task.h"
 #include "os/Debug.h"
+#include "os/System.h"
 #include "os/Timer.h"
+#include "rndobj/Cam.h"
+#include "rndobj/Env.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Flare.h"
 #include "rndobj/Lit.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Group.h"
+#include "rndobj/Rnd.h"
+#include "rndobj/Trans.h"
+#include "utl/Loader.h"
 #include "world/SpotlightDrawer.h"
 #include "world/LightPreset.h"
 #include "math/Rot.h"
@@ -17,7 +27,7 @@ RndMesh *Spotlight::sDiskMesh;
 
 INIT_REVS(Spotlight)
 
-const Vector2 &Spotlight::BeamDef::NGRadii() const {
+Vector2 Spotlight::BeamDef::NGRadii() const {
     float exp = mExpand;
     float f1 = mTopRadius * exp;
     float f2 = mBottomRadius * exp;
@@ -35,14 +45,14 @@ void Spotlight::Init() {
 }
 
 Spotlight::Spotlight()
-    : mDiscMat(this, 0), mFlare(Hmx::Object::New<RndFlare>()), mFlareOffset(0.0f),
+    : mDiscMat(this), mFlare(Hmx::Object::New<RndFlare>()), mFlareOffset(0.0f),
       mSpotScale(30.0f), mSpotHeight(0.25f), mColor(-1), mIntensity(1.0f),
-      mColorOwner(this, this), mLensSize(0.0f), mLensOffset(0.0f), mLensMaterial(this, 0),
-      mBeam(this), mSlaves(this, kObjListNoNull), mLightCanOffset(0.0f),
-      mLightCanMesh(this, 0), mTarget(this, 0), mSpotTarget(this, 0), unk22c(-1e+33f),
-      mDampingConstant(1.0f), mAdditionalObjects(this, kObjListNoNull), mFlareEnabled(1),
-      mFlareVisibilityTest(1), unk286(1), mTargetShadow(0), mLightCanSort(0), unk289(1),
-      mAnimateColorFromPreset(1), mAnimateOrientationFromPreset(1), unk28c(0) {
+      mColorOwner(this, this), mLensSize(0.0f), mLensOffset(0.0f), mLensMaterial(this),
+      mBeam(this), mSlaves(this), mLightCanOffset(0.0f), mLightCanMesh(this),
+      mTarget(this), mSpotTarget(this), unk22c(-1e+33f), mDampingConstant(1.0f),
+      mAdditionalObjects(this), mFlareEnabled(1), mFlareVisibilityTest(1), unk286(1),
+      mTargetShadow(0), mLightCanSort(0), unk289(1), mAnimateColorFromPreset(1),
+      mAnimateOrientationFromPreset(1), unk28c(0) {
     mFlare->SetTransParent(this, false);
     mFloorSpotXfm.Reset();
     mLensXfm.Reset();
@@ -87,9 +97,9 @@ void Spotlight::ConvertGroupToMesh(RndGroup *grp) {
         std::vector<RndDrawable *>::iterator itEnd = grp->mDraws.end();
         for (; it != itEnd; it++) {
             RndMesh *cur = dynamic_cast<RndMesh *>(*it);
-            if (cur) {
+            if (cur && cur) {
                 count++;
-                if (mLightCanMesh)
+                if (!mLightCanMesh)
                     mLightCanMesh = cur;
             }
         }
@@ -129,7 +139,7 @@ BEGIN_LOADS(Spotlight)
     if (gRev > 0x15)
         bs >> mLightCanMesh;
     else {
-        ObjPtr<RndGroup, ObjectDir> grpPtr(this, 0);
+        ObjPtr<RndGroup> grpPtr(this);
         bs >> grpPtr;
         ConvertGroupToMesh(grpPtr);
     }
@@ -158,7 +168,7 @@ BEGIN_LOADS(Spotlight)
         bs >> sym;
     }
     if (gRev > 10) {
-        ObjPtr<RndMat, ObjectDir> matPtr(this, 0);
+        ObjPtr<RndMat> matPtr(this);
         bs >> matPtr;
         mFlare->SetMat(matPtr);
         if (gRev > 0x11 && gRev < 0x13) {
@@ -268,14 +278,14 @@ BEGIN_COPYS(Spotlight)
     CREATE_COPY(Spotlight)
     BEGIN_COPYING_MEMBERS
         if (ty != kCopyFromMax) {
-            mFlare->Copy(this, kCopyDeep);
+            mFlare->Copy(c->mFlare, kCopyDeep);
             COPY_MEMBER(mFlareOffset)
             COPY_MEMBER(mLightCanMesh)
             COPY_MEMBER(mTarget)
             COPY_MEMBER(mSpotTarget)
             COPY_MEMBER(mSpotScale)
             COPY_MEMBER(mSpotHeight)
-            // ...
+            SetColorIntensity(c->Color(), c->Intensity());
             COPY_MEMBER(mDiscMat)
             COPY_MEMBER(mDampingConstant)
             COPY_MEMBER(mLensSize)
@@ -319,9 +329,7 @@ END_COPYS
 void Spotlight::ListDrawChildren(std::list<RndDrawable *> &draws) {
     if (mLightCanMesh)
         draws.push_back(mLightCanMesh);
-    for (ObjPtrList<RndDrawable, ObjectDir>::iterator it = mAdditionalObjects.begin();
-         it != mAdditionalObjects.end();
-         ++it) {
+    FOREACH (it, mAdditionalObjects) {
         draws.push_back(*it);
     }
 }
@@ -362,10 +370,42 @@ int Spotlight::CollidePlane(const Plane &pl) {
     return -1;
 }
 
+void Spotlight::Poll() {
+    if (!LOADMGR_EDITMODE) {
+        if (!Showing())
+            return;
+        if (mIntensity == 0)
+            return;
+    }
+    Hmx::Matrix3 m38;
+    if (!unk28c) {
+        RndTransformable *target = ResolveTarget();
+        if (!target || (!unk289 && target->WorldXfm().v == unk268)) {
+            if (!target && !mAnimateOrientationFromPreset && !DoFloorSpot()) {
+                UpdateTransforms();
+                return;
+            }
+            CheckFloorSpotTransform();
+            unk230 = WorldXfm().m;
+            UpdateSlaves();
+            return;
+        }
+        unk268 = target->WorldXfm().v;
+        CalculateDirection(target, m38);
+        if (!unk289 && mDampingConstant != 1) {
+            Interp(unk230, m38, mDampingConstant * TheTaskMgr.DeltaSeconds(), m38);
+        } else
+            unk289 = false;
+    } else
+        MakeRotMatrix(unk274, m38);
+    SetLocalRot(m38);
+    unk230 = m38;
+    UpdateTransforms();
+    unk28c = false;
+}
+
 void Spotlight::CloseSlaves() {
-    for (ObjPtrList<RndLight, ObjectDir>::iterator it = mSlaves.begin();
-         it != mSlaves.end();
-         ++it) {
+    FOREACH (it, mSlaves) {
         RndLight *lit = *it;
         if (lit)
             lit->SetShadowOverride(0);
@@ -373,10 +413,12 @@ void Spotlight::CloseSlaves() {
 }
 
 void Spotlight::UpdateSlaves() {
-    if (!mSlaves.empty()) {
-        for (ObjPtrList<RndLight, ObjectDir>::iterator it = mSlaves.begin();
-             it != mSlaves.end();
-             ++it) {
+    if (mSlaves.empty())
+        return;
+    else {
+        ObjPtrList<RndLight>::iterator it = mSlaves.begin();
+        ObjPtrList<RndLight>::iterator itEnd = mSlaves.end();
+        for (; it != itEnd; ++it) {
             RndLight *lit = *it;
             Transform tf40(WorldXfm());
             if (lit->TransParent()) {
@@ -441,13 +483,11 @@ bool Spotlight::MakeWorldSphere(Sphere &s, bool b) {
             }
         }
         return true;
-    } else {
-        if (&mSphere) { // fix this line
-            Multiply(mSphere, WorldXfm(), s);
-            return true;
-        } else
-            return false;
-    }
+    } else if (mSphere.GetRadius()) {
+        Multiply(mSphere, WorldXfm(), s);
+        return true;
+    } else
+        return false;
 }
 
 void Spotlight::SetColorIntensity(const Hmx::Color &col, float f) {
@@ -558,18 +598,114 @@ void Spotlight::UpdateFloorSpotTransform(const Transform &tf) {
     }
 }
 
+#pragma push
+#pragma auto_inline on
 void Spotlight::DrawShowing() {
     START_AUTO_TIMER("spotlight");
-    for (ObjPtrList<RndDrawable>::iterator it = mAdditionalObjects.begin();
-         it != mAdditionalObjects.end();
-         ++it) {
-        MILO_ASSERT(*it != this, 0x3D8);
-        if (*it != this)
-            (*it)->DrawShowing();
+    if (LightCanSort() && mLightCanMesh) {
+        mLightCanMesh->SetWorldXfm(mLightCanXfm);
+        Sphere s(mLightCanMesh->mSphere);
+        if (s.GetRadius() > 0) {
+            Multiply(s, mLightCanXfm, s);
+            if (!RndCam::sCurrent->CompareSphereToWorld(s)) {
+                mLightCanMesh->DrawShowing();
+            }
+        }
+    }
+    if (TheRnd->DrawMode() == 0) {
+        SpotlightDrawer::DrawLight(this);
+    } else if (unk286) {
+        UpdateTransforms();
+        Hmx::Color c48(Color());
+        Multiply(c48, Intensity(), c48);
+        sEnviron->SetAmbientColor(c48);
+        RndEnvironTracker tracker(sEnviron, nullptr);
+        FOREACH (it, mAdditionalObjects) {
+            MILO_ASSERT(*it != this, 0x3D8);
+            if (*it != this)
+                (*it)->DrawShowing();
+        }
+        if (mLensMaterial) {
+            MILO_ASSERT(sDiskMesh, 0x3E2);
+            sDiskMesh->SetWorldXfm(mLensXfm);
+            sDiskMesh->SetMat(mLensMaterial);
+            sDiskMesh->DrawShowing();
+        }
+        if (mBeam.mBeam && TheRnd->DrawMode() != 4) {
+            mBeam.mBeam->DrawShowing();
+        }
+        if (mFlare && mFlare->GetMat()) {
+            mFlare->Draw();
+        }
+        if (mTarget) {
+            if (mTargetShadow) {
+                Character *theChar = dynamic_cast<Character *>(mTarget.Ptr());
+                if (theChar) {
+                    Vector3 v58 = theChar->WorldXfm().v;
+                    v58.z += 3.0f;
+                    Plane p68(v58, Vector3(0, 0, 1));
+                    theChar->DrawShadow(WorldXfm(), p68);
+                }
+            }
+            if (DoFloorSpot()) {
+                MILO_ASSERT(sDiskMesh, 0x408);
+                sDiskMesh->SetWorldXfm(mFloorSpotXfm);
+                sDiskMesh->SetMat(mDiscMat);
+                sDiskMesh->DrawShowing();
+            }
+        }
+    }
+}
+#pragma pop
+
+void Spotlight::Generate() {
+    if (!mBeam.mBeam || LOADMGR_EDITMODE) {
+        RELEASE(mBeam.mBeam);
+        if (mBeam.mLength > 0) {
+            bool b1 = false;
+            if (GetGfxMode() == 1 && TheLoadMgr.GetPlatform() != 3) {
+                b1 = true;
+            }
+            if (b1) {
+                BuildNGShaft(mBeam);
+            } else {
+                BuildShaft(mBeam);
+            }
+        }
+        UpdateBounds();
+        UpdateSphere();
     }
 }
 
-void Spotlight::BuildBoard() { MILO_ASSERT(!sDiskMesh, 0x427); }
+void Spotlight::BuildBoard() {
+    MILO_ASSERT(!sDiskMesh, 0x427);
+    sDiskMesh = Hmx::Object::New<RndMesh>();
+    RndMesh::VertVector &verts = sDiskMesh->Verts();
+    std::vector<RndMesh::Face> &faces = sDiskMesh->Faces();
+    verts.resize(4, true);
+    faces.resize(2);
+
+    verts[0].pos.Set(-0.5, -0.5, 0);
+    verts[0].color.Clear();
+    verts[0].uv.Set(0, 0);
+
+    verts[1].pos.Set(0.5, -0.5, 0);
+    verts[1].color.Clear();
+    verts[1].uv.Set(1, 0);
+
+    verts[2].pos.Set(-0.5, 0.5, 0);
+    verts[2].color.Clear();
+    verts[2].uv.Set(0, 1);
+
+    verts[3].pos.Set(0.5, 0.5, 0);
+    verts[3].color.Clear();
+    verts[3].uv.Set(1, 1);
+
+    faces[0].Set(0, 1, 2);
+    faces[1].Set(1, 3, 2);
+    sDiskMesh->Sync(0x13F);
+    sDiskMesh->UpdateSphere();
+}
 
 DECOMP_FORCEACTIVE(
     Spotlight,
@@ -578,6 +714,30 @@ DECOMP_FORCEACTIVE(
     "!SpotlightDrawer::DrawNGSpotlights()"
 )
 
+void Spotlight::BuildNGShaft(Spotlight::BeamDef &def) {
+    switch (def.mShape) {
+    case 1:
+        BuildNGCone(def, 4);
+        return;
+    case 2:
+        BuildNGSheet(def);
+        return;
+    case 3:
+        BuildNGQuad(def, RndTransformable::kBillboardXYZ);
+        return;
+    case 4:
+        BuildNGQuad(def, RndTransformable::kBillboardZ);
+        return;
+    default:
+        int num = 10;
+        if (def.mNumSegments > 3) {
+            num = def.mNumSegments;
+        }
+        BuildNGCone(def, num);
+        return;
+    }
+}
+
 void Spotlight::BuildShaft(Spotlight::BeamDef &def) {
     if (def.mIsCone)
         BuildCone(def);
@@ -585,12 +745,52 @@ void Spotlight::BuildShaft(Spotlight::BeamDef &def) {
         BuildBeam(def);
 }
 
+void Spotlight::Mats(std::list<class RndMat *> &mats, bool b2) {
+    if (mLensMaterial && b2) {
+        mats.push_back(mLensMaterial);
+        for (int i = 0; i < 2U; i++) {
+            MatShaderOptions opts;
+            opts.SetLast5(0xC);
+            opts.mTempMat = true;
+            opts.SetHasAOCalc(i);
+            RndMat *mat = Hmx::Object::New<RndMat>();
+            mat->Copy(mLensMaterial, kCopyDeep);
+            mat->SetShaderOpts(opts);
+            mats.push_back(mat);
+        }
+    }
+    if (mDiscMat) {
+        mats.push_back(mDiscMat);
+    }
+    if (mLightCanMesh && mLightCanMesh->Mat()) {
+        MatShaderOptions opts;
+        opts.SetLast5(0xC);
+        RndMat *lightMat = mLightCanMesh->Mat();
+        lightMat->SetShaderOpts(opts);
+        mats.push_back(lightMat);
+        if (b2) {
+            for (int i = 0; i < 2U; i++) {
+                MatShaderOptions opts;
+                opts.SetLast5(0xC);
+                opts.mTempMat = true;
+                opts.SetHasAOCalc(i);
+                RndMat *mat = Hmx::Object::New<RndMat>();
+                mat->Copy(mLightCanMesh->Mat(), kCopyDeep);
+                mat->SetShaderOpts(opts);
+                mats.push_back(mat);
+            }
+        }
+    }
+    if (mBeam.mMat) {
+        mats.push_back(mBeam.mMat);
+    }
+}
+
 Spotlight::BeamDef::BeamDef(Hmx::Object *obj)
     : mBeam(0), mIsCone(0), mLength(100.0f), mTopRadius(4.0f), mBottomRadius(30.0f),
       mTopSideBorder(0.1f), mBottomSideBorder(0.3f), mBottomBorder(0.5f), mOffset(0.0f),
       mTargetOffset(0.0f, 0.0f), mBrighten(1.0f), mExpand(1.0f), mShape(0),
-      mNumSections(0), mNumSegments(0), mXSection(obj, 0), mCutouts(obj, kObjListNoNull),
-      mMat(obj, 0) {}
+      mNumSections(0), mNumSegments(0), mXSection(obj), mCutouts(obj), mMat(obj) {}
 
 Spotlight::BeamDef::BeamDef(const Spotlight::BeamDef &def)
     : mBeam(0), mIsCone(def.mIsCone), mLength(def.mLength), mTopRadius(def.mTopRadius),
@@ -624,7 +824,7 @@ RndTransformable *Spotlight::ResolveTarget() {
 }
 
 void Spotlight::PropogateToPresets(int i) {
-    for (ObjDirItr<LightPreset> it(Dir(), false); it != 0; ++it) {
+    for (ObjDirItr<LightPreset> it(Dir(), false); it != nullptr; ++it) {
         it->SetSpotlight(this, i);
     }
 }
@@ -677,8 +877,7 @@ BEGIN_PROPSYNCS(Spotlight)
     SYNC_PROP_MODIFY(spot_scale, mSpotScale, UpdateBounds())
     SYNC_PROP_MODIFY(spot_height, mSpotHeight, UpdateBounds())
     SYNC_PROP_MODIFY_ALT(spot_material, mDiscMat, UpdateBounds())
-    SYNC_PROP_SET(color, Color().Opaque(), SetColor(_val.Int())) // there are color32
-                                                                 // inlines here - fix!
+    SYNC_PROP_SET(color, Color().Opaque(), SetColor(_val.Int()))
     SYNC_PROP_SET(intensity, Intensity(), SetIntensity(_val.Float()))
     SYNC_PROP(color_owner, mColorOwner)
     SYNC_PROP(damping_constant, mDampingConstant)

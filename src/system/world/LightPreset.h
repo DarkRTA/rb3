@@ -30,6 +30,7 @@ public:
         EnvironmentEntry();
         void Load(BinStream &);
         bool operator!=(const EnvironmentEntry &) const;
+        void Animate(const EnvironmentEntry &, float);
 
         /** "Ambient color" */
         int mColor; // 0x0 - ambient color
@@ -70,22 +71,23 @@ public:
     // size 0x20
     class SpotlightEntry {
     public:
+        enum {
+            kEnabled = 1
+            // there's a flag for 2 but idk what it is
+        };
+
         SpotlightEntry(Hmx::Object *);
         void Load(BinStream &);
         void CalculateDirection(Spotlight *, Hmx::Quat &) const;
         void Animate(Spotlight *, const SpotlightEntry &, float);
-        bool operator!=(const SpotlightEntry &) const;
+        bool operator!=(const SpotlightEntry &e) const {
+            return mIntensity != e.mIntensity || unk8 != e.unk8 || mTarget != e.mTarget
+                || (uint)mColor != (uint)e.mColor || unk10 != e.unk10;
+        }
 
         float mIntensity; // 0x0
         int mColor; // 0x4 - packed color
-        bool unk8p7 : 1;
-        bool unk8p6 : 1;
-        bool unk8p5 : 1;
-        bool unk8p4 : 1;
-        bool unk8p3 : 1;
-        bool unk8p2 : 1;
-        bool unk8p1 : 1;
-        bool mFlareEnabled : 1; // 0x8 & 1
+        unsigned char unk8; // 0x8
         RndTransformable *mTarget; // 0xc
         Hmx::Quat unk10;
 

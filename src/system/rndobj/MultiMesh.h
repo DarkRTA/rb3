@@ -185,6 +185,7 @@ public:
      * @returns The aforementioned Instance.
      */
     Instance &Instances(int idx) { return *NextItr(mInstances.begin(), idx); }
+    const std::list<Instance> &Instances() const { return mInstances; }
 
     // getters/setters
     void SetMesh(RndMesh *);

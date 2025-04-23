@@ -511,12 +511,12 @@ inline bool ObjPtr<T1, T2>::Load(BinStream &bs, bool warn, class ObjectDir *dir)
         dir = mOwner->Dir();
     if (mOwner && dir) {
         *this = dynamic_cast<T1 *>(dir->FindObject(buf, false));
-        if (mPtr == 0 && buf[0] != '\0' && warn) {
+        if (mPtr == nullptr && buf[0] != '\0' && warn) {
             MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
         }
         return false;
     } else {
-        *this = 0;
+        *this = nullptr;
         if (buf[0] != '\0' && warn)
             MILO_WARN("No dir to find %s", buf);
     }

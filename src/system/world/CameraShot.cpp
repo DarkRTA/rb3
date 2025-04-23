@@ -40,9 +40,8 @@ INIT_REVS(CamShot);
 
 CamShot::CamShot()
     : mKeyframes(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.0f), mFilter(0.9f),
-      mClampHeight(-1.0f), mCategory(), mAnims(this, kObjListNoNull), mPath(this),
-      mDrawOverrides(this, kObjListNoNull), mPathFrame(-1.0f),
-      mPlatformOnly(kPlatformNone), mPostProcOverrides(this, kObjListNoNull),
+      mClampHeight(-1.0f), mCategory(), mAnims(this), mPath(this), mDrawOverrides(this),
+      mPathFrame(-1.0f), mPlatformOnly(kPlatformNone), mPostProcOverrides(this),
       mCrowds(this), mGlowSpot(this), mLastShakeOffset(0, 0, 0),
       mLastShakeAngOffset(0, 0, 0), mLastDesiredShakeOffset(0, 0, 0),
       mLastDesiredShakeAngOffset(0, 0, 0), mShakeVelocity(0, 0, 0),
@@ -58,14 +57,14 @@ void CamShot::Init() {
 }
 
 void CamShot::ListAnimChildren(std::list<RndAnimatable *> &animlist) const {
-    for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end();
-         ++it) {
+    FOREACH (it, mAnims) {
         animlist.push_back(*it);
     }
 }
 
 Hmx::Object *CamShot::AnimTarget() { return sAnimTarget; }
 
+// matches in retail
 void CamShot::StartAnim() {
     START_AUTO_TIMER("cam_switch");
     HandleType(start_shot_msg);
@@ -82,8 +81,7 @@ void CamShot::StartAnim() {
     mLastShakeAngOffset.Zero();
     mLastDesiredShakeAngOffset.Zero();
     mShakeAngVelocity.Zero();
-    for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end();
-         ++it) {
+    FOREACH (it, mAnims) {
         (*it)->StartAnim();
     }
     for (int i = 0; i != mCrowds.size(); i++) {
@@ -94,8 +92,7 @@ void CamShot::StartAnim() {
 void CamShot::EndAnim() {
     UnHide();
     HandleType(stop_shot_msg);
-    for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end();
-         ++it) {
+    FOREACH (it, mAnims) {
         (*it)->EndAnim();
     }
 }
@@ -106,25 +103,21 @@ void CamShot::DoHide() {
         mEndShowList.clear();
         mEndShowList.reserve(mHideList.size() + mShowList.size() + 3);
         mEndHideList.reserve(unk64.size());
-        for (std::vector<RndDrawable *>::iterator it = mHideList.begin();
-             it != mHideList.end();
-             ++it) {
+        FOREACH (it, mHideList) {
             RndDrawable *curDraw = *it;
             if (curDraw->Showing()) {
                 curDraw->SetShowing(false);
                 mEndShowList.push_back(curDraw);
             }
         }
-        for (std::vector<RndDrawable *>::iterator it = mShowList.begin();
-             it != mShowList.end();
-             ++it) {
+        FOREACH (it, mShowList) {
             RndDrawable *curDraw = *it;
             if (curDraw->Showing()) {
                 curDraw->SetShowing(false);
                 mEndShowList.push_back(curDraw);
             }
         }
-        for (std::vector<Symbol>::iterator it = unk74.begin(); it != unk74.end(); ++it) {
+        FOREACH (it, unk74) {
             BandCharacter *targetChar = TheBandWardrobe->FindTarget(*it);
             if (!targetChar && unk74.size() == 1) {
                 if (*it == player_bass0) {
@@ -153,8 +146,7 @@ void CamShot::DoHide() {
                 }
             }
         }
-        for (std::vector<RndDrawable *>::iterator it = unk64.begin(); it != unk64.end();
-             ++it) {
+        FOREACH (it, unk64) {
             RndDrawable *curDraw = *it;
             if (!curDraw->Showing()) {
                 curDraw->SetShowing(true);
@@ -167,14 +159,10 @@ void CamShot::DoHide() {
 
 void CamShot::UnHide() {
     if (mHidden) {
-        for (std::vector<RndDrawable *>::iterator it = mEndHideList.begin();
-             it != mEndHideList.end();
-             ++it) {
+        FOREACH (it, mEndHideList) {
             (*it)->SetShowing(false);
         }
-        for (std::vector<RndDrawable *>::iterator it = mEndShowList.begin();
-             it != mEndShowList.end();
-             ++it) {
+        FOREACH (it, mEndShowList) {
             (*it)->SetShowing(true);
         }
         mEndHideList.clear();
@@ -206,9 +194,7 @@ void CamShot::SetFrame(float frame, float blend) {
         RndAnimatable::SetFrame(frame, blend);
         RndCam *cam = GetCam();
         if (cam) {
-            for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin();
-                 it != mAnims.end();
-                 ++it) {
+            FOREACH (it, mAnims) {
                 (*it)->SetFrame(frame, 1.0f);
             }
             if (!mKeyframes.empty()) {
@@ -413,6 +399,7 @@ void CamShot::GetKey(
     }
 }
 
+// matches in retail
 void CamShot::CacheFrames() {
     float frames = 0.0f;
     for (int i = 0; i != mKeyframes.size(); i++) {
@@ -423,6 +410,7 @@ void CamShot::CacheFrames() {
     mDuration = frames;
 }
 
+// matches in retail with the right inline settings
 bool CamShot::SetPos(CamShotFrame &frame, RndCam *cam) {
     cam = cam ? cam : GetCam();
     if (!cam)
@@ -679,8 +667,8 @@ BEGIN_LOADS(CamShot)
         if (gRev < 7)
             mFilter = 0.9f;
         bs >> mClampHeight;
-        ObjPtrList<RndTransformable> pList(this, kObjListNoNull);
-        ObjPtr<RndTransformable> ptr(this, 0);
+        ObjPtrList<RndTransformable> pList(this);
+        ObjPtr<RndTransformable> ptr(this);
         int listsize;
         bs >> listsize;
         for (int i = 0; i < listsize; i++) {
@@ -822,14 +810,14 @@ next:
         bs >> mDrawOverrides;
     if (gRev > 0x1F)
         bs >> mPostProcOverrides;
-    if (gRev > 0x23 && (gRev - 47 > 1U)) {
+    if (gRev > 0x23 && !(gRev >= 47 && gRev <= 48)) {
         bs >> bitfield_bool;
         mPS3PerPixel = bitfield_bool;
     }
     if (gRev > 0x24)
         bs >> mFlags;
     Symbol s258;
-    if (gRev == 40 || gRev == 41 || gRev == 42)
+    if (gRev >= 40 && gRev <= 42)
         bs >> s258;
     if (gRev < 0x2A) {
         if (csc.mCrowd)
@@ -858,21 +846,20 @@ float CamShot::GetDurationSeconds() const {
     }
 }
 
-void CamShot::Disable(bool b, int i) {
-    if (b)
-        mDisabled |= i;
+void CamShot::Disable(bool disable, int mask) {
+    if (disable)
+        mDisabled |= mask;
     else
-        mDisabled &= ~i;
+        mDisabled &= ~mask;
 }
 
 CamShotFrame::CamShotFrame(Hmx::Object *o)
     : mDuration(0), mBlend(0), mBlendEase(0), mFrame(-1.0f), mShakeNoiseAmp(0),
-      mShakeNoiseFreq(0), mFocusBlurMultiplier(0), mTargets(o, kObjListNoNull),
+      mShakeNoiseFreq(0), mFocusBlurMultiplier(0), mTargets(o),
       mCamShot(dynamic_cast<CamShot *>(o)), mParent(o), mFocusTarget(o), mZoomFOV(0),
       mMaxBlur(0xFF), mMinBlur(0), mBlendEaseMode(0), mUseParentNotation(0),
       mParentFirstFrame(0) {
-    mMaxAngularOffset[1] = 0;
-    mMaxAngularOffset[0] = 0;
+    mMaxAngularOffset[0] = mMaxAngularOffset[1] = 0;
     SetBlurDepth(0.34999999f);
     SetFieldOfView(1.2217305f);
     mWorldOffset.Reset();
@@ -1006,9 +993,7 @@ bool CamShotFrame::OnSyncTargets(
 bool CamShotFrame::SameTargets(const CamShotFrame &frame) const {
     if (mTargets.size() != frame.mTargets.size())
         return false;
-    for (ObjPtrList<RndTransformable>::iterator it = mTargets.begin();
-         it != mTargets.end();
-         ++it) {
+    FOREACH (it, mTargets) {
         ObjPtrList<RndTransformable>::iterator otherIt = frame.mTargets.begin();
         for (; otherIt != frame.mTargets.end(); ++otherIt) {
             if (*it == *otherIt)
@@ -1166,9 +1151,7 @@ void CamShotFrame::UpdateTarget() const {
 void CamShotFrame::GetCurrentTargetPosition(Vector3 &v) const {
     v.Zero();
     int count = 0;
-    for (ObjPtrList<RndTransformable>::iterator it = mTargets.begin();
-         it != mTargets.end();
-         ++it) {
+    FOREACH (it, mTargets) {
         RndTransformable *cur = *it;
         if (cur) {
             count++;
@@ -1180,9 +1163,7 @@ void CamShotFrame::GetCurrentTargetPosition(Vector3 &v) const {
 }
 
 bool CamShotFrame::HasTargets() const {
-    for (ObjPtrList<RndTransformable>::iterator it = mTargets.begin();
-         it != mTargets.end();
-         ++it) {
+    FOREACH (it, mTargets) {
         if (*it)
             return true;
     }
@@ -1198,7 +1179,7 @@ DataNode CamShot::OnGetOccluded(DataArray *da) { return 0; }
 DataNode CamShot::OnSetAllCrowdChars3D(DataArray *da) { return 0; }
 
 CamShotCrowd::CamShotCrowd(Hmx::Object *o)
-    : mCrowd(o, 0), mCrowdRotate(kCrowdRotateNone), unk18(dynamic_cast<CamShot *>(o)) {}
+    : mCrowd(o), mCrowdRotate(kCrowdRotateNone), unk18(dynamic_cast<CamShot *>(o)) {}
 CamShotCrowd::CamShotCrowd(Hmx::Object *o, const CamShotCrowd &crowd)
     : mCrowd(crowd.mCrowd), mCrowdRotate(crowd.mCrowdRotate), unk10(crowd.unk10),
       unk18(dynamic_cast<CamShot *>(o)) {}
@@ -1257,10 +1238,7 @@ void CamShotCrowd::GetSelectedCrowd(
     std::list<std::pair<RndMultiMesh *, std::list<RndMultiMesh::Instance>::iterator> >
         &crowdChars
 ) {
-    for (std::list<std::pair<class RndMultiMeshProxy *, int> >::iterator it =
-             RndMultiMesh::sProxyPool.begin();
-         it != RndMultiMesh::sProxyPool.end();
-         ++it) {
+    FOREACH (it, RndMultiMesh::sProxyPool) {
         RndMultiMeshProxy *proxy = it->first;
         MILO_ASSERT(proxy, 0xB8F);
         RndMultiMesh *multiMesh = proxy->GetMultiMesh();
@@ -1271,7 +1249,58 @@ void CamShotCrowd::GetSelectedCrowd(
     }
 }
 
-DECOMP_FORCEACTIVE(CameraShot, "ki != mmesh->Instances().size()")
+void CamShotCrowd::AddCrowdChars(
+    const std::list<
+        std::pair<RndMultiMesh *, std::list<RndMultiMesh::Instance>::iterator> > *listPtr
+) {
+    if (!Crowd())
+        MILO_WARN("No crowd selected");
+    else if (!Crowd()->IsForced3DCrowd()) {
+        float fullness = Crowd()->FlatFullness();
+        Crowd()->Set3DCharList(std::vector<std::pair<int, int> >(), unk18);
+        Crowd()->SetFullness(1, Crowd()->CharFullness());
+        if (!listPtr) {
+            ObjList<WorldCrowd::CharData>::iterator it = Crowd()->mCharacters.begin();
+            int i64 = 0;
+            for (; it != Crowd()->mCharacters.end(); ++it, ++i64) {
+                int i68 = 0;
+                std::list<RndMultiMesh::Instance> &insts = it->mMMesh->mInstances;
+                for (std::list<RndMultiMesh::Instance>::iterator instIt = insts.begin();
+                     instIt != insts.end();
+                     ++instIt, ++i68) {
+                    unk10.push_back(std::make_pair(i64, i68));
+                }
+            }
+            Crowd()->Set3DCharAll();
+        } else {
+            FOREACH_PTR (it, listPtr) {
+                RndMultiMesh *mmesh = it->first;
+                int i5 = 0;
+                for (ObjList<WorldCrowd::CharData>::iterator it2 =
+                         Crowd()->mCharacters.begin();
+                     it2 != Crowd()->mCharacters.end() && it2->mMMesh != mmesh;
+                     it2++) {
+                    i5++;
+                }
+                if (i5 != Crowd()->mCharacters.size()) {
+                    int ki = 0;
+                    for (std::list<RndMultiMesh::Instance>::iterator mmit =
+                             mmesh->mInstances.begin();
+                         mmit != mmesh->mInstances.end() && mmit != it->second;
+                         ++mmit, ++ki)
+                        ;
+                    MILO_ASSERT(ki != mmesh->Instances().size(), 0xBE1);
+                    std::pair<int, int> iPair = std::make_pair(i5, ki);
+                    if (std::find(unk10.begin(), unk10.end(), iPair) == unk10.end()) {
+                        unk10.push_back(iPair);
+                    }
+                }
+            }
+            Crowd()->Set3DCharList(unk10, unk18);
+        }
+        Crowd()->SetFullness(fullness, Crowd()->CharFullness());
+    }
+}
 
 BEGIN_HANDLERS(CamShot)
     HANDLE(has_targets, OnHasTargets)
@@ -1325,7 +1354,8 @@ DataNode CamShot::OnRadio(DataArray *da) {
     int i2 = da->Int(2);
     int i3 = da->Int(3);
     if (mFlags & i2) {
-        mFlags = mFlags & ~i3 | i2;
+        mFlags &= ~i3;
+        mFlags |= i2;
     }
     return 0;
 }

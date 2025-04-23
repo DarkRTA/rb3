@@ -11,7 +11,7 @@ class CameraManager {
 public:
     class Category {
     public:
-        Category() : unk4(0) {}
+        Category() {}
         bool operator<(const Category &c) const { return unk0 < c.unk0; }
 
         Symbol unk0;
