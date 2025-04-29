@@ -11,11 +11,10 @@ class NetStream : public BinStream {
 public:
     NetStream();
     virtual ~NetStream();
-    virtual void Flush() {}
     virtual int Tell() { return 0; }
+    virtual void Flush() {}
     virtual EofType Eof();
     virtual bool Fail() { return mFail; }
-    virtual const char *Name() const;
     virtual void ReadImpl(void *, int);
     virtual void WriteImpl(const void *, int);
     virtual void SeekImpl(int, SeekType);

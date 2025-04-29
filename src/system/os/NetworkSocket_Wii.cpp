@@ -19,7 +19,7 @@ NetworkSocket *NetworkSocket::Create(bool streaming) {
     return new WiiNetworkSocket(streaming);
 }
 
-bool NetworkSocket::ResolveHostName(String str) {
+int NetworkSocket::ResolveHostName(String str) {
     if (WiiNetworkSocket::Init() == false) {
         return 0;
     } else {

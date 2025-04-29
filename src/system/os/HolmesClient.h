@@ -14,6 +14,8 @@
 #include "types.h"
 #include "obj/Msg.h"
 
+#define DEFAULT_PORT 4544
+
 namespace Holmes {
     enum Protocol {
         kVersion, // 0x0

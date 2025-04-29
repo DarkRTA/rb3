@@ -1173,7 +1173,7 @@
             "system/os/MapFile_Wii.cpp": "NonMatching",
             "system/os/Memcard_Wii.cpp": "MISSING",
             "system/os/Memcard.cpp": "Matching",
-            "system/os/NetStream.cpp": "NonMatching",
+            "system/os/NetStream.cpp": "Matching",
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
             "system/os/PlatformMgr.cpp": "Matching",

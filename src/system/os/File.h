@@ -1,4 +1,5 @@
 #pragma once
+#include "utl/BinStream.h"
 #include "utl/Str.h"
 #include <revolution/DVD.h>
 
@@ -99,6 +100,8 @@ void FileEnumerate(
     const char *, void (*)(const char *, const char *), bool, const char *, bool
 );
 void FileRecursePattern(const char *, void (*)(char const *, char const *), bool);
+
+void operator>>(BinStream *, FileStat &);
 }
 
 File *NewFile(const char *, int);
