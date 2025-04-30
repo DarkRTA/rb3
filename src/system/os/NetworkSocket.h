@@ -34,7 +34,7 @@ public:
 
     static NetworkSocket *Create(bool);
     static String GetHostName();
-    static bool ResolveHostName(String);
+    static int ResolveHostName(String);
     static int IPStringToInt(const String &);
 };
 

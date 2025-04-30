@@ -5,6 +5,7 @@
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/ContentMgr.h"
+#include "os/ContentMgr_Wii.h"
 #include "os/Debug.h"
 #include "rndobj/Mesh.h"
 #include "ui/UIPanel.h"
@@ -98,7 +99,9 @@ void TexLoadPanel::Poll() {
         case 0: {
             const char *name = TheSongMgr.ContentName(dlc->unk20, true);
             dlc->mState = 1;
-            // WiiContentMgr stuff
+            TheWiiContentMgr.UnmountContents(name);
+            if (TheContentMgr->MountContent(name))
+                dlc->StartLoading();
             break;
         }
         case 2:

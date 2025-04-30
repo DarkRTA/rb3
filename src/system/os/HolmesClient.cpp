@@ -1,4 +1,5 @@
 #include "HolmesClient.h"
+#include "milo_types.h"
 #include "obj/DataFunc.h"
 #include "os/AsyncFileHolmes.h"
 #include "os/CritSec.h"
@@ -36,6 +37,8 @@ namespace {
     char gShareName[NETBIOS_NAME_MAX] = { 0 };
 
     String gServerName;
+
+    bool gStackTraced = false;
 
     int gActivePrintCount;
     HolmesInput gInput(NULL);
@@ -187,6 +190,33 @@ void HolmesSetFileShare(const char *machine_name, const char *share_name) {
     strncpy(gShareName, share_name, NETBIOS_NAME_MAX);
 }
 
+char *HolmesFileShare() { return gShareName; }
+
+NetAddress HolmesResolveIP() {
+    String name(gMachineName);
+    NetAddress addr(0, 0);
+    int off = name.find(':');
+    if (off != String::npos) {
+        String port_str = name.substr(off + 1);
+        name = name.substr(0, off);
+        addr.mPort = (ushort)strtol(port_str.c_str(), nullptr, 0);
+    } else
+        addr.mPort = DEFAULT_PORT;
+    uint ip = NetworkSocket::IPStringToInt(name);
+    if (ip + 0x10000 != 0xffff) {
+        addr.mIP = ip;
+    }
+    if (addr.mIP == 0) {
+        name += ".harmonixmusic.com";
+        int x;
+        addr.mIP = x = NetworkSocket::ResolveHostName(name);
+        if (x == 0 && gHostLogging == false) {
+            MILO_FAIL("Couldn\'t resolve holmes_host: %s", String(name));
+        }
+    }
+    return addr;
+}
+
 static DataNode DumpHolmesLog(DataArray *) {
     TextFileStream *tfs = new TextFileStream("holmes.csv", true);
     if (!tfs->mFile.Fail()) {
@@ -236,7 +266,7 @@ u32 HolmesClientSysExec(const char *filename) {
 
     MILO_ASSERT(gHolmesStream, 820);
 
-    u8 b = true;
+    u8 b = Holmes::kSysExec;
     BinStream *holmes_strm = gStreamBuffer;
     *holmes_strm << b;
     *holmes_strm << filename;
@@ -253,9 +283,50 @@ u32 HolmesClientSysExec(const char *filename) {
     return return_code;
 }
 
+FileStat *HolmesClientGetStat(const char *cc, FileStat &fs) {
+    CritSecTracker cst(&gCrit);
+    BeginCmd(Holmes::kGetStat, true);
+    MILO_ASSERT(gHolmesStream, 840);
+    u8 type = Holmes::kGetStat;
+    *gStreamBuffer << type;
+    *gStreamBuffer << cc;
+    HolmesFlushStreamBuffer();
+    WaitForResponse(Holmes::kGetStat);
+    u8 b;
+    *gHolmesStream >> b;
+    bool b2 = b;
+    if (b2)
+        gHolmesStream >> fs;
+    FinishResponse();
+    EndCmd(Holmes::kGetStat);
+    if (b2)
+        return nullptr;
+    return (FileStat *)-1;
+}
+
 bool HolmesClientOpen(const char *, int, uint &, int &) {
     if (gCrit.mEntryCount != 0)
         gCrit.Enter();
+}
+
+void HolmesClientTruncate(int a, int b) {
+    CritSecTracker cst(&gCrit);
+    MILO_ASSERT(gHolmesStream, 1011);
+    if (gHolmesStream->Fail() && gHostLogging)
+        return;
+    BeginCmd(Holmes::kTruncateFile, 1);
+    u8 type = (u8)Holmes::kTruncateFile;
+    int one = a, two = b;
+    BinStream &bs = *gStreamBuffer;
+    bs << type;
+    bs << one;
+    bs << two;
+    HolmesFlushStreamBuffer();
+    WaitForResponse(Holmes::kTruncateFile);
+    int x;
+    *gHolmesStream >> x;
+    FinishResponse();
+    EndCmd(Holmes::kTruncateFile);
 }
 
 bool PendingRead(File *f) {
@@ -293,24 +364,42 @@ void HolmesClientClose(File *fi, int fd) {
 }
 
 void HolmesClientPrint(const char *cc) {
-    CriticalSection *cs = &gCrit;
-    if (cs)
-        cs->Enter();
-    if (!gHolmesStream || gHolmesStream->Fail()) {
-        if (cs)
-            cs->Exit();
-    } else {
-        BeginCmd(Holmes::kPrint, true);
-        *gStreamBuffer << u8(Holmes::kPrint);
-        *gStreamBuffer << cc;
-        HolmesFlushStreamBuffer();
-        gActivePrintCount++;
-        if (gActivePrintCount > 2) {
-            WaitForResponse(Holmes::kPrint);
-            CheckPrints();
-        }
-        EndCmd(Holmes::kPrint);
-        if (cs)
-            cs->Exit();
+    CritSecTracker cst(&gCrit);
+    if (gHolmesStream == nullptr || gHolmesStream->Fail())
+        return;
+
+    BeginCmd(Holmes::kPrint, true);
+    *gStreamBuffer << u8(Holmes::kPrint);
+    *gStreamBuffer << cc;
+    HolmesFlushStreamBuffer();
+    gActivePrintCount++;
+    if (gActivePrintCount > 2) {
+        WaitForResponse(Holmes::kPrint);
+        CheckPrints();
     }
+    EndCmd(Holmes::kPrint);
+}
+
+void HolmesClientStackTrace(const char *cc, unsigned int *ui, int i, String &s) {
+    s = "";
+    CritSecTracker cst(&gCrit);
+    if (gHolmesStream == nullptr || gHolmesStream->Fail())
+        return;
+    BeginCmd(Holmes::kStackTrace, true);
+    u8 type = Holmes::kStackTrace;
+    *gStreamBuffer << type;
+    *gStreamBuffer << cc;
+    *gStreamBuffer << i;
+    int x = 0;
+    while (x < i) {
+        *gStreamBuffer << ui[x];
+        x++;
+    }
+
+    HolmesFlushStreamBuffer();
+    gStackTraced = true;
+    WaitForResponse(Holmes::kStackTrace);
+    *gHolmesStream >> s;
+    FinishResponse();
+    EndCmd(Holmes::kStackTrace);
 }

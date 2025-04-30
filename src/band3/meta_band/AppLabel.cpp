@@ -4,8 +4,10 @@
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/Utl.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
+#include "os/System.h"
 #include "ui/UIListSlot.h"
 #include "utl/Locale.h"
 #include "utl/Symbol.h"
@@ -126,12 +128,24 @@ void AppLabel::SetSongAndArtistNameFromSymbol(Symbol shortname, int i) {
     }
 }
 
+void AppLabel::SetSongName(const SongSortNode *ssn) {
+    MILO_ASSERT(ssn, 265);
+    SetDisplayText(ssn->GetTitle(), 1);
+}
+
 void AppLabel::SetSongYear(int i1, int i2) {
     if (i1 == i2) {
         SetInt(i1, false);
     } else
         SetDisplayText(MakeString("%i (%i)", i1, i2), true);
 }
+
+void AppLabel::SetAlbumName(const SongSortNode *ssn) {
+    MILO_ASSERT(ssn, 279);
+    SetDisplayText(ssn->GetAlbum(), 1);
+}
+
+void AppLabel::SetArtistName(const SortNode *) {}
 
 void AppLabel::SetArtistName(Symbol shortname) {
     if (!shortname.Null()) {
@@ -152,3 +166,31 @@ void AppLabel::SetArtistName(const char *name, bool cover) {
         SetTokenFmt(cover_artist_fmt, ptr, name);
     }
 }
+
+void AppLabel::SetLinkingCode(const char *cc) {
+    String s(cc);
+    if (s.length() != 10)
+        MILO_WARN("linking code is not 10 characters!\n");
+    if (s.find(' ') != String::npos)
+        MILO_WARN("linking code has spaces!\n");
+    SetDisplayText(cc, 1);
+}
+
+void AppLabel::SetRatingIcon(int i) {
+    AUTO(ratingIcons, SystemConfig(song_select, rating_icons, SystemLanguage()));
+    MILO_ASSERT(ratingIcons, 943);
+    SetIcon(ratingIcons->Str(i)[0]);
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(AppLabel)
+    HANDLE(set_user_name, OnSetUserName)
+    HANDLE_ACTION(set_intro_name, SetIntroName(_msg->Obj<BandUser>(2)))
+
+    HANDLE_ACTION(set_linking_code, SetLinkingCode(_msg->Str(2)))
+    HANDLE_ACTION(set_recommendation, SetRecommendation(_msg->Obj<StoreInfoPanel>(2)))
+    HANDLE_SUPERCLASS(BandLabel)
+    HANDLE_CHECK(1040)
+END_HANDLERS
+#pragma pop
