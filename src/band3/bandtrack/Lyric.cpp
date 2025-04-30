@@ -32,7 +32,7 @@ float LyricPlate::CurrentStartX(float start) const {
 }
 
 float LyricPlate::CurrentEndX(float end) const {
-    return end + mWidthX + mText->mLocalXfm.v.x;
+    return end + (mWidthX + mText->mLocalXfm.v.x);
 }
 
 void LyricPlate::Poll(float f) {
