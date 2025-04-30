@@ -1673,7 +1673,7 @@
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/wstring.c": "MISSING",
 
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/ansi_fp.c": "MISSING",
-            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/math_sun.c": "MISSING",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/math_sun.c": "Matching",
 
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/abort_exit_ppc_eabi.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/math_ppc.c": "Matching",

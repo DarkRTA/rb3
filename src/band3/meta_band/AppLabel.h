@@ -3,12 +3,14 @@
 #include "bandobj/BandLabel.h"
 #include "bandobj/BandTrack.h"
 #include "game/BandUser.h"
+#include "game/Defines.h"
 #include "game/PracticeSectionProvider.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/CharData.h"
 #include "meta_band/Leaderboard.h"
 #include "meta_band/MainHubPanel.h"
+#include "meta_band/MetaPerformer.h"
 #include "meta_band/SongRecord.h"
 #include "meta_band/StoreInfoPanel.h"
 #include "meta_band/TokenRedemptionPanel.h"
@@ -26,6 +28,7 @@ public:
     virtual void SetCreditsText(DataArray *, UIListSlot *);
 
     DataNode OnSetUserName(const DataArray *);
+    DataNode OnSetBandName(const DataArray *);
 
     void SetFromCharacter(const CharData *);
     void SetSongName(Symbol, bool);
@@ -54,12 +57,21 @@ public:
     void SetSectionName(const PracticeSection &);
     void SetFromSongSelectNode(const Node *);
     void SetSongCount(int);
+    void SetStarRating(int);
+    void SetScoreOrStars(const MetaPerformer *, int);
     void SetSongAndArtistName(const SongSortNode *);
     void SetSongName(const SongSortNode *);
     void SetSetlistName(const SavedSetlist *);
-    void SetBattleInstrument(const SetlistRecord *);
+    void SetSetlistDescription(const SavedSetlist *);
+    void SetSetlistOwner(const SetlistRecord *);
     void SetTokenRedemptionString(const TokenRedemptionPanel *, int);
+    void SetBandName(const LocalBandUser *);
+    void SetBandName(const BandProfile *);
     void SetLinkingCode(const char *);
     void SetRecommendation(const StoreInfoPanel *);
     void SetRatingIcon(int);
+    void SetBattleTimeLeft(int);
+    void SetBattleInstrument(ScoreType);
+    void SetBattleInstrument(const SetlistRecord *);
+    void SetPrimaryBandName();
 };
