@@ -5,22 +5,22 @@
 extern "C" {
 #endif
 
-//Forward declarations
+// Forward declarations
 typedef struct DVDFileInfo;
 
-typedef struct DVDDir{
+typedef struct DVDDir {
     u32 entryNum;
     u32 location;
     u32 next;
 } DVDDir;
 
-typedef struct DVDDirEntry{
+typedef struct DVDDirEntry {
     u32 entryNum;
     BOOL isDir;
-    char* name;
+    char *name;
 } DVDDirEntry;
 
-typedef void (*DVDCallback)(s32 result, struct DVDFileInfo* fileInfo);
+typedef void (*DVDCallback)(s32 result, struct DVDFileInfo *fileInfo);
 
 typedef struct DVDFileInfo {
     DVDCommandBlock cb;
@@ -31,14 +31,23 @@ typedef struct DVDFileInfo {
 
 extern BOOL __DVDLongFileNameFlag;
 
-s32 DVDConvertPathToEntrynum(const char* pathPtr);
-BOOL DVDFastOpen(s32 entrynum, DVDFileInfo* fileInfo);
-BOOL DVDClose(DVDFileInfo* fileInfo);
-BOOL DVDGetCurrentDir(char* path, u32 maxlen);
-BOOL DVDReadAsyncPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, DVDCallback callback, s32 prio);
-s32 DVDReadPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, s32 prio);
-u32 DVDGetTransferredSize(DVDCommandBlock* block);
-
+s32 DVDConvertPathToEntrynum(const char *pathPtr);
+BOOL DVDFastOpen(s32 entrynum, DVDFileInfo *fileInfo);
+BOOL DVDClose(DVDFileInfo *fileInfo);
+BOOL DVDGetCurrentDir(char *path, u32 maxlen);
+BOOL DVDReadAsyncPrio(
+    DVDFileInfo *fileInfo,
+    void *addr,
+    s32 length,
+    s32 offset,
+    DVDCallback callback,
+    s32 prio
+);
+s32 DVDReadPrio(DVDFileInfo *fileInfo, void *addr, s32 length, s32 offset, s32 prio);
+u32 DVDGetTransferredSize(DVDCommandBlock *block);
+BOOL DVDFastOpenDir();
+BOOL DVDReadDir(DVDDir *, DVDDirEntry *);
+BOOL DVDCloseDir(DVDDir *);
 
 #ifdef __cplusplus
 }

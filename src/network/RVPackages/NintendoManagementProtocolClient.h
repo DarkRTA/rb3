@@ -7,7 +7,7 @@ namespace Quazal {
     class NintendoManagementProtocolClient : public ClientProtocol {
     public:
         NintendoManagementProtocolClient() : ClientProtocol(1) {}
-        virtual ~NintendoManagementProtocolClient() {}
+        virtual ~NintendoManagementProtocolClient();
         virtual void ExtractCallSpecificResults(Message *, ProtocolCallContext *);
 
         bool

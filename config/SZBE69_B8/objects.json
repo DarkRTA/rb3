@@ -79,7 +79,7 @@
             "band3/game/ScoreTracker.cpp": "Matching",
             "band3/game/ScoreUtl.cpp": "Matching",
             "band3/game/Scoring.cpp": "NonMatching",
-            "band3/game/Shuttle.cpp": "NonMatching",
+            "band3/game/Shuttle.cpp": "Matching",
             "band3/game/Singer.cpp": "NonMatching",
             "band3/game/SongDB.cpp": "NonMatching",
             "band3/game/StatCollector.cpp": "Matching",
@@ -366,7 +366,7 @@
             "network/Core/Operation.cpp": "NonMatching",
             "network/Core/OperationManager.cpp": "MISSING",
             "network/Core/PeriodicJob.cpp": "Matching",
-            "network/Core/PollForCompletionJob.cpp": "NonMatching",
+            "network/Core/PollForCompletionJob.cpp": "Matching",
             "network/Core/PseudoGlobalVariableList.cpp": "Matching",
             "network/Core/PseudoGlobalVariableRoot.cpp": "Matching",
             "network/Core/PseudoSingleton.cpp": "Matching",
@@ -643,7 +643,7 @@
 
             "network/RVPackages/JobNintendoLogin.cpp": "MISSING",
             "network/RVPackages/JobNintendoTerminate.cpp": "MISSING",
-            "network/RVPackages/JobNintendoUpdateNameByGuest.cpp": "MISSING",
+            "network/RVPackages/JobNintendoUpdateNameByGuest.cpp": "Matching",
             "network/RVPackages/NintendoClient.cpp": "MISSING",
             "network/RVPackages/NintendoManagementProtocolDDL.cpp": "MISSING",
             "network/RVPackages/NintendoTokenDDL.cpp": "MISSING",
@@ -1885,7 +1885,7 @@
             "sdk/RVL_SDK/src/bte/uusb_ppc.c": "MISSING",
             "sdk/RVL_SDK/src/bte/wbt_ext.c": "MISSING",
 
-            "sdk/RVL_SDK/src/cnt/cnt.c": "MISSING",
+            "sdk/RVL_SDK/src/cnt/cnt.c": "NonMatching",
             "sdk/RVL_SDK/src/cnt/cntFatal.c": "MISSING",
 
             "sdk/RVL_SDK/src/dsp/dsp_debug.c": "Matching",

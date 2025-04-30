@@ -1,6 +1,8 @@
 #pragma once
 #include "os/ContentMgr.h"
 #include "os/ThreadCall.h"
+#include "revolution/cnt/cnt.h"
+#include "revolution/mem/mem_allocator.h"
 
 bool CntSdRsoInit(struct RSOObjectHeader *);
 void CntSdRsoTerminate();
@@ -26,17 +28,18 @@ public:
 
     void
     Enumerate(const char *, void (*)(const char *, const char *), bool, const char *);
+    void *GetHandle(long *);
 
     int unk8; // 0x8 - mState?
     Symbol mName; // 0xc
-    unsigned long long mTitleId; // 0x10
+    u64 mTitleId; // 0x10
     unsigned int mContentId; // 0x18
-    int unk1c; // 0x1c
+    CNTHandle *unk1c; // 0x1c
     int unk20; // 0x20
     int unk24; // 0x24
     int unk28; // 0x28
     int unk2c; // 0x2c - location
-    bool unk30; // 0x30
+    u8 unk30; // 0x30
     bool unk31; // 0x31
     bool unk32; // 0x32
 };
@@ -68,3 +71,4 @@ public:
 
 extern WiiContentMgr TheWiiContentMgr;
 extern const char *gCurContentName;
+extern MEMAllocator gCNTAllocator;

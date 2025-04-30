@@ -11,7 +11,9 @@ void Shuttle::Poll() {
     if (mActive) {
         JoypadData *data = JoypadGetPadData(mPadNum);
         if (data) {
-            mMs = Clamp<float>(0, mEndMs, mMs + powf(data->GetLX(), 5) * 1000.0f);
+#pragma fp_contract off
+            mMs =
+                Clamp<float>(0, mEndMs, mMs + (f32)pow(data->mSticks[0][0], 5) * 1000.0f);
         }
     }
 }
