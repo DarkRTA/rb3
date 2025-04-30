@@ -10,7 +10,9 @@
 #include "meta_band/Leaderboard.h"
 #include "meta_band/MainHubPanel.h"
 #include "meta_band/SongRecord.h"
+#include "meta_band/StoreInfoPanel.h"
 #include "meta_band/TokenRedemptionPanel.h"
+#include "obj/Data.h"
 
 class Node;
 
@@ -22,6 +24,8 @@ public:
     virtual DataNode Handle(DataArray *, bool);
     virtual ~AppLabel();
     virtual void SetCreditsText(DataArray *, UIListSlot *);
+
+    DataNode OnSetUserName(const DataArray *);
 
     void SetFromCharacter(const CharData *);
     void SetSongName(Symbol, bool);
@@ -39,6 +43,8 @@ public:
     void SetArtistName(Symbol);
     void SetArtistName(const BandSongMetadata *);
     void SetArtistName(const char *, bool);
+    void SetArtistName(const SortNode *);
+    void SetAlbumName(const SongSortNode *);
     void SetMotd(MainHubPanel *);
     void SetDLCMotd(MainHubPanel *);
     void SetUnlinkedMotd(const MainHubMessageProvider *);
@@ -53,4 +59,7 @@ public:
     void SetSetlistName(const SavedSetlist *);
     void SetBattleInstrument(const SetlistRecord *);
     void SetTokenRedemptionString(const TokenRedemptionPanel *, int);
+    void SetLinkingCode(const char *);
+    void SetRecommendation(const StoreInfoPanel *);
+    void SetRatingIcon(int);
 };
