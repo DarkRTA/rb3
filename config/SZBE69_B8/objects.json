@@ -643,7 +643,7 @@
 
             "network/RVPackages/JobNintendoLogin.cpp": "MISSING",
             "network/RVPackages/JobNintendoTerminate.cpp": "MISSING",
-            "network/RVPackages/JobNintendoUpdateNameByGuest.cpp": "Matching",
+            "network/RVPackages/JobNintendoUpdateNameByGuest.cpp": "NonMatching",
             "network/RVPackages/NintendoClient.cpp": "MISSING",
             "network/RVPackages/NintendoManagementProtocolDDL.cpp": "MISSING",
             "network/RVPackages/NintendoTokenDDL.cpp": "MISSING",
