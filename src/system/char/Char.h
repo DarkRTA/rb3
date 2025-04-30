@@ -24,7 +24,40 @@ public:
     }
 
     void Init();
-    void SetObjects(DataArray *);
+    void SetObjects(DataArray *msg) {
+        int obj_node = 1;
+        int cmp2;
+        int siz = msg->Size();
+        int x = siz ^ 1;
+        int y = x >> 1;
+        uint cmp = uint(y - (x & siz)) >> 31;
+        if (cmp) {
+            cmp = CONST_ARRAY(msg)->Node(1).Type() == kDataSymbol;
+        }
+        if (cmp) {
+            cmp = msg->Sym(1) == "clear";
+            if (!cmp) {
+                cmp = msg->Sym(1) == "once";
+            }
+        }
+        if (cmp) {
+            obj_node = 2;
+            cmp2 = msg->Sym(1) == "clear";
+            cmp = msg->Sym(1) == "once";
+        }
+        if (cmp2) {
+            mOnce.clear();
+        }
+        while (obj_node < msg->Size()) {
+            mOnce.push_back(msg->GetObj(obj_node));
+            obj_node++;
+        }
+
+        bool show = !mObjects.empty() || !mOnce.empty();
+        RndOverlay *ovl = mOverlay;
+        ovl->mShowing = show;
+        ovl->mTimer.Restart();
+    }
     static DataNode OnSetObjects(DataArray *);
 
     ObjPtrList<Hmx::Object> mObjects; // 0x4

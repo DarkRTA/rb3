@@ -53,6 +53,10 @@
 #include "char/CharClip.h"
 #include "char/CharUtl.h"
 #include "obj/DataFunc.h"
+#include "rndobj/Highlightable.h"
+#include "world/Dir.h"
+
+float gCharHighlightY = -1;
 
 CharDebug TheCharDebug;
 
@@ -135,4 +139,51 @@ void CharTerminate() {
     CharBoneDir::Terminate();
 }
 
-float CharDebug::UpdateOverlay(RndOverlay *, float) {}
+float CharDebug::UpdateOverlay(RndOverlay *ovl, float hilite_y) {
+    gCharHighlightY = hilite_y;
+    RndCam *stack60 = 0, *stack64 = RndCam::Current();
+    if (TheWorld) {
+        stack60 = TheWorld->mCam;
+    }
+    if (stack60) {
+        stack60->Select();
+    }
+    FOREACH (it, mObjects) {
+        AUTO(hilite, dynamic_cast<RndHighlightable *>(*it));
+        if (hilite) {
+            hilite->Highlight();
+            continue;
+        }
+    }
+    FOREACH (it, mOnce) {
+        AUTO(hilite, dynamic_cast<RndHighlightable *>(*it));
+        if (hilite) {
+            hilite->Highlight();
+            continue;
+        }
+        AUTO(tex, dynamic_cast<RndTex *>(*it));
+        if (tex == nullptr)
+            continue;
+        static RndMesh *mesh;
+        static RndMat *mat;
+        if (mesh == nullptr) {
+            mesh = Hmx::Object::New<RndMesh>();
+            mat = Hmx::Object::New<RndMat>();
+            mat->mUseEnviron = false;
+            mat->mColorModFlags = RndMat::kColorModAlphaUnpackModulate;
+            mesh->Verts().resize(4, true);
+            if (mesh->Faces().size() > 2) {
+            }
+        }
+    }
+    mOnce.clear();
+    if (mObjects.empty()) {
+        ovl->mShowing = false;
+        ovl->mTimer.Restart();
+    }
+    if (stack60)
+        stack64->Select();
+    float old_hilite = gCharHighlightY;
+    gCharHighlightY = -1;
+    return old_hilite;
+}
