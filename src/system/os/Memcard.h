@@ -74,3 +74,11 @@ DECLARE_MESSAGE(DeviceChosenMsg, "device_chosen")
 DeviceChosenMsg(int i) : Message(Type(), i) {}
 int Device() const { return mData->Int(2); }
 END_MESSAGE
+
+DECLARE_MESSAGE(NoDeviceChosenMsg, "no_device_chosen")
+NoDeviceChosenMsg() : Message(Type()) {}
+END_MESSAGE
+
+DECLARE_MESSAGE(MCResultMsg, "mc_result")
+MCResultMsg(int i) : Message(Type(), i) {}
+END_MESSAGE
