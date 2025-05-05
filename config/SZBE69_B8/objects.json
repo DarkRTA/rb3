@@ -245,7 +245,7 @@
             "band3/meta_band/ProfileAssets.cpp": "Matching",
             "band3/meta_band/ProfileMgr.cpp": "NonMatching",
             "band3/meta_band/RetryAudioPanel.cpp": "NonMatching",
-            "band3/meta_band/SaveLoadManager.cpp": "MISSING",
+            "band3/meta_band/SaveLoadManager.cpp": "NonMatching",
             "band3/meta_band/SaveLoadStatusPanel.cpp": "Matching",
             "band3/meta_band/SavedSetlist.cpp": "NonMatching",
             "band3/meta_band/SelectDifficultyPanel.cpp": "LinkIssues",
