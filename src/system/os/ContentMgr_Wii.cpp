@@ -61,13 +61,9 @@ void SDCallback(int unk) {
     }
 }
 
-void HandleErrorFromRestore(WiiContent *content, OpResult result) {
+void HandleErrorFromRestore(WiiContent *content, OpResult result) {}
 
-}
-
-int ConvertCNTSDError(int error) {
-    return 0;
-}
+int ConvertCNTSDError(int error) { return 0; }
 
 void DoIndentPrint(int i) {
     while (i--) {
@@ -76,7 +72,11 @@ void DoIndentPrint(int i) {
 }
 
 WiiContent::WiiContent(
-    Symbol name, unsigned long long titleId, unsigned int contentId, bool inNand, bool needsMount
+    Symbol name,
+    unsigned long long titleId,
+    unsigned int contentId,
+    bool inNand,
+    bool needsMount
 ) {
     mName = name;
     mTitleId = titleId;
@@ -107,25 +107,15 @@ WiiContent::~WiiContent() {
     }
 }
 
-Symbol WiiContent::FileName() {
-    return mName;
-}
+Symbol WiiContent::FileName() { return mName; }
 
-Symbol WiiContent::DisplayName() {
-    return mName;
-}
+Symbol WiiContent::DisplayName() { return mName; }
 
-const char *WiiContent::Root() {
-    return mName.Str();
-}
+const char *WiiContent::Root() { return mName.Str(); }
 
-ContentLocT WiiContent::Location() {
-    return mLocation;
-}
+ContentLocT WiiContent::Location() { return mLocation; }
 
-int WiiContent::OnMemcard() {
-    return true;
-}
+int WiiContent::OnMemcard() { return true; }
 
 void WiiContent::Mount() {
     if (mState == kUnmounted) {
@@ -262,7 +252,6 @@ void WiiContent::Delete() {
 void WiiContent::PollTransfer() {
     MILO_ASSERT(unk20 == 1, 1119);
     if (unk20 == 1) {
-
     }
 }
 
@@ -290,7 +279,11 @@ void WiiContent::Poll() {
                             // CNTHandle::DebugPrintContents(handle);
                             mState = kMounted;
                         } else {
-                            MILO_FAIL("CM: %s: CNTInitHandleTitle Failed: %i\n", mName.Str(), result);
+                            MILO_FAIL(
+                                "CM: %s: CNTInitHandleTitle Failed: %i\n",
+                                mName.Str(),
+                                result
+                            );
                             unk24 = 1;
                             mState = kFailed;
                         }
@@ -321,17 +314,12 @@ void WiiContent::Poll() {
     } else if (oldState == kNeedsBackup) {
         StartBackup();
     } else if (oldState == kBackingUp) {
-
     }
 }
 
-extern "C" void *WiiCntAlloc(MEMAllocator *, u32 size) {
-    return _MemAlloc(size, 0x20);
-}
+extern "C" void *WiiCntAlloc(MEMAllocator *, u32 size) { return _MemAlloc(size, 0x20); }
 
-extern "C" void WiiCntFree(MEMAllocator *, void *block) {
-    _MemFree(block);
-}
+extern "C" void WiiCntFree(MEMAllocator *, void *block) { _MemFree(block); }
 
 extern "C" void InitAllocator(MEMAllocator *allocator) {
     static MEMAllocatorFuncs cntAllocFunc = { WiiCntAlloc, WiiCntFree };
@@ -354,7 +342,7 @@ int ecFree(void *block) {
 ECNameValue ecFreeFunc = { "free", ecFree };
 
 WiiContentMgr::WiiContentMgr() {
-    // 
+    //
 }
 
 void WiiContentMgr::PreInit() {}
@@ -363,7 +351,7 @@ void WiiContentMgr::Init() {
     gLastPlatformErrorTimer.Restart();
     CNTInit();
     InitAllocator(&gCNTAllocator);
-    
+
     mMode = 1; // kNANDMode
 
     ContentMgr::Init();
@@ -398,19 +386,16 @@ void WiiContentMgr::Terminate() {
     TheWiiContentMgr.UnmountContents("");
     MILO_LOG("CM: Clearing the Cache\n");
     CM_CNTSDCacheClearRSO();
-    if (mSDBuffer != NULL)
-    {
+    if (mSDBuffer != NULL) {
         _MemFree(mSDBuffer);
         mSDBuffer = NULL;
     }
     CNTShutdown();
-    if (gCNTThreadStackBuffer != NULL)
-    {
+    if (gCNTThreadStackBuffer != NULL) {
         _MemFree(gCNTThreadStackBuffer);
         gCNTThreadStackBuffer = NULL;
     }
-    if (gCNTThreadWorkBuffer != NULL)
-    {
+    if (gCNTThreadWorkBuffer != NULL) {
         _MemFree(gCNTThreadWorkBuffer);
         gCNTThreadWorkBuffer = NULL;
     }
@@ -438,9 +423,7 @@ void WiiContent::Enumerate(
     }
 }
 
-void WiiContent::SetPassiveErrorsEnabled(bool enabled) {
-    mHandleRestoreErrors = enabled;
-}
+void WiiContent::SetPassiveErrorsEnabled(bool enabled) { mHandleRestoreErrors = enabled; }
 
 void WiiContentMgr::NotifyUnmounted(Content *c) {
     WiiContent *pc = dynamic_cast<WiiContent *>(c);

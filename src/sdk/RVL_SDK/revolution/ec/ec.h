@@ -26,7 +26,9 @@ typedef struct _ECNameValue {
 
 int EC_Init(ECNameValue *funcs, int numFuncs);
 int EC_Shutdown();
-int EC_DeleteContents(unsigned long long titleId, unsigned short *contents, int numContents);
+int EC_DeleteContents(
+    unsigned long long titleId, unsigned short *contents, int numContents
+);
 int EC_SetParameter(const char *paramId, const char *value);
 int EC_GetIsSyncNeeded();
 int EC_GetTitleInfo(unsigned long long titleId, ECTitleInfo *titleInfo);

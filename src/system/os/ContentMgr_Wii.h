@@ -20,13 +20,13 @@ struct CNTSDThreadInfo {
     // total size: 0x350
     struct OSThread thread; // offset 0x0, size 0x318
     enum CNTSDThreadStatus status; // offset 0x318, size 0x4
-    void * stack; // offset 0x31C, size 0x4
+    void *stack; // offset 0x31C, size 0x4
     unsigned long stackSize; // offset 0x320, size 0x4
     long priority; // offset 0x324, size 0x4
     unsigned short attribute; // offset 0x328, size 0x2
-    void * (* func)(void *); // offset 0x32C, size 0x4
+    void *(*func)(void *); // offset 0x32C, size 0x4
     unsigned long long args8B[1]; // offset 0x330, size 0x8
-    void * args4B[5]; // offset 0x338, size 0x14
+    void *args4B[5]; // offset 0x338, size 0x14
 };
 
 enum OpResult {

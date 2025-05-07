@@ -30,18 +30,14 @@ void WiiCommerceMgr::Init() {
     TheStoreMetadata.Init();
 }
 
-bool WiiCommerceMgr::IsBusy() const {
-    return mCommerceAsyncOpId != -1;
-}
+bool WiiCommerceMgr::IsBusy() const { return mCommerceAsyncOpId != -1; }
 
 bool WiiCommerceMgr::NeedSync() {
     int r = EC_GetIsSyncNeeded();
     return (bool)(gAllowNeedSyncReturn & r != -0xFE2);
 }
 
-bool WiiCommerceMgr::CheckPurchaseSync() {
-    return true;
-}
+bool WiiCommerceMgr::CheckPurchaseSync() { return true; }
 
 void WiiCommerceMgr::GetTitleInfo() {
     // titleInfo is actually WiiCommerceMgr.mTitleInfo
@@ -51,8 +47,15 @@ void WiiCommerceMgr::GetTitleInfo() {
         long r = EC_GetTitleInfo(titleId, &titleInfo);
         if (r != -4050) {
             const char *titleIdString = MakeTitleIdString(titleId);
-            MILO_LOG("Store: titleinfo: %d - titleId = %s | isTmdPresent = %d | isOnDevice = %d | type = %d | version = %d\n",
-                r, titleIdString, titleInfo.isTmdPresent, titleInfo.isOnDevice, titleInfo.type, titleInfo.version);
+            MILO_LOG(
+                "Store: titleinfo: %d - titleId = %s | isTmdPresent = %d | isOnDevice = %d | type = %d | version = %d\n",
+                r,
+                titleIdString,
+                titleInfo.isTmdPresent,
+                titleInfo.isOnDevice,
+                titleInfo.type,
+                titleInfo.version
+            );
         } else {
             const char *titleIdString = MakeTitleIdString(titleId);
             MILO_LOG("Store: titleId = %s not owned.\n", titleIdString);
@@ -60,8 +63,7 @@ void WiiCommerceMgr::GetTitleInfo() {
     }
 }
 
-bool WiiCommerceMgr::SetParentalControlPin(String pin)
-{
+bool WiiCommerceMgr::SetParentalControlPin(String pin) {
     const char *pinStr = pin.c_str();
     int ret = EC_SetParameter("PCPW", pinStr);
     return (ret == 0 || ret == -4075);
@@ -84,8 +86,7 @@ unsigned long long WiiCommerceMgr::MakeDataTitleId(const char *cc) {
     return tidParts.u64parts;
 }
 
-unsigned int FileSizeToBlocks(unsigned int fileSize, bool unk)
-{
+unsigned int FileSizeToBlocks(unsigned int fileSize, bool unk) {
     if (unk) {
         fileSize += 0x3FFF;
     }

@@ -385,6 +385,4 @@ void PlatformMgr::ContentStarted() { SetHomeMenuEnabled(false); }
 void PlatformMgr::ContentDone() { SetHomeMenuEnabled(true); }
 void PlatformMgr::ContentCancelled() { SetHomeMenuEnabled(true); }
 
-bool PlatformMgr::IsShuttingDown() {
-    return gPowerCallback != 0;
-}
+bool PlatformMgr::IsShuttingDown() { return gPowerCallback != 0; }
