@@ -58,6 +58,26 @@ typedef struct _CNTHandle {
     u8 type;
 } CNTHandle;
 
+typedef struct _CNTFileInfoNAND {
+    CNTHandleNAND *CntHandle;
+    unsigned int startOffset;
+    unsigned int length;
+    long readOffset;
+} CNTFileInfoNAND;
+
+typedef struct _CNTFileInfoDVD {
+    DVDFileInfo fileInfo;
+    long readOffset;
+} CNTFileInfoDVD;
+
+typedef struct _CNTFileInfo {
+    union {
+        CNTFileInfoNAND nand;
+        CNTFileInfoDVD dvd;
+    };
+    u8 type;
+} CNTFileInfo;
+
 void CNTInit(void);
 int CNTShutdown(void);
 
@@ -69,6 +89,12 @@ u32 contentConvertPathToEntrynumDVD(const char *path);
 BOOL CNTOpenDir(CNTHandle *handle, const char *path, CNTDir *dir);
 BOOL CNTReadDir(CNTDir *, CNTDirEntry *);
 BOOL CNTCloseDir(CNTDir *);
+
+int CNTOpen(CNTHandle *handle, const char *path, CNTFileInfo *fileInfo);
+int CNTGetLength(CNTFileInfo *fileInfo);
+int CNTClose(CNTFileInfo *fileInfo);
+int CNTRead(CNTFileInfo *fileInfo, void *buffer, int length);
+int CNTSeek(CNTFileInfo *fileInfo, int position, int seekFrom);
 
 #ifdef __cplusplus
 }

@@ -1145,7 +1145,7 @@
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncFile_Wii.cpp": "MISSING",
             "system/os/AsyncFile.cpp": "NonMatching",
-            "system/os/AsyncFileCNT.cpp": "MISSING",
+            "system/os/AsyncFileCNT.cpp": "NonMatching",
             "system/os/AsyncFileHolmes.cpp": "Matching",
             "system/os/AsyncTask.cpp": "Matching",
             "system/os/BlockMgr.cpp": "NonMatching",
