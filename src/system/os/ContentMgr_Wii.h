@@ -117,6 +117,8 @@ public:
 
     void UnmountContents(Symbol);
     WiiContent *ContentOf(Symbol);
+    CNTHandle *GetChannelContentHandle();
+    CNTHandle *ContentHandleOf(Symbol);
 
     void *mSDBuffer; // 68
     int mMode; // 6c
