@@ -37,7 +37,7 @@ public:
     virtual void Unmount() {}
     virtual void Delete() {}
     virtual Symbol FileName() = 0;
-    virtual int DisplayName() = 0;
+    virtual Symbol DisplayName() = 0;
     virtual int GetLRM() { return 0; }
 };
 
