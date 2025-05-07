@@ -45,7 +45,7 @@ BOOL DVDReadAsyncPrio(
 );
 s32 DVDReadPrio(DVDFileInfo *fileInfo, void *addr, s32 length, s32 offset, s32 prio);
 u32 DVDGetTransferredSize(DVDCommandBlock *block);
-BOOL DVDFastOpenDir();
+BOOL DVDFastOpenDir(int entryNum, DVDDir *dir);
 BOOL DVDReadDir(DVDDir *, DVDDirEntry *);
 BOOL DVDCloseDir(DVDDir *);
 

@@ -103,6 +103,7 @@ public:
     bool IsGuestOnlineID(const OnlineID *) const;
     bool StartProfanity(const unsigned short **, int, char *, Hmx::Object *);
     void HandleNetError(int, Symbol);
+    bool IsShuttingDown();
 
     bool OnMsg(const ButtonDownMsg &);
     bool OnMsg(const ButtonUpMsg &);

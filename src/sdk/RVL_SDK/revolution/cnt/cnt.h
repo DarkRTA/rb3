@@ -1,5 +1,5 @@
-#ifndef RVL_SDK_PPC_ARCH_H
-#define RVL_SDK_PPC_ARCH_H
+#ifndef RVL_SDK_CNT_H
+#define RVL_SDK_CNT_H
 
 #include "revolution/ARC.h"
 #include "revolution/DVD.h"
@@ -37,17 +37,31 @@ typedef struct _CNTDirEntry {
     u8 type;
 } CNTDirEntry;
 
+typedef struct _CNTHandleNAND {
+    ARCHandle ArcHandle;
+    long FileDescriptor;
+    void *allocator;
+} CNTHandleNAND;
+
+typedef struct _CNTHandleDVD {
+    unsigned long index;
+    long rootDir;
+    long currDir;
+    u8 reserved[24];
+} CNTHandleDVD;
+
 typedef struct _CNTHandle {
     union {
-        ARCHandle arc;
+        CNTHandleNAND nand;
+        CNTHandleDVD dvd;
     };
     u8 type;
-    u8 pad_to_0x28[3]; // stupid hack
 } CNTHandle;
 
 void CNTInit(void);
+int CNTShutdown(void);
 
-void CNTReleaseHandle(CNTHandle *);
+int CNTReleaseHandle(CNTHandle *);
 CNTHandle *
 contentInitHandleTitleNAND(u64 title_id, u32 content_id, void *r6, MEMAllocator *);
 u32 contentConvertPathToEntrynumDVD(const char *path);

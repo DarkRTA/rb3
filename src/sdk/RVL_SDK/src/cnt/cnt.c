@@ -2,14 +2,26 @@
 #include <revolution/CNT.h>
 
 BOOL CNTOpenDir(CNTHandle *handle, const char *path, CNTDir *dir) {
+    BOOL ret;
     switch (handle->type) {
     case ARC:
-        return ARCOpenDir(&handle->arc, path, &dir->arc);
+        dir->type = 1;
+        ret = ARCOpenDir(&handle->nand.ArcHandle, path, &dir->arc);
+        break;
     case DVD:
-
+        ret = FALSE;
+        dir->type = 2;
+        dir->pad = 0;
+        int entrynum = contentConvertPathToEntrynumDVD(path);
+        if (entrynum >= 0) {
+            ret = DVDFastOpenDir(entrynum, &dir->dvd);
+        }
+        break;
     default:
-        return FALSE;
+        ret = FALSE;
+        break;
     }
+    return ret;
 }
 
 BOOL CNTReadDir(CNTDir *dir, CNTDirEntry *entry) {
