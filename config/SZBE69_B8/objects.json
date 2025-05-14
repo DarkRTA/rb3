@@ -1169,7 +1169,7 @@
             "system/os/JoypadClient.cpp": "NonMatching",
             "system/os/JoypadMsgs.cpp": "Matching",
             "system/os/Keyboard.cpp": "Matching",
-            "system/os/Keyboard_Wii.cpp": "MISSING",
+            "system/os/Keyboard_Wii.cpp": "Matching",
             "system/os/MapFile_Wii.cpp": "NonMatching",
             "system/os/Memcard_Wii.cpp": "MISSING",
             "system/os/Memcard.cpp": "Matching",
@@ -1412,7 +1412,7 @@
             "system/ui/UITrigger.cpp": "NonMatching",
             "system/ui/Utl.cpp": "NonMatching",
 
-            "system/usbwii/UsbWii.cpp": "MISSING",
+            "system/usbwii/UsbWii.cpp": "NonMatching",
 
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",

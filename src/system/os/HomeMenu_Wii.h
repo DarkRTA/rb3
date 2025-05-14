@@ -30,6 +30,7 @@ public:
     void ActivateSDIcon(bool);
     void SetHomeMenuActive(bool);
     void UnlockHomeMenu();
+    void ForceQuit();
     void RegisterCallback(Callback *);
     void NotifyCallbacksOpen();
     void NotifyCallbacksClose();

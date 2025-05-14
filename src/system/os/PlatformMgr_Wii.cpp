@@ -1,12 +1,21 @@
+#include "net/WiiFriendMgr.h"
+#include "os/ContentMgr_Wii.h"
+#include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/Joypad_Wii.h"
 #include "os/CritSec.h"
 #include "meta/Profile.h"
 #include "meta/WiiProfileMgr.h"
+#include "revolution/gx/GXTypes.h"
+#include "revolution/os/OSReset.h"
+#include "revolution/os/OSThread.h"
+#include "revolution/sc/scapi.h"
+#include "revolution/vi/vi.h"
 #include <revolution/SC.h>
 #include <revolution/MEM.h>
 #include "DWC/dwc_common/dwc_init.h"
 #include "DWC/dwc_common/dwc_error.h"
+#include "DWC/dwcsec_prof/dwc_prof.h"
 #include "utl/Locale.h"
 #include "utl/UTF8.h"
 #include "utl/Symbols.h"
@@ -88,7 +97,7 @@ PlatformMgr::PlatformMgr()
       mHomeMenuDisabled(0), mNetworkPlay(0), unkce56(0), mIsRestarting(0),
       mPartyMicAllowed(0), mEnableSFX(0), unkce5a(0), mEnumerateFriendsCallback(0),
       mSendMsgCallback(0), mSignInUserCallback(0), mIsOnlineRestricted(1), unkce69(0),
-      unkce6a(0) {
+      mIgnorePowerOperations(0) {
     mHomeMenuWii = new HomeMenu();
     mDiscErrorMgr = new DiscErrorMgrWii();
     mProfaneWord = 0;
@@ -103,7 +112,23 @@ void PlatformMgr::PreInit() {
     mHomeMenuWii->PreInit();
 }
 
-void PlatformMgr::RegionInit() {}
+void PlatformMgr::RegionInit() {
+    unsigned char regionId;
+    int r = SCGetSimpleAddressRegionIdHi(&regionId);
+    if (r != 0) {
+        if ((u8)(regionId + 0xF8) <= 0x2C || regionId == 0x99 || regionId == 0xA8) {
+            SetRegion(kRegionNA);
+        } else if ((u8)(regionId + 0xC0) <= 0x30) {
+            SetRegion(kRegionEurope);
+        } else if (regionId == 0x01 || regionId == 0x80) {
+            SetRegion(kRegionJapan);
+        } else {
+            SetRegion(kRegionNA);
+        }
+    } else {
+        SetRegion(kRegionNA);
+    }
+}
 
 void PlatformMgr::SetNotifyUILocation(NotifyLocation) {}
 bool PlatformMgr::IsEthernetCableConnected() { return mEthernetCableConnected; }
@@ -168,6 +193,37 @@ bool PlatformMgr::HasOnlinePrivilege(int pad) const {
         return p->IsFlag(2);
     else
         return GetOwnerOfGuest(pad) != -1;
+}
+
+bool PlatformMgr::CanSeeUserCreatedContent(const OnlineID *user) const {
+    WiiFriendList friendsList;
+    int userpid = user->GetPrincipalID();
+    TheWiiFriendMgr.GetCachedFriends(&friendsList);
+    int max = friendsList.mFriends.size();
+    int i = 0;
+    while (i < max) {
+        WiiFriend *myFriend = friendsList.GetFriendByIdx(i);
+        WiiFriendProfile *friendProfile = myFriend->GetProfileByPrincipalID(userpid);
+        if (friendProfile != NULL) {
+            return true;
+        }
+        i++;
+    }
+    return false;
+}
+
+void PlatformMgr::GetOnlineID(int idx, OnlineID *id) const {
+    WiiProfile *profile = TheWiiProfileMgr.GetProfileForPad(idx);
+    if (profile != NULL) {
+        id->SetPrincipalID(profile->mId);
+    }
+}
+
+void PlatformMgr::SetScreenSaver(bool enable) {
+    if (enable != mScreenSaver) {
+        VIEnableDimming(enable);
+        mScreenSaver = enable;
+    }
 }
 
 bool PlatformMgr::IsUserAWiiGuest(const LocalUser *pUser) const {
@@ -255,10 +311,36 @@ void PlatformMgr::KillDNSLookup() {
     }
 }
 
+int PlatformMgr::GetLastDWCError() {
+    bool noError = false;
+    int ec = 0;
+    DWCErrorType etype;
+    DWCError r = (DWCError)DWC_GetLastErrorEx(&ec, (int *)&etype);
+    MILO_LOG(
+        "DWC_GetLastError \n-DWCError: %d\n-Error type: %d \n-Error Code: %d\n",
+        r,
+        etype,
+        -ec
+    );
+    if (r == 0 && ec == 0) {
+        noError = true;
+    }
+    if (noError) {
+        ec = 0;
+    } else {
+        ec = -ec;
+    }
+    return ec;
+}
+
 void PlatformMgr::ClearNetError() {
     mNetError = "";
     mHasNetError = 0;
 }
+
+int PlatformMgr::GetLastDNSError() { return -gDNSError; }
+
+void PlatformMgr::SetConnected(bool connected) { mConnected = connected; }
 
 bool PlatformMgr::OnMsg(const ButtonDownMsg &msg) {
     if (msg.GetAction() == 4 && mDisabling) {
@@ -283,12 +365,36 @@ bool PlatformMgr::OnMsg(const ButtonUpMsg &msg) {
 
 void PlatformMgr::SetDiskError(DiskError err) {}
 
-void WiiPowerCallback() { gPowerCallback = 1; }
-void WiiResetCallback() { gPowerCallback = 2; }
+void WiiPowerCallback() { gPowerCallback = kQuitShutdown; }
+void WiiResetCallback() { gPowerCallback = kQuitRestart; }
 
 void PlatformMgr::SystemInitPowerCallbacks() {
     OSSetPowerCallback(WiiPowerCallback);
     OSSetResetCallback(WiiResetCallback);
+}
+
+void PlatformMgr::WiiPoll() {
+    if (gPowerCallback != kQuitNone && mIgnorePowerOperations) {
+        VISetBlack(true);
+        VIFlush();
+        VIWaitForRetrace();
+    }
+    if (gPowerCallback != kQuitNone && !mIgnorePowerOperations) {
+        if (mHomeMenuWii->mHomeMenuActive) {
+            mHomeMenuWii->ForceQuit();
+        }
+        WiiShutdown((QuitType)gPowerCallback);
+    }
+}
+
+void PlatformMgr::SystemCheckShutdown() {
+    if (gPowerCallback != kQuitNone) {
+        if (gMainThreadID != NULL) {
+            OSSuspendThread(gMainThreadID);
+            gMainThreadID = NULL;
+        }
+        WiiShutdown((QuitType)gPowerCallback);
+    }
 }
 
 bool PlatformMgr::IsSignedIntoLive(int pad) const {
@@ -323,7 +429,18 @@ void PlatformMgr::SendMsg(
 
 void PlatformMgr::RunNetStartUtility() { InitNintendoConnection(); }
 
-int PlatformMgr::GetOwnerOfGuest(int) const {}
+int PlatformMgr::GetOwnerOfGuest(int) const {
+    int i = 0;
+    do {
+        int idx = TheWiiProfileMgr.GetIndexForPad(i);
+        if (idx >= 0 && TheWiiProfileMgr.IsIndexValid(idx)
+            && TheWiiProfileMgr.IsPadAGuest(i) == false
+            && TheWiiProfileMgr.IsPadRegistered(i))
+            return i;
+        i++;
+    } while (i < 4);
+    return -1;
+}
 
 bool PlatformMgr::IsPadAGuest(int pad) const {
     if (GetOwnerOfGuest(pad) != -1) {
@@ -365,13 +482,62 @@ bool PlatformMgr::StartProfanity(
                 c = mProfaneResults;
             memset(c, 0, iii);
             unkca14 = o;
-            // PlatformMgrWii::gCrit.Enter();
+            CriticalSection *crit = &PlatformMgrWii::gCrit;
+            if (crit != NULL)
+                crit->Enter();
+            int r = DWC_CheckProfanityAsync(us, iii, NULL, -1, c, &unkce38);
+            if (r == 0) {
+                MILO_LOG("CCS DEBUG: Profanity Check failed to initialize\n");
+                if (crit != NULL)
+                    crit->Exit();
+                return false;
+            } else {
+                mCheckingProfanity = true;
+                if (crit != NULL)
+                    crit->Exit();
+                return true;
+            }
         }
     } else
         return false;
 }
 
+bool PlatformMgr::CheckProfanity(bool &done, bool &profane) {
+    bool ret;
+    int r = DWC_CheckProfanityProcess();
+    switch (r) {
+    case 1:
+        return false;
+    case 2:
+        done = true;
+        for (int i = 0; i < mProfaneWordCount; i++) {
+            if (mProfaneResults[i] == true) {
+                MILO_LOG("CCS DEBUG: Username is very un classy\n");
+                profane = true;
+                return true;
+            }
+        }
+        profane = false;
+        return true;
+    case 0:
+        MILO_ASSERT(0 && "Improper use of DWC profanity check - tell Ian S." && "", 2064);
+    case 3:
+        HandleDWCError();
+        done = false;
+        MILO_LOG("CCS DEBUG: DWC Check failed\n");
+        return true;
+    }
+    return false;
+}
+
 void PlatformMgr::EnableProfanity(bool b) { mProfanityAllowed = b; }
+
+void PlatformMgr::HandleNANDCorruptError() {
+    const char *localized = Localize(wii_error_nand_worn, NULL);
+    GXColor bg = { 0, 0, 0, 255 };
+    GXColor fg = { 255, 255, 255, 255 };
+    OSFatal(fg, bg, localized);
+}
 
 void PlatformMgr::SetHomeMenuEnabled(bool b) {
     if (b)
@@ -385,4 +551,37 @@ void PlatformMgr::ContentStarted() { SetHomeMenuEnabled(false); }
 void PlatformMgr::ContentDone() { SetHomeMenuEnabled(true); }
 void PlatformMgr::ContentCancelled() { SetHomeMenuEnabled(true); }
 
-bool PlatformMgr::IsShuttingDown() { return gPowerCallback != 0; }
+bool PlatformMgr::IsShuttingDown() { return gPowerCallback != kQuitNone; }
+
+void PlatformMgr::WiiShutdown(QuitType type) {
+    VISetBlack(true);
+    VIFlush();
+    VIWaitForRetrace();
+    switch (type) {
+    case kQuitRestart:
+        if (TheWiiContentMgr.mCNTSDInited) {
+            TheWiiContentMgr.UnmountContents(Symbol(""));
+        }
+        OSRestart(0);
+        break;
+    case kQuitShutdown:
+        if (TheWiiContentMgr.mCNTSDInited) {
+            TheWiiContentMgr.UnmountContents(Symbol(""));
+        }
+        OSShutdownSystem();
+        break;
+    case kQuitMenu:
+        if (TheWiiContentMgr.mCNTSDInited) {
+            TheWiiContentMgr.UnmountContents(Symbol(""));
+        }
+        OSReturnToMenu();
+        break;
+    case kQuitDataManager:
+        if (TheWiiContentMgr.mCNTSDInited) {
+            TheWiiContentMgr.UnmountContents(Symbol(""));
+        }
+        OSReturnToDataManager();
+        break;
+    }
+    OSPanic("PlatformMgr_Wii.cpp", 1845, "Exit");
+}

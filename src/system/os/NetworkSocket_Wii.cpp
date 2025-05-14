@@ -23,12 +23,22 @@ int NetworkSocket::ResolveHostName(String str) {
     if (WiiNetworkSocket::Init() == false) {
         return 0;
     } else {
-        so_ret_t ret = SOGetHostByName(str.c_str());
-        if (ret != 0) {
-            MILO_FAIL("WiiNetworkSockets only support IPv4");
+        so_host_t *ret = SOGetHostByName(str.c_str());
+        if (ret != NULL) {
+            short length = ret->h_length;
+            if (ret->h_addr_list[0] == NULL) {
+                return 0;
+            } else {
+                if (length != 4) {
+                    MILO_FAIL("WiiNetworkSockets only support IPv4");
+                    return 0;
+                } else {
+                    return *(uint *)ret->h_addr_list[0];
+                }
+            }
+        } else {
             return 0;
-        } else
-            return 0;
+        }
     }
 }
 
@@ -133,9 +143,33 @@ int WiiNetworkSocket::InqBoundPort(unsigned short &) const {
     return 0;
 }
 
-int WiiNetworkSocket::Send(const void *, u32) {
+int WiiNetworkSocket::Send(const void *data, u32 len) {
     if (mFail)
         return 0;
+    unsigned long sendLen = 0x4000;
+    so_fd_t sock = mSocket;
+    if (len < 0x4000)
+        sendLen = len;
+    so_ret_t ret = SOSend(sock, data, sendLen, 0);
+    switch (ret) {
+    case SO_E15:
+    case SO_E56:
+        mFail = true;
+    case SO_OK:
+    case SO_EAGAIN:
+        return 0;
+    case SO_ENOMEM:
+        OSReport("SOSend failed with SO_ENOMEM. Increase gSOHeapSize\n", ret);
+        mFail = true;
+        return 0;
+    default:
+        OSReport("SOSend failed. (%d)\n", ret);
+        Disconnect();
+        mFail = true;
+        break;
+    }
+end:
+    return 0;
 }
 
 int WiiNetworkSocket::SendTo(const void *, u32, uint, u16) {
@@ -150,16 +184,15 @@ int WiiNetworkSocket::BroadcastTo(const void *, u32, u16) {
 
 bool WiiNetworkSocket::CanRead() const {
     bool ret = false;
-    bool tru = true;
     so_poll_t poll;
     poll.socket = mSocket;
-    poll.mask = (so_event_t)tru;
+    poll.mask = (so_event_t)1;
     poll.result = (so_event_t)0;
     bool status = OSDisableInterrupts();
     so_ret_t ret2 = SOPoll(&poll, 1, 0);
     OSRestoreInterrupts(status);
     if (ret2 >= 0 && poll.result == poll.mask) {
-        ret = tru;
+        ret = true;
     }
     return ret;
 }

@@ -213,7 +213,7 @@ const char *SOInetNtoA(const u32 *addr);
 
 /* host IP or 0 on error. */
 u32 SOGetHostID(void);
-so_ret_t SOGetHostByName(const char *addr);
+so_host_t *SOGetHostByName(const char *addr);
 
 /* not reentrant or thread safe! */
 so_ret_t SOGetAddrInfo(
