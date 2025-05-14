@@ -7,13 +7,12 @@
 
 // uncompiled
 extern "C" u32 SOGetHostID(void);
-extern "C" so_ret_t SOGetHostByName(const char *addr);
 extern "C" s32 SOInetPtoN(s32, char *, s32 *);
 extern "C" void SOInetNtoP(s32, const s32 *, char *, s32);
-extern s16 htons(u16 arg0);
-extern s16 ntohs(u16 arg0);
-extern s32 htonl(u32 arg0);
-extern s32 ntohl(u32 arg0);
+extern u16 htons(u16 arg0);
+extern u16 ntohs(u16 arg0);
+extern s32 htonl(unsigned int arg0);
+extern s32 ntohl(unsigned int arg0);
 
 namespace Quazal {
     InetAddress::InetAddress() {
@@ -30,7 +29,7 @@ namespace Quazal {
         s32 sp8;
         u32 var_r3;
         const char *temp_r28;
-        so_ret_t temp_r3;
+        so_host_t *temp_r3;
 
         memset(this, 0, 8);
         this->unk1 = 2;
@@ -53,8 +52,8 @@ namespace Quazal {
                 if (var_r3 == -1) {
                     BadEvents::Signal((BadEvents::_ID)7);
                     temp_r3 = SOGetHostByName(sp110);
-                    if (temp_r3 != SO_OK) {
-                        this->address = **(s32 **)(((s32 *)temp_r3)[3]);
+                    if (temp_r3 != NULL) {
+                        this->address = *(uint *)temp_r3->h_addr_list[0];
                     }
                 }
             }
@@ -69,8 +68,8 @@ namespace Quazal {
             if (var_r3 == -1) {
                 BadEvents::Signal((BadEvents::_ID)7);
                 temp_r3 = SOGetHostByName(sp10);
-                if (temp_r3 != SO_OK) {
-                    this->address = **(s32 **)(((s32 *)temp_r3)[3]);
+                if (temp_r3 != NULL) {
+                    this->address = *(uint *)temp_r3->h_addr_list[0];
                 }
             }
         }
@@ -91,7 +90,7 @@ namespace Quazal {
         s32 sp8;
         u32 var_r3;
         char *temp_r30;
-        so_ret_t temp_r3;
+        so_host_t *temp_r3;
 
         if (strcmp(arg0, "255.255.255.255") == 0) {
             this->address = -1;
@@ -116,8 +115,8 @@ namespace Quazal {
             if (var_r3 == -1) {
                 BadEvents::Signal((Quazal::BadEvents::_ID)7);
                 temp_r3 = SOGetHostByName(sp10);
-                if (temp_r3 != SO_OK) {
-                    this->address = **(s32 **)(((s32 *)temp_r3)[3]);
+                if (temp_r3 != NULL) {
+                    this->address = *(uint *)temp_r3->h_addr_list[0];
                 } else {
                     return 0;
                 }
@@ -134,8 +133,8 @@ namespace Quazal {
         if (var_r3 == -1) {
             BadEvents::Signal((Quazal::BadEvents::_ID)7);
             temp_r3 = SOGetHostByName(sp110);
-            if (temp_r3 != SO_OK) {
-                this->address = **(s32 **)(((s32 *)temp_r3)[3]);
+            if (temp_r3 != NULL) {
+                this->address = *(uint *)temp_r3->h_addr_list[0];
             } else {
                 return 0;
             }
@@ -165,26 +164,30 @@ namespace Quazal {
     u16 InetAddress::GetPortNumber() const { return ntohs(this->port); }
 
     // Nonmatching: https://decomp.me/scratch/IYV0H
-    s32 InetAddress::operator<(const Quazal::InetAddress &b) const {
-        s32 curr_addr;
-        u16 check_port;
-        s32 check_addr;
+    bool InetAddress::operator<(const Quazal::InetAddress &b) const {
+        u32 curr_addr;
+        u32 check_port;
+        u32 check_addr;
         u16 curr_port;
 
         check_addr = b.address;
         check_port = ntohs(b.port);
         curr_addr = this->address;
-        curr_port = ntohs(this->port);
+        curr_port = ((u16)ntohs(this->port));
 
-        return -((curr_addr ^ 0x80000000) < (check_addr ^ 0x80000000))
-            + (u32)(curr_port < check_port);
-        // (curr_addr ^ 0x80000000) < (u32)(curr_port < check_port) + (check_addr ^
-        // 0x80000000)
+        return (
+            (curr_addr ^ 0x80000000)
+            < ((u32)(curr_port < check_port) + (check_addr ^ 0x80000000))
+        );
+        // return -((curr_addr ^ 0x80000000) < (check_addr ^ 0x80000000))
+        //     + (u32)(curr_port < check_port);
+        //  (curr_addr ^ 0x80000000) < (u32)(curr_port < check_port) + (check_addr ^
+        //  0x80000000)
     }
 
     bool InetAddress::operator==(const InetAddress &b) const {
         s32 temp_r31;
-        u16 temp_r30;
+        s32 temp_r30;
         s32 temp_r29;
 
         s32 temp;

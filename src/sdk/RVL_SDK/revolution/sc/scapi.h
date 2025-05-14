@@ -98,6 +98,7 @@ u8 SCGetScreenSaverMode(void);
 u8 SCGetSoundMode(void);
 u32 SCGetCounterBias(void);
 u32 SCGetSimpleAddressID(int);
+u32 SCGetSimpleAddressRegionIdHi(unsigned char *);
 
 void SCGetBtDeviceInfoArray(SCBtDeviceInfoArray *array);
 BOOL SCSetBtDeviceInfoArray(const SCBtDeviceInfoArray *array);

@@ -11,7 +11,7 @@ extern "C" {
 // Get TV format from TV info
 #define VI_TV_INFO_FMT(info) ((info) >> 2)
 // Get TV scan mode from TV info
-#define VI_TV_INFO_MODE(info) ((info)&0b00000011)
+#define VI_TV_INFO_MODE(info) ((info) & 0b00000011)
 
 typedef enum {
     VI_TV_FMT_NTSC,
@@ -46,12 +46,13 @@ VIRetraceCallback VISetPostRetraceCallback(VIRetraceCallback callback);
 void VIInit(void);
 void VIWaitForRetrace(void);
 
-void VIConfigure(const GXRenderModeObj* rmo);
+void VIConfigure(const GXRenderModeObj *rmo);
 void VIConfigurePan(u16 x, u16 y, u16 w, u16 h);
 void VIFlush(void);
-void VISetNextFrameBuffer(void* fb);
+void VISetNextFrameBuffer(void *fb);
 
 void VISetBlack(BOOL black);
+void VIEnableDimming(BOOL dimming);
 s32 VIGetRetraceCount(void);
 
 VITvFormat VIGetTvFormat(void);
