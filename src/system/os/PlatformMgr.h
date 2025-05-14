@@ -31,6 +31,14 @@ enum NotifyLocation {
     kNotify2
 };
 
+enum QuitType {
+    kQuitNone,
+    kQuitShutdown,
+    kQuitRestart,
+    kQuitMenu,
+    kQuitDataManager
+};
+
 typedef bool EnumerateFriendsCallbackFunc(int, std::vector<Friend *> &, Hmx::Object *);
 typedef bool SendMsgCallbackFunc(Friend *, const char *, const char *, MemStream &);
 typedef bool SignInUserCallbackFunc(User *, unsigned long);
@@ -69,6 +77,8 @@ public:
     void ClearDWCError();
     bool CanSeeUserCreatedContent(const OnlineID *) const;
     void SystemInitPowerCallbacks();
+    void WiiPoll();
+    void SystemCheckShutdown();
 
     bool IsUserAWiiGuest(const LocalUser *) const;
     int InitNintendoConnection();
@@ -97,13 +107,17 @@ public:
     void KillDNSLookup();
     void UpdateDWCLibrary();
     void TerminateDWCLibrary();
+    void HandleDWCError();
     void EnumerateFriends(int, std::vector<Friend *> &, Hmx::Object *);
     void SendMsg(Friend *, const char *, const char *, MemStream &);
     bool IsPadAGuest(int) const;
     bool IsGuestOnlineID(const OnlineID *) const;
     bool StartProfanity(const unsigned short **, int, char *, Hmx::Object *);
+    bool CheckProfanity(bool &, bool &);
     void HandleNetError(int, Symbol);
     bool IsShuttingDown();
+    void WiiShutdown(QuitType type);
+    void HandleNANDCorruptError();
 
     bool OnMsg(const ButtonDownMsg &);
     bool OnMsg(const ButtonUpMsg &);
@@ -194,7 +208,7 @@ public:
     SignInUserCallbackFunc *mSignInUserCallback; // 0xce64
     bool mIsOnlineRestricted; // 0xce68
     bool unkce69;
-    bool unkce6a;
+    bool mIgnorePowerOperations;
     bool unkce6b; // checked in Utl's MaxAllowedHmxMaturityLevel, need to come up with a
                   // better name
 } __attribute__((aligned(32)));
