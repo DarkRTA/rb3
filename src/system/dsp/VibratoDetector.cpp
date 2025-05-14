@@ -3,7 +3,7 @@
 
 
 VibratoDetector::VibratoDetector(int i1, int i2)
-    : mBufIdx(0), mHi(0), mY0(0.0), mY1(0.0), mY2(0.0), mLastDetect(0),
+    : mBufIdx(0), mHi(0), mY0(0.0), mY1(0.0), mY2(0.0), mSample(0) ,mLastDetect(0),
     mMaxPeriod(i2), mMinPeriod(i1)
 
     {
