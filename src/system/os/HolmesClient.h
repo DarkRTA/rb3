@@ -91,7 +91,7 @@ namespace Holmes {
 
 void HolmesClientInit();
 void HolmesClientReInit();
-void HolmesClientInitOpcode(bool);
+bool HolmesClientInitOpcode(bool r3);
 void HolmesClientTerminate();
 void HolmesClientEnumerate(
     const char *, void (*)(const char *, const char *), bool, const char *, bool
