@@ -19,19 +19,26 @@
 namespace {
     // get ready for some bullshit
     struct HolmesProfileData {
-        Timer unk_0x0;
-        Timer unk_0x30;
-        u32 pad1, pad2;
+        Timer wait;
+        Timer work;
+        u32 count;
+        u32 pad2;
 
         HolmesProfileData() {}
     };
 
-    uint gRealMaxBufferSize;
+    struct ReadRequest {
+        File *mRequestor;
+        void *mBuffer;
+        int mBytes;
+    };
+
+    int gRealMaxBufferSize;
     HolmesProfileData gProfile[20];
     CriticalSection gCrit;
     NetStream *gHolmesStream;
     MemStream *gStreamBuffer;
-    std::list<File *> gRequests;
+    std::list<ReadRequest *> gRequests;
 
     char gMachineName[NETBIOS_NAME_MAX] = { 0 };
     char gShareName[NETBIOS_NAME_MAX] = { 0 };
@@ -53,23 +60,47 @@ namespace {
 
     void BeginCmd(Holmes::Protocol prot, bool b) {
         if (b) {
+            gProfile[prot].count += 1;
+        }
+        gProfile[prot].work.Start();
+    }
+
+    void EndCmd(Holmes::Protocol prot) {
+        gProfile[prot].work.Stop();
+        if (gRealMaxBufferSize != 0) {
+            MILO_NOTIFY_ONCE(
+                "HolmesClient buffer exceeded %d < %d", 0x2000d, gRealMaxBufferSize
+            );
         }
     }
 
-    void EndCmd(Holmes::Protocol) {
-        MILO_NOTIFY_ONCE(
-            "HolmesClient buffer exceeded %d < %d", 0x2000d, gRealMaxBufferSize
-        );
-    }
+    bool CheckForResponse(Holmes::Protocol ptcl);
 
-    u32 CheckReads() {}
+    u32 CheckReads() {
+        ReadRequest *currentRequest;
+        do {
+            if (gRequests.empty()) {
+                return false;
+            }
+            if (!CheckForResponse(Holmes::kReadFile)) {
+                return false;
+            }
+            BeginCmd(Holmes::kReadFile, false);
+            currentRequest = gRequests.front();
+            int r =
+                gHolmesStream->ReadAsync(currentRequest->mBuffer, currentRequest->mBytes);
+            gRequests.pop_back();
+            EndCmd(Holmes::kReadFile);
+        } while (currentRequest != NULL);
+    }
 
     void WaitForResponse(Holmes::Protocol ptcl);
 
 #pragma optimization_level 3
     void WaitForReads() {
         CritSecTracker cst(&gCrit);
-        for (std::list<File *>::iterator it = gRequests.begin(); it != gRequests.end();
+        for (std::list<ReadRequest *>::iterator it = gRequests.begin();
+             it != gRequests.end();
              it++) {
             WaitForResponse(Holmes::kReadFile);
             CheckReads();
@@ -151,16 +182,25 @@ namespace {
 
 String gLastCachedResource;
 u32 gLastCacheResult;
+extern bool gHostConfig;
 extern bool gHostLogging;
 
-bool UsingHolmes(int) {
+bool UsingHolmes(int flags) {
     if (gHolmesStream == NULL)
         return false;
     else {
         if (!UsingCD())
             return true;
         else {
-            // if ()
+            if (gHostConfig == false || (flags & 2) == 0) {
+                if (gHostLogging == false || (flags & 4) == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return true;
+            }
         }
     }
 }
@@ -215,6 +255,65 @@ NetAddress HolmesResolveIP() {
         }
     }
     return addr;
+}
+
+bool HolmesClientInitOpcode(bool r3) {
+    bool fail = false;
+    *gStreamBuffer << (char)Holmes::kVersion;
+    *gStreamBuffer << 0x18; // version
+    *gStreamBuffer << NetworkSocket::GetHostName();
+    *gStreamBuffer << gHolmesTarget;
+    *gStreamBuffer << gShareName;
+    *gStreamBuffer << FileSystemRoot();
+    *gStreamBuffer << (char)TheLoadMgr.GetPlatform(); // gPlatform?
+    *gStreamBuffer << (char)GetGfxMode();
+    HolmesFlushStreamBuffer();
+    if (r3 == false) {
+        WaitForAnyResponse(Holmes::kVersion);
+        uchar successByte;
+        *gHolmesStream >> successByte;
+        fail = successByte;
+    } else {
+        WaitForResponse(Holmes::kVersion);
+    }
+    int holmesVersion = -1;
+    if (fail == false) {
+        *gHolmesStream >> holmesVersion;
+        fail = holmesVersion != 0x18;
+    }
+    if (fail != false) {
+        delete gHolmesStream;
+        gHolmesStream = NULL;
+        delete gStreamBuffer;
+        gStreamBuffer = NULL;
+        if (gHostLogging) {
+            FinishResponse();
+            return fail;
+        }
+        if (holmesVersion >= 0) {
+            MILO_FAIL(
+                "Holmes version mismatch\nResync/rebuild both projects\nHolmes=%d Console=%d",
+                holmesVersion,
+                0x18
+            );
+        } else {
+            MILO_FAIL("Holmes protocol mismatch\nCould not connect to console");
+        }
+    }
+    if (fail == false) {
+        *gHolmesStream << gServerName;
+    }
+    if (fail == false && gShareName[0] != 0) {
+        String machineName = gMachineName;
+        String fileRoot;
+        *gHolmesStream >> fileRoot;
+        if (strlen(fileRoot.c_str()) == 0) {
+            MILO_FAIL("Holmes fileroot missing!");
+        }
+        HolmesSetFileShare(machineName.c_str(), fileRoot.c_str());
+    }
+    FinishResponse();
+    return fail;
 }
 
 static DataNode DumpHolmesLog(DataArray *) {
@@ -304,9 +403,77 @@ FileStat *HolmesClientGetStat(const char *cc, FileStat &fs) {
     return (FileStat *)-1;
 }
 
-bool HolmesClientOpen(const char *, int, uint &, int &) {
-    if (gCrit.mEntryCount != 0)
-        gCrit.Enter();
+bool HolmesClientOpen(const char *filepath, int flags, uint &result, int &r6) {
+    gCrit.Enter();
+    if (gHostLogging) {
+        if ((flags & 4) == 0) {
+            if (gHostConfig == false) {
+                MILO_FAIL("gHostLogging tried to read file: %s", filepath);
+            }
+        } else if (gHolmesStream == NULL) {
+            gCrit.Exit();
+            return false;
+        }
+    }
+    MILO_ASSERT(gHolmesStream, 944);
+
+    if (!gHolmesStream->Fail()) {
+        BeginCmd(Holmes::kOpenFile, true);
+        bool someFlagSet = (bool)(flags >> 1 & 1);
+        *gStreamBuffer << (char)Holmes::kOpenFile;
+        *gStreamBuffer << filepath;
+        *gStreamBuffer << someFlagSet; // write?
+        *gStreamBuffer << (bool)((flags >> 18) & 1);
+        if (!someFlagSet) {
+            *gStreamBuffer << (bool)((flags >> 9) & 1);
+            *gStreamBuffer << (bool)((flags >> 11) & 1);
+        }
+        HolmesFlushStreamBuffer();
+        WaitForResponse(Holmes::kOpenFile);
+        uint returnCode;
+        *gHolmesStream >> returnCode;
+        if (returnCode != -1) {
+            *gHolmesStream >> r6;
+            result = returnCode;
+        }
+        FinishResponse();
+        EndCmd(Holmes::kOpenFile);
+        if (returnCode == -1) {
+            gCrit.Exit();
+            return false;
+        } else {
+            gCrit.Exit();
+            return true;
+        }
+    }
+
+    gCrit.Exit();
+    return false;
+}
+
+void HolmesClientWrite(int file, int offset, int length, const void *data) {
+    if (length == 0)
+        return;
+    gCrit.Enter();
+    MILO_ASSERT(gHolmesStream, 944);
+
+    if (!gHolmesStream->Fail() || gHostLogging == false) {
+        BeginCmd(Holmes::kWriteFile, true);
+        *gStreamBuffer << (char)Holmes::kWriteFile;
+        *gStreamBuffer << file;
+        *gStreamBuffer << offset; // write?
+        *gStreamBuffer << length;
+        gStreamBuffer->Write(data, length);
+        HolmesFlushStreamBuffer();
+        WaitForResponse(Holmes::kWriteFile);
+        uint returnCode;
+        *gHolmesStream >> returnCode;
+        FinishResponse();
+        EndCmd(Holmes::kWriteFile);
+    }
+
+    gCrit.Exit();
+    return;
 }
 
 void HolmesClientTruncate(int a, int b) {
@@ -330,9 +497,9 @@ void HolmesClientTruncate(int a, int b) {
 }
 
 bool PendingRead(File *f) {
-    for (std::list<File *>::iterator it = gRequests.begin(); it != gRequests.end();
+    for (std::list<ReadRequest *>::iterator it = gRequests.begin(); it != gRequests.end();
          it++) {
-        if (*it == f)
+        if ((*it)->mRequestor == f)
             return true;
     }
     return false;
