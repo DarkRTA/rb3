@@ -14,6 +14,15 @@ void XTEABlockEncrypter::SetNonce(const unsigned long long *nonce, unsigned int 
     mNonce[1] = nonce[1] + shift;
 }
 
+void XTEABlockEncrypter::Encrypt(const XTEABlock *in, XTEABlock *out) {
+    unsigned long long *nonce = mNonce;
+    for (int i = 0; i < 2; i++) {
+        out->mData[i] = in->mData[i] ^ Encipher(*nonce, mKey);
+        *nonce += 1;
+        nonce++;
+    }
+}
+
 unsigned long long
 XTEABlockEncrypter::Encipher(unsigned long long nonce, unsigned int *key) {
     unsigned long v[2] = { (nonce >> 32), (nonce & 0xFFFFFFFF) }; // only god knows if this is right
