@@ -9,13 +9,13 @@ public:
 
     int mBuffer[5]; // 0x0
     float mPitches[5]; // 0x14
-    int unk28;
-    int unk2c;
-    int unk30;
-    int unk34;
-    int unk38;
-    int unk3c;
-    int unk40;
-    int unk44;
-    int unk48;
+    int mBufIdx; // 0x28
+    bool mHi; // 0x2c
+    float mY0; // 0x30
+    float mY1; // 0x34
+    float mY2; // 0x38
+    int mSample; // 0x3c
+    int mLastDetect; // 0x40
+    int mMaxPeriod; // 0x44
+    int mMinPeriod; // 0x48
 };

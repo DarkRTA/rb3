@@ -23,22 +23,14 @@ void XTEABlockEncrypter::Encrypt(const XTEABlock *in, XTEABlock *out) {
     }
 }
 
-#define XTEA_SUM0 0x9e3779b9
-#define XTEA_SUM1 0x3c6ef372
-#define XTEA_SUM2 0xdaa66d2b
-#define XTEA_SUM3 0x78dde6e4
-
 unsigned long long
 XTEABlockEncrypter::Encipher(unsigned long long nonce, unsigned int *key) {
-    unsigned int v0 = (unsigned int)(nonce >> 32);
-    unsigned int v1 = (unsigned int)(nonce);
-    v1 += (v0 + (v0 << 4 ^ v0 >> 5) ^ key[0]);
-    v0 += (v1 + (v1 << 4 ^ v1 >> 5) ^ key[3] + XTEA_SUM0);
-    v1 += (v0 + (v0 << 4 ^ v0 >> 5) ^ key[1] + XTEA_SUM0);
-    v0 += (v1 + (v1 << 4 ^ v1 >> 5) ^ key[2] + XTEA_SUM1);
-    v1 += (v0 + (v0 << 4 ^ v0 >> 5) ^ key[2] + XTEA_SUM1);
-    v0 += (v1 + (v1 << 4 ^ v1 >> 5) ^ key[1] + XTEA_SUM2);
-    v1 += (v0 + (v0 << 4 ^ v0 >> 5) ^ key[3] + XTEA_SUM2);
-    v0 += (v1 + (v1 << 4 ^ v1 >> 5) ^ key[0] + XTEA_SUM3);
-    return (v0 << 32) | v1;
+    unsigned long v[2] = { (nonce >> 32), (nonce & 0xFFFFFFFF) }; // only god knows if this is right
+    unsigned int sum = 0;
+    for (int i = 0; i < 4; i++) {
+        v[1] += (v[0] + (v[0] << 4 ^ v[0] >> 5)) ^ sum + (key[(sum & 3)]);
+        sum += 0x9E3779B9;
+        v[0] += (v[1] + (v[1] << 4 ^ v[1] >> 5)) ^ sum + key[(sum >> 11) & 3];
+    }
+    return *v;
 }
