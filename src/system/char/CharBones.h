@@ -73,6 +73,7 @@ public:
     char *RotYOffset() const { return mStart + mRotYOffset; }
     char *RotZOffset() const { return mStart + mRotZOffset; }
     char *EndOffset() const { return mStart + mEndOffset; }
+    char* SetStart(char* ptr){ mStart = ptr; }
 
     static Type TypeOf(Symbol);
     static const char *SuffixOf(Type);

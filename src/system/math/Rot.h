@@ -26,6 +26,7 @@ void MakeRotQuatUnitX(const Vector3 &, Hmx::Quat &);
 float GetXAngle(const Hmx::Matrix3 &);
 float GetYAngle(const Hmx::Matrix3 &);
 float GetZAngle(const Hmx::Matrix3 &);
+void MakeEuler(const Hmx::Quat&, Vector3&);
 
 TextStream &operator<<(TextStream &ts, const Hmx::Quat &v);
 TextStream &operator<<(TextStream &ts, const Vector3 &v);

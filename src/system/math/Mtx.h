@@ -238,6 +238,17 @@ public:
         x = y = z = 0;
         w = 32767;
     }
+    void ToQuat(Hmx::Quat& q) const {
+        q.Set(x * 0.000030518509f, y * 0.000030518509f, z * 0.000030518509f, w * 0.000030518509f);
+    }
+};
+
+class ByteQuat {
+public:
+    char x, y, z, w;
+    void ToQuat(Hmx::Quat& q) const {
+        q.Set(x * 0.0078740157f, y * 0.0078740157f, z * 0.0078740157f, w * 0.0078740157f);
+    }
 };
 
 class TransformNoScale {

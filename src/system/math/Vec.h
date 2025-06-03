@@ -74,6 +74,14 @@ public:
     Vector3() {}
     Vector3(float f1, float f2, float f3) : x(f1), y(f2), z(f3) {}
     // Vector3(const Vector3& v) : x(v.x), y(v.y), z(v.z) {}
+
+    // used during decompression of CharBones vectors
+    Vector3(short* s){
+        x = s[0] * 0.000030518509f * 1300.0f;
+        y = s[1] * 0.000030518509f * 1300.0f;
+        z = s[2] * 0.000030518509f * 1300.0f;
+    }
+
     void Set(float f1, float f2, float f3) {
         x = f1;
         y = f2;
