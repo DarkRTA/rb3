@@ -1,5 +1,10 @@
 #include "char/CharBones.h"
 #include "char/CharClip.h"
+#include "decomp.h"
+#include "math/Mtx.h"
+#include "math/Rot.h"
+#include "math/Vec.h"
+#include "utl/MakeString.h"
 #include "utl/Symbols.h"
 
 void TestDstComplain(Symbol s) {
@@ -16,7 +21,7 @@ CharBones::CharBones() : mCompression(kCompressNone), mStart(0), mTotalSize(0) {
 }
 
 CharBones::Type CharBones::TypeOf(Symbol s) {
-    for (const char *p = s.Str(); p != 0; p++) {
+    for (const char *p = s.Str(); *p != 0; p++) {
         if (*p == '.') {
             switch (p[1]) {
             case 'p':
@@ -26,9 +31,10 @@ CharBones::Type CharBones::TypeOf(Symbol s) {
             case 'q':
                 return TYPE_QUAT;
             case 'r': {
+                // check if rot is x, y, or z
                 unsigned char next = p[3];
-                if (next + 0x88U <= 2)
-                    return (Type)(next - 0x75);
+                if ((unsigned char)(next - 'x') <= 2)
+                    return (Type)((char)next - 'u');
             }
             default:
                 break;
@@ -100,32 +106,20 @@ void CharBones::ListBones(std::list<Bone> &bones) const {
 
 void CharBones::Zero() { memset(mStart, 0, mTotalSize); }
 
-// enum CompressionType {
-//     kCompressNone,
-//     kCompressRots,
-//     kCompressVects,
-//     kCompressQuats,
-//     kCompressAll
-// };
-
 int CharBones::TypeSize(int i) const {
-    if (i < 2) {
-        if (mCompression < kCompressVects)
-            return 0xC;
-        else
-            return 6;
+    if(i > 1U){
+        if(i != 2){
+            if(mCompression != kCompressNone) return 2;
+            else return 4;
+        }
+        else {
+            if(mCompression >= kCompressQuats) return 4;
+            else if(mCompression != kCompressNone) return 8;
+            else return 16;
+        }
     }
-    if (i != 2) {
-        if (mCompression == kCompressNone)
-            return 4;
-        else
-            return 2;
-    }
-    if (mCompression > kCompressVects)
-        return 4;
-    if (mCompression == kCompressNone)
-        return 0x10;
-    return 8;
+    else if(mCompression >= kCompressVects) return 6;
+    else return 12;
 }
 
 int CharBones::FindOffset(Symbol s) const {
@@ -173,11 +167,63 @@ void CharBones::SetCompression(CompressionType ty) {
     }
 }
 
-void CharBones::Print() {
-    for (std::vector<Bone>::iterator it = mBones.begin(); it != mBones.end(); ++it) {
-        MILO_LOG("%s %.2f: %s\n", (*it).name, (*it).weight, StringVal((*it).name));
+DECOMP_FORCEACTIVE(CharBones, "!mCompression && !bones.mCompression")
+
+const char* CharBones::StringVal(Symbol s){
+    void* ptr = FindPtr(s);
+    CharBones::Type t = TypeOf(s);
+    if(t < 2){
+        if(mCompression >= 2){
+            Vector3 vshort((short*)ptr);
+            return MakeString("%g %g %g", vshort.x, vshort.y, vshort.z);
+        }
+        else {
+            Vector3* vptr = (Vector3*)vptr;
+            return MakeString("%g %g %g", vptr->x, vptr->y, vptr->z);
+        }
+    }
+    else if(t == 2){
+        Hmx::Quat q;
+        Hmx::Quat* qPtr = (Hmx::Quat*)ptr;
+        if(mCompression >= 3){
+            ByteQuat* bqPtr = (ByteQuat*)qPtr;
+            bqPtr->ToQuat(q);
+        }
+        else if(mCompression != kCompressNone){
+            ShortQuat* sqPtr = (ShortQuat*)qPtr;
+            sqPtr->ToQuat(q);
+        }
+        else q = *qPtr;
+        Vector3 v40;
+        MakeEuler(q, v40);
+        v40 *= RAD2DEG;
+        return MakeString("quat(%g %g %g %g) euler(%g %g %g)", q.x, q.y, q.z, q.w, v40.x, v40.y, v40.z);
+    }
+    else {
+        float floatVal;
+        if(mCompression != kCompressNone){
+            floatVal = *((short*)ptr) * 0.00061035156f;
+        }
+        else {
+            floatVal = *((float*)ptr);
+        }
+        floatVal *= RAD2DEG;
+        if(mCompression != kCompressNone){
+            return MakeString("deg %g raw %d", floatVal, *((short*)ptr));
+        }
+        else {
+            return MakeString("deg %g rad %g", floatVal, *((float*)ptr));
+        }
     }
 }
+
+void CharBones::Print() {
+    for (std::vector<Bone>::iterator it = mBones.begin(); it != mBones.end(); ++it) {
+        MILO_LOG("%s %.2f: %s\n", it->name, it->weight, StringVal(it->name));
+    }
+}
+
+DECOMP_FORCEACTIVE(CharBones, "!mCompression", "false", "newSize == 4", "oldSize == 2", "end >= start")
 
 void CharBones::ScaleAdd(CharClip *clip, float f1, float f2, float f3) {
     clip->ScaleAdd(*this, f1, f2, f3);

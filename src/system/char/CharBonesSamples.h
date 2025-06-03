@@ -26,6 +26,18 @@ public:
     static void SetVer(int);
     int NumSamples() const { return mNumSamples; }
 
+    void SetStartFromRawData(int idx){
+        SetStart(&mRawData[mTotalSize * idx]);
+    }
+    // set mStart to mRawData[mTotalSize * 2];
+
+//     void fn_804B1CE8(int param_1,int param_2)
+
+// {
+//   fn_8034D25C(param_1,*(param_1 + 0x54) + *(param_1 + 0x4c) * param_2);
+//   return;
+// }
+
     short mNumSamples; // 0x50
     short mPreviewSample; // 0x52
     char *mRawData; // 0x54
