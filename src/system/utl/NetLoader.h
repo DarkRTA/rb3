@@ -1,6 +1,7 @@
 #ifndef UTL_NETLOADER_H
 #define UTL_NETLOADER_H
 
+#include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/Str.h"
 #include "utl/Loader.h"
@@ -55,7 +56,7 @@ public:
     bool HasFailed();
 
     NetLoaderStub *mLoader; // 0x0
-    int unk_0x4; // 0x4
+    DataArray *unk_0x4; // 0x4
 };
 
 #endif
