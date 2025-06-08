@@ -107,19 +107,27 @@ void CharBones::ListBones(std::list<Bone> &bones) const {
 void CharBones::Zero() { memset(mStart, 0, mTotalSize); }
 
 int CharBones::TypeSize(int i) const {
-    if(i > 1U){
-        if(i != 2){
-            if(mCompression != kCompressNone) return 2;
-            else return 4;
-        }
-        else {
-            if(mCompression >= kCompressQuats) return 4;
-            else if(mCompression != kCompressNone) return 8;
-            else return 16;
-        }
+    switch (i) {
+    case TYPE_POS:
+    case TYPE_SCALE:
+        if (mCompression >= kCompressVects)
+            return 6;
+        else
+            return 12;
+    case TYPE_QUAT:
+        if (mCompression >= kCompressQuats)
+            return 4;
+        else if (mCompression != kCompressNone)
+            return 8;
+        else
+            return 16;
+
+    default:
+        if (mCompression != kCompressNone)
+            return 2;
+        else
+            return 4;
     }
-    else if(mCompression >= kCompressVects) return 6;
-    else return 12;
 }
 
 int CharBones::FindOffset(Symbol s) const {
@@ -157,7 +165,8 @@ void CharBones::RecomputeSizes() {
         int diff = mCounts[i + 1] - mCounts[i];
         mOffsets[i + 1] = mOffsets[i] + diff * TypeSize(i);
     }
-    mTotalSize = mEndOffset + 0xFU & 0xFFFFFFF0;
+    mTotalSize = mEndOffset + 0xFU & 0xFFFFFFF0; // round up to the nearest 0x10,
+                                                 // alignment moment
 }
 
 void CharBones::SetCompression(CompressionType ty) {
@@ -169,50 +178,46 @@ void CharBones::SetCompression(CompressionType ty) {
 
 DECOMP_FORCEACTIVE(CharBones, "!mCompression && !bones.mCompression")
 
-const char* CharBones::StringVal(Symbol s){
-    void* ptr = FindPtr(s);
+const char *CharBones::StringVal(Symbol s) {
+    void *ptr = FindPtr(s);
     CharBones::Type t = TypeOf(s);
-    if(t < 2){
-        if(mCompression >= 2){
-            Vector3 vshort((short*)ptr);
+    if (t < 2) {
+        if (mCompression >= 2) {
+            Vector3 vshort((short *)ptr);
             return MakeString("%g %g %g", vshort.x, vshort.y, vshort.z);
-        }
-        else {
-            Vector3* vptr = (Vector3*)vptr;
+        } else {
+            Vector3 *vptr = (Vector3 *)vptr;
             return MakeString("%g %g %g", vptr->x, vptr->y, vptr->z);
         }
-    }
-    else if(t == 2){
+    } else if (t == 2) {
         Hmx::Quat q;
-        Hmx::Quat* qPtr = (Hmx::Quat*)ptr;
-        if(mCompression >= 3){
-            ByteQuat* bqPtr = (ByteQuat*)qPtr;
+        Hmx::Quat *qPtr = (Hmx::Quat *)ptr;
+        if (mCompression >= 3) {
+            ByteQuat *bqPtr = (ByteQuat *)qPtr;
             bqPtr->ToQuat(q);
-        }
-        else if(mCompression != kCompressNone){
-            ShortQuat* sqPtr = (ShortQuat*)qPtr;
+        } else if (mCompression != kCompressNone) {
+            ShortQuat *sqPtr = (ShortQuat *)qPtr;
             sqPtr->ToQuat(q);
-        }
-        else q = *qPtr;
+        } else
+            q = *qPtr;
         Vector3 v40;
         MakeEuler(q, v40);
         v40 *= RAD2DEG;
-        return MakeString("quat(%g %g %g %g) euler(%g %g %g)", q.x, q.y, q.z, q.w, v40.x, v40.y, v40.z);
-    }
-    else {
+        return MakeString(
+            "quat(%g %g %g %g) euler(%g %g %g)", q.x, q.y, q.z, q.w, v40.x, v40.y, v40.z
+        );
+    } else {
         float floatVal;
-        if(mCompression != kCompressNone){
-            floatVal = *((short*)ptr) * 0.00061035156f;
-        }
-        else {
-            floatVal = *((float*)ptr);
+        if (mCompression != kCompressNone) {
+            floatVal = *((short *)ptr) * 0.00061035156f;
+        } else {
+            floatVal = *((float *)ptr);
         }
         floatVal *= RAD2DEG;
-        if(mCompression != kCompressNone){
-            return MakeString("deg %g raw %d", floatVal, *((short*)ptr));
-        }
-        else {
-            return MakeString("deg %g rad %g", floatVal, *((float*)ptr));
+        if (mCompression != kCompressNone) {
+            return MakeString("deg %g raw %d", floatVal, *((short *)ptr));
+        } else {
+            return MakeString("deg %g rad %g", floatVal, *((float *)ptr));
         }
     }
 }
@@ -223,7 +228,9 @@ void CharBones::Print() {
     }
 }
 
-DECOMP_FORCEACTIVE(CharBones, "!mCompression", "false", "newSize == 4", "oldSize == 2", "end >= start")
+DECOMP_FORCEACTIVE(
+    CharBones, "!mCompression", "false", "newSize == 4", "oldSize == 2", "end >= start"
+)
 
 void CharBones::ScaleAdd(CharClip *clip, float f1, float f2, float f3) {
     clip->ScaleAdd(*this, f1, f2, f3);

@@ -59,7 +59,7 @@ public:
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
-    virtual int GetMasterProfileID() {
+    virtual unsigned int GetMasterProfileID() {
         MILO_FAIL("not implemented for this platform");
         return 0;
     }

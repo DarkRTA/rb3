@@ -22,7 +22,7 @@ public:
     virtual int GetCompetitionClient();
     virtual Quazal::SecureConnectionClient *GetSecureConnectionClient();
     virtual Quazal::AccountManagementClient *GetAccountManagementClient();
-    virtual int GetMasterProfileID();
+    virtual unsigned int GetMasterProfileID();
     virtual int CreateProfile(String);
     virtual int DeleteProfile(OnlineID &);
     virtual Quazal::Data *GetCustomAuthData();
