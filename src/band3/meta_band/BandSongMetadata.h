@@ -1,6 +1,7 @@
 #pragma once
 #include "meta/SongMetadata.h"
 #include "meta_band/BandSongMgr.h"
+#include "obj/Data.h"
 #include "os/DateTime.h"
 
 class BandSongMetadata : public SongMetadata {
@@ -96,3 +97,6 @@ public:
     bool mHasDiscUpdate; // 0xfc
     BandSongMgr *mSongMgr; // 0x100
 };
+
+    DECLARE_MESSAGE(MetadataLoadedMsg, "metadata_loaded")
+    END_MESSAGE
