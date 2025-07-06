@@ -28,4 +28,5 @@ public:
 };
 
 void InitStoreOverlay();
+void UpdateStoreOverlay();
 extern RndOverlay *gStoreUIOverlay; 
