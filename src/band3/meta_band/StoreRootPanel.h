@@ -27,5 +27,5 @@ public:
     DataArray *mUGCMetadata;
 };
 
-int InitStoreOverlay();
+void InitStoreOverlay();
 extern RndOverlay *gStoreUIOverlay; 

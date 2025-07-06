@@ -25,6 +25,6 @@ BEGIN_HANDLERS(StoreRootPanel)
     HANDLE_CHECK(149)
 END_HANDLERS
 
-int InitStoreOverlay() { 
+void InitStoreOverlay() { 
     gStoreUIOverlay = RndOverlay::Find(store, false);
 }
