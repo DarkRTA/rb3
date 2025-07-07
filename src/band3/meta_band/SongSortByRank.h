@@ -41,5 +41,4 @@ public:
 
     std::map<int, bool> mRankings; // 0x3c
     DataResultList mDataResults; // 0x54
-    float mDelayedStartTime;
 };
