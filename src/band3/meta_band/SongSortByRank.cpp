@@ -61,7 +61,7 @@ void SongSortByRank::MakeReady() {
 
 void SongSortByRank::CancelMakeReady() {
     CancelSongRankingRequest();
-    if(!this->mRankings.empty())
+    if(!mRankings.empty())
         mRankings.clear();
     mDataResults.Clear();
 }
