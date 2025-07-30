@@ -5,6 +5,7 @@
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "game/PracticeSectionProvider.h"
+#include "meta/StoreOffer.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/CharData.h"
@@ -15,6 +16,7 @@
 #include "meta_band/StoreInfoPanel.h"
 #include "meta_band/TokenRedemptionPanel.h"
 #include "obj/Data.h"
+#include "ui/UIPanel.h"
 
 class Node;
 
@@ -64,6 +66,15 @@ public:
     void SetSetlistName(const SavedSetlist *);
     void SetSetlistDescription(const SavedSetlist *);
     void SetSetlistOwner(const SetlistRecord *);
+    void SetEditSetlistName(const UIPanel *);
+    void SetEditSetlistDesc(const UIPanel *);
+    void SetOfferName(const StoreOffer *);
+    void SetOfferCost(const StoreOffer *);
+    void SetOfferArtist(const StoreOffer *);
+    void SetOfferAlbum(const StoreOffer *);
+    void SetOfferDescription(const StoreOffer *);
+    void SetStoreCrumbText();
+    void SetMusicLibraryStatus();
     void SetTokenRedemptionString(const TokenRedemptionPanel *, int);
     void SetBandName(const LocalBandUser *);
     void SetBandName(const BandProfile *);

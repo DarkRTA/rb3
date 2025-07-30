@@ -4,16 +4,20 @@
 #include "game/BandUser.h"
 #include "game/Scoring.h"
 #include "macros.h"
+#include "meta/StoreOffer.h"
 #include "meta_band/BandMachineMgr.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/MainHubMessageProvider.h"
+#include "meta_band/MainHubPanel.h"
+#include "meta_band/MetaPerformer.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SavedSetlist.h"
 #include "meta_band/SessionMgr.h"
 #include "meta_band/SongRecord.h"
 #include "meta_band/SongSortNode.h"
+#include "meta_band/StoreInfoPanel.h"
 #include "meta_band/Utl.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
@@ -22,12 +26,14 @@
 #include "os/PlatformMgr.h"
 #include "os/System.h"
 #include "ui/UIListSlot.h"
+#include "ui/UIPanel.h"
 #include "utl/Locale.h"
 #include "utl/MakeString.h"
 #include "utl/Messages2.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols4.h"
 
 DECOMP_FORCEACTIVE(AppLabel, "%s) %s")
 
@@ -386,6 +392,20 @@ void AppLabel::SetSetlistOwner(const SetlistRecord *setlist) {
     SetDisplayText(setlist->GetOwner(), true);
 }
 
+void AppLabel::SetEditSetlistName(const UIPanel *) {}
+void AppLabel::SetEditSetlistDesc(const UIPanel *) {}
+
+void AppLabel::SetOfferName(const StoreOffer *) {}
+void AppLabel::SetOfferCost(const StoreOffer *) {}
+void AppLabel::SetOfferArtist(const StoreOffer *) {}
+void AppLabel::SetOfferAlbum(const StoreOffer *) {}
+void AppLabel::SetOfferDescription(const StoreOffer *) {}
+
+void AppLabel::SetStoreCrumbText() {}
+void AppLabel::SetMusicLibraryStatus() {}
+
+void AppLabel::SetRecommendation(const StoreInfoPanel *) {}
+
 void AppLabel::SetLinkingCode(const char *cc) {
     String s(cc);
     if (s.length() != 10)
@@ -420,8 +440,61 @@ void AppLabel::SetRatingIcon(int i) {
 BEGIN_HANDLERS(AppLabel)
     HANDLE(set_user_name, OnSetUserName)
     HANDLE_ACTION(set_intro_name, SetIntroName(_msg->Obj<BandUser>(2)))
-
+    HANDLE_ACTION(
+        set_icon_and_profile_name,
+        SetIconAndProfileName((ScoreType)_msg->Int(2), _msg->Obj<BandProfile>(3))
+    )
+    HANDLE_ACTION(set_profile_name, SetProfileName(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_ACTION(
+        set_formatted_profile_name,
+        SetFormattedProfileName(_msg->Sym(2), _msg->Obj<BandUser>(3))
+    )
+    HANDLE_ACTION(set_star_rating, SetStarRating(_msg->Int(2)))
+    HANDLE_ACTION(set_motd, SetMotd(_msg->Obj<MainHubPanel>(2)))
+    HANDLE_ACTION(set_song_name, SetSongName(_msg->Sym(2), true))
+    HANDLE_ACTION(set_song_name_from_node, SetSongName(_msg->Obj<SongSortNode>(2)))
+    HANDLE_ACTION(set_album_name, SetAlbumName(_msg->Obj<SongSortNode>(2)))
+    HANDLE_ACTION(set_artist_name, SetArtistName(_msg->Obj<SortNode>(2)))
+    HANDLE_ACTION(set_artist_name_from_shortname, SetArtistName(_msg->Sym(2)))
+    HANDLE_ACTION(
+        set_song_and_artist_name, SetSongAndArtistName(_msg->Obj<SongSortNode>(2))
+    )
+    HANDLE_ACTION(
+        set_song_and_artist_name_from_sym,
+        SetSongAndArtistNameFromSymbol(_msg->Sym(2), _msg->Int(3))
+    )
+    HANDLE_ACTION(set_song_count, SetSongCount(_msg->Int(2)))
+    HANDLE_ACTION(set_song_year, SetSongYear(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(
+        set_score_or_stars, SetScoreOrStars(_msg->Obj<MetaPerformer>(2), _msg->Int(3))
+    )
+    HANDLE_ACTION(set_from_song_select_node, SetFromSongSelectNode(_msg->Obj<Node>(2)))
+    HANDLE(set_band_name, OnSetBandName)
+    HANDLE_ACTION(set_primary_band_name, SetPrimaryBandName())
+    HANDLE_ACTION(
+        set_setlist_name, SetSetlistName(_msg->Obj<SetlistRecord>(2)->GetSetlist())
+    )
+    HANDLE_ACTION(
+        set_setlist_description,
+        SetSetlistDescription(_msg->Obj<SetlistRecord>(2)->GetSetlist())
+    )
+    HANDLE_ACTION(set_setlist_owner, SetSetlistOwner(_msg->Obj<SetlistRecord>(2)))
+    HANDLE_ACTION(set_edit_setlist_name, SetEditSetlistName(_msg->Obj<UIPanel>(2)))
+    HANDLE_ACTION(set_edit_setlist_desc, SetEditSetlistDesc(_msg->Obj<UIPanel>(2)))
+    HANDLE_ACTION(set_offer_name, SetOfferName(_msg->Obj<StoreOffer>(2)))
+    HANDLE_ACTION(set_offer_cost, SetOfferCost(_msg->Obj<StoreOffer>(2)))
+    HANDLE_ACTION(set_offer_artist, SetOfferArtist(_msg->Obj<StoreOffer>(2)))
+    HANDLE_ACTION(set_offer_album, SetOfferAlbum(_msg->Obj<StoreOffer>(2)))
+    HANDLE_ACTION(set_store_crumb_text, SetStoreCrumbText())
+    HANDLE_ACTION(set_offer_description, SetOfferDescription(_msg->Obj<StoreOffer>(2)))
     HANDLE_ACTION(set_linking_code, SetLinkingCode(_msg->Str(2)))
+    HANDLE_ACTION(set_music_library_status, SetMusicLibraryStatus())
+    HANDLE_ACTION(set_battle_time_left, SetBattleTimeLeft(_msg->Int(2)))
+    HANDLE_ACTION(set_battle_instrument, SetBattleInstrument((ScoreType)_msg->Int(2)))
+    HANDLE_ACTION(
+        set_battle_instrument_str, SetBattleInstrument(_msg->Obj<SetlistRecord>(2))
+    )
+    HANDLE_ACTION(set_rating_icon, SetRatingIcon(_msg->Int(2)))
     HANDLE_ACTION(set_recommendation, SetRecommendation(_msg->Obj<StoreInfoPanel>(2)))
     HANDLE_SUPERCLASS(BandLabel)
     HANDLE_CHECK(1040)
