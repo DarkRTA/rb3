@@ -18,6 +18,6 @@ public:
     virtual const char *GetAlbum() const;
     virtual int GetTier(Symbol) const;
 
-    int unk34;
-    int unk38;
+    Symbol unk34;
+    StoreOffer *unk38;
 };

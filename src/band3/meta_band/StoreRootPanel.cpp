@@ -1,4 +1,6 @@
 #include "StoreRootPanel.h"
+#include "utl/Str.h"
+#include "utl/TextStream.h"
 StoreRootPanel::StoreRootPanel() {}
 
 StoreRootPanel::~StoreRootPanel() {
@@ -25,6 +27,14 @@ BEGIN_HANDLERS(StoreRootPanel)
     HANDLE_CHECK(149)
 END_HANDLERS
 
-int InitStoreOverlay() { 
+void InitStoreOverlay() { 
     gStoreUIOverlay = RndOverlay::Find(store, false);
+}
+
+void UpdateStoreOverlay() {
+    
+    if (gStoreUIOverlay && gStoreUIOverlay->mShowing != false) {
+        gStoreUIOverlay->Clear();
+        //I have no idea what DAT_80D17CBC is
+    }
 }

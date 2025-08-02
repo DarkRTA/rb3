@@ -80,7 +80,7 @@ public:
     virtual void RemoveUntil(float f1, float f2) { DoRemoveUntil(Instances(), f1, f2); }
     virtual std::list<T> &Instances() = 0;
     virtual void RemoveInstances(
-        std::list<T> &list, std::list<T>::iterator start, std::list<T>::iterator end
+        std::list<T> &list, typename std::list<T>::iterator start, typename std::list<T>::iterator end
     ) {
         list.erase(start, end);
         SetDirty(true);
@@ -104,8 +104,8 @@ public:
 
     void DoRemoveAt(std::list<T> &insts, float f1, float f2, float f3) {
         if (!insts.empty()) {
-            std::list<T>::iterator it5c = insts.end();
-            std::list<T>::iterator it = insts.begin();
+            typename std::list<T>::iterator it5c = insts.end();
+            typename std::list<T>::iterator it = insts.begin();
             for (; it != insts.end(); ++it) {
                 if (IsFabsZero(it->mXfm.v.y - f1)) {
                     if (f3 < 0 || Abs<float>(it->mXfm.v.x - f2) <= f3) {
@@ -132,7 +132,7 @@ public:
 
     void DoRemoveUntil(std::list<T> &insts, float f1, float f2) {
         if (!insts.empty()) {
-            std::list<T>::iterator it = insts.begin();
+            typename std::list<T>::iterator it = insts.begin();
             for (; it != insts.end() && f2 * it->mXfm.m.y.y + it->mXfm.v.y < f1; ++it) {
             }
             if (it != insts.end()) {

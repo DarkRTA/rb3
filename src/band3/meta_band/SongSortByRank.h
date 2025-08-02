@@ -25,7 +25,7 @@ public:
 class SongSortByRank : public SongSort {
 public:
     SongSortByRank() { mShortName = by_rank; }
-    virtual ~SongSortByRank() {}
+    virtual ~SongSortByRank();
     virtual DataNode Handle(DataArray *, bool);
     virtual void Clear();
     virtual bool IsReady() const;
@@ -35,6 +35,9 @@ public:
     virtual HeaderSortNode *NewHeaderNode(SongSortNode *) const;
     virtual OwnedSongSortNode *NewSongNode(SongRecord *) const;
     virtual StoreSongSortNode *NewSongNode(class StoreOffer *) const;
+
+    void RequestSongRankingInfo();
+    void CancelSongRankingRequest();
 
     std::map<int, bool> mRankings; // 0x3c
     DataResultList mDataResults; // 0x54
