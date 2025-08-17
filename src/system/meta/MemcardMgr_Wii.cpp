@@ -3,7 +3,11 @@
 MemcardMgr TheMemcardMgr;
 
 MemcardMgr::MemcardMgr()
-    : unka4(0), unka8(0), unkac(0), unkb9(0), unkbc(-1), unkc0(0), unkcc(0), unkd0(0),
+    : unka4(0), unka8(0), unkac(0), mIsWriteMode(0), unkbc(-1), unkc0(0), unkcc(0), unkd0(0),
       unkd4(-1), unkd8(-1), unkdc(0) {}
 
 MemcardMgr::~MemcardMgr() {}
+
+bool MemcardMgr::IsWriteMode() {
+  return (mIsWriteMode >> 1) & 1;
+}

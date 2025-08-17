@@ -29,6 +29,7 @@ public:
     int SaveBufferToNAND(bool);
     int DoSeek(int, BinStream::SeekType);
     bool FinishWrite();
+    void SeekImpl(int, BinStream::SeekType);
 
     char *mBuffer; // 0x68
     int mTell; // 0x70

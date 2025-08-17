@@ -1,14 +1,7 @@
 #include "BufStreamNAND.h"
-#include "PowerPC_EABI_Support/Runtime/__mem.h"
-#include "math/SHA1.h"
-#include "math/StreamChecksum.h"
-#include "meta/FixedSizeSaveableStream.h"
-#include "os/Debug.h"
-#include "os/Memcard.h"
-#include "revolution/nand/nand.h"
+#include "meta/MemcardMgr_Wii.h"
 #include "rndwii/Rnd.h"
-#include "utl/BinStream.h"
-#include "utl/Symbol.h"
+
 
 BufStreamNAND::BufStreamNAND(void *v1, int i1, char* buffer, bool b1) 
     : FixedSizeSaveableStream(v1, i1, b1), mBuffer(buffer), mChecksum(0), mBytesChecksummed(0), mSize(i1), mFilePath(), mFileOpen(0) {
@@ -199,4 +192,20 @@ bool BufStreamNAND::FinishWrite() {
     if(result)
         mFail = true;
     return result;
+}
+
+int BufStreamNAND::DoSeek(int i1, BinStream::SeekType seekType) {
+
+}
+
+void BufStreamNAND::SeekImpl(int i1, BinStream::SeekType seekType) {
+    if(TheMemcardMgr.IsWriteMode() && SaveBufferToNAND(false) != 0)
+        mFail = true;
+    else {
+        DoSeek(i1, seekType);
+        if(!TheMemcardMgr.IsWriteMode() && LoadBufferFromNAND()) {
+            mFail = true;
+        }
+    }
+     
 }
