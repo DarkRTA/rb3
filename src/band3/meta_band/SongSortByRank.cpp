@@ -1,17 +1,8 @@
 #include "meta_band/SongSortByRank.h"
 #include "meta/Sorting.h"
-#include "meta/StoreOffer.h"
-#include "meta_band/BandSongMgr.h"
 #include "meta_band/MusicLibrary.h"
 #include "meta_band/ProfileMgr.h"
-#include "meta_band/SongSortNode.h"
-#include "meta_band/StoreSongSortNode.h"
 #include "net_band/RockCentral.h"
-#include "net_band/RockCentralMsgs.h"
-#include "obj/ObjMacros.h"
-#include "os/Debug.h"
-#include "stl/pointers/_vector.h"
-#include "utl/Symbols4.h"
 
 RankCmp::RankCmp(int val, const char *name, RankCmp::RankType ty)
     : mVal(val), mSongName(name), mType(ty) {}
