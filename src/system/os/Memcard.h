@@ -8,6 +8,35 @@ enum AccessType {
 };
 enum CreateType {
 };
+enum MCResult {
+    kMCNoError,
+    kMCNoCard,
+    kMCNotFormatted,
+    kMCDifferentCard,
+    kMCReadWriteFailed,
+    kMCCorrupt,
+    kMCNotEnoughSpace,
+    kMCFileExists,
+    kMCFileNotFound,
+    kMCMultipleFilesFound,
+    kMCObsoleteVersion,
+    kMCNewerVersion,
+    kMCGeneralError,
+    kMCUnsupported,
+    kMCAlreadyFormatted,
+    kMCInsufficientInodes,
+    kMCSystemCorrupt,
+    kMCAccessError,
+    kMCMaxedSysMem,
+    kMCSystemMemCorrupt,
+    kMCUnknownError,
+    kMCNoEntriesError,
+    kMCNoFilesError,
+    kMCNoPermission,
+    kMCDeprecated,
+    kMCNotOwner,
+    kMCMax
+};
 
 class MCFile {
 public:
