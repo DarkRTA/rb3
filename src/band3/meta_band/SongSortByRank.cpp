@@ -1,12 +1,8 @@
 #include "meta_band/SongSortByRank.h"
 #include "meta/Sorting.h"
-#include "meta_band/BandSongMgr.h"
 #include "meta_band/MusicLibrary.h"
 #include "meta_band/ProfileMgr.h"
-#include "meta_band/SongSortNode.h"
 #include "net_band/RockCentral.h"
-#include "os/Debug.h"
-#include "stl/pointers/_vector.h"
 
 RankCmp::RankCmp(int val, const char *name, RankCmp::RankType ty)
     : mVal(val), mSongName(name), mType(ty) {}
@@ -80,3 +76,22 @@ void SongSortByRank::CancelSongRankingRequest() {
     TheRockCentral.CancelOutstandingCalls(this);
 }
 
+StoreSongSortNode SongSortByRank::*NewSongNode(StoreOffer *offer) {
+    const char *name = offer->OfferName();
+    //RankCmp *cmp = new 
+}
+
+DataNode SongSortByRank::OnMsg(RockCentralOpCompleteMsg const &msg) {
+    if(msg.Success()) {
+        for(int i = 0; i < mDataResults.mDataResultList.size(); i++) {
+            DataResult *res = mDataResults.GetDataResult(i);
+            //res->GetDataResultValue("SongSortByRank.cpp", );
+        }
+    }
+}
+
+BEGIN_HANDLERS(SongSortByRank)
+HANDLE_MESSAGE(RockCentralOpCompleteMsg)
+HANDLE_SUPERCLASS(SongSort)
+HANDLE_CHECK(0x13E)
+END_HANDLERS

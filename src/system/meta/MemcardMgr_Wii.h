@@ -10,6 +10,7 @@ public:
     virtual ~MemcardMgr();
     virtual int ThreadStart();
     virtual void ThreadDone(int);
+    bool IsWriteMode();
 
     bool unk20;
     char unk21[64];
@@ -20,7 +21,7 @@ public:
     int unkb0;
     int unkb4;
     bool unkb8;
-    bool unkb9;
+    bool mIsWriteMode; // 0xB9
     int unkbc;
     int unkc0; // mState
     int unkc4;

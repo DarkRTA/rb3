@@ -2,6 +2,7 @@
 #include "meta_band/SongSort.h"
 #include "meta_band/SongSortNode.h"
 #include "net_band/DataResults.h"
+#include "net_band/RockCentralMsgs.h"
 #include "utl/Symbols.h"
 
 class RankCmp : public SongSortCmp {
@@ -36,6 +37,7 @@ public:
     virtual OwnedSongSortNode *NewSongNode(SongRecord *) const;
     virtual StoreSongSortNode *NewSongNode(class StoreOffer *) const;
 
+    DataNode OnMsg(RockCentralOpCompleteMsg const&);
     void RequestSongRankingInfo();
     void CancelSongRankingRequest();
 
