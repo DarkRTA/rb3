@@ -1,4 +1,5 @@
 #include "BufStreamNAND.h"
+#include "PowerPC_EABI_Support/Runtime/__mem.h"
 #include "math/SHA1.h"
 #include "math/StreamChecksum.h"
 #include "meta/FixedSizeSaveableStream.h"
@@ -51,16 +52,16 @@ void BufStreamNAND::Clear() {
 int BufStreamNAND::Open() {
     s32 file;
     MCResult result;
-    SetGPHangDetectEnabled(0, "Open");
+    SetGPHangDetectEnabled(false, "Open");
     if(!mFileOpen) {
         file = NANDOpen(mFilePath, mFileInfo, 3);
         result = HandleResultNAND(file);
         if(result) 
-            mFail = 1;
+            mFail = true;
         else
-            mFileOpen = 1;
+            mFileOpen = true;
     }
-    SetGPHangDetectEnabled(1, "Open");
+    SetGPHangDetectEnabled(true, "Open");
     
     return file;
 }
@@ -68,24 +69,24 @@ int BufStreamNAND::Open() {
 int BufStreamNAND::Close() {
     s32 file;
     MCResult result;
-    SetGPHangDetectEnabled(0, "Close");
+    SetGPHangDetectEnabled(false, "Close");
     if(mFileOpen) {
         //NANDGetLength(mFileInfo, u32 *) // stack variable epic
         file = NANDClose(mFileInfo);
         result = HandleResultNAND(file);
         if(result)
-            mFail = 1;
+            mFail = true;
         else
-         mFileOpen = 1;
+         mFileOpen = true;
     }
-    SetGPHangDetectEnabled(0, "Close");
+    SetGPHangDetectEnabled(true, "Close");
     return result;
 }
 
 bool BufStreamNAND::FinishStream() {
     int result = Close();
     if(result) {
-        mFail = 1;
+        mFail = true;
     }
     return result;
 }
@@ -99,7 +100,7 @@ void BufStreamNAND::ReadImpl(void *v1, int i1) {
         
         if((mRunningTell + i1) > mSize || (mTell + i1) > mChunkSize) {
             temp = mSize - mTell;
-            mFail = 1;
+            mFail = true;
         }
         // init_proc(&mBuffer[mTell], temp)
         mRunningTell += temp;
@@ -112,9 +113,90 @@ void BufStreamNAND::ReadImpl(void *v1, int i1) {
     }
 }
 
+int BufStreamNAND::Pad(int size) {
+    MILO_ASSERT(size > mSize, 0x170);
+    int result = 0;
+
+    while(size > mRunningTell) {
+        mTell = size - mRunningTell;
+
+        if(mTell > mChunkSize)
+            mTell = mChunkSize;
+        mRunningTell += mTell;
+
+        result = SaveBufferToNAND(0);
+        if(result) {
+            mFail = true;
+            return result;
+        }
+    }
+    return result;
+}
+
+int BufStreamNAND::PadToEnd() {
+    return Pad(mSize);
+}
+
 void BufStreamNAND::DeleteChecksum() {
     if(mChecksum) {
         delete(mChecksum);
     }
     mChecksum = 0;
+}
+
+int BufStreamNAND::LoadBufferFromNAND() {
+    SetGPHangDetectEnabled(false, "LoadBufferFromNAND");
+    s32 file = Open();
+    DoSeek(0, kSeekCur);
+    int v3 = mChunkSize;
+    int v4 = mRunningTell;
+    int v5 = mSize;
+
+    if(v4 + v3 > v5)
+        v3 = v5 - v4;
+    s32 res = NANDRead(mFileInfo, mBuffer, v3);
+
+    if(res == v3) {
+        mTell = 0;
+        SetGPHangDetectEnabled(true, "LoadBufferFromNAND");
+        return file;
+    }
+    else {
+        mFail = true;
+        MCResult result = HandleResultNAND(res);
+        SetGPHangDetectEnabled(true, "LoadBufferFromNAND");
+        return result;
+    }
+}
+
+int BufStreamNAND::SaveBufferToNAND(bool b1) {
+    SetGPHangDetectEnabled(false, "SaveBufferToNAND");
+    s32 file = Open();
+    s32 write = NANDWrite(mFileInfo, mBuffer, mTell);
+    if(write == mTell) {
+        memset(mBuffer, 0, mChunkSize);
+        mTell = 0;
+        if(b1 && mRunningTell == mSize && (file = Close()) != 0) {
+            mFail = true;
+            SetGPHangDetectEnabled(true, "SaveBufferToNAND");
+            return file;
+        }
+        else {
+            SetGPHangDetectEnabled(true, "SaveBufferToNAND");
+            return file;
+        }
+    }
+    else {
+        mFail = true;
+        MCResult result = HandleResultNAND(write);
+        SetGPHangDetectEnabled(true, "SaveBufferToNAND");
+        return result;
+    }
+}
+
+bool BufStreamNAND::FinishWrite() {
+    bool result = SaveBufferToNAND(false);
+    if(result)
+        mFail = true;
+    return result;
 }

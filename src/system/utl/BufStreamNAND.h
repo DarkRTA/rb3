@@ -20,10 +20,15 @@ public:
     int LoadBufferFromNAND();
     void Clear();
     int Open();
-    MCResult HandleResultNAND(s32 l1);
+    MCResult HandleResultNAND(s32);
     bool FinishStream();
     int Close();
     void DeleteChecksum();
+    int Pad(int);
+    int PadToEnd();
+    int SaveBufferToNAND(bool);
+    int DoSeek(int, BinStream::SeekType);
+    bool FinishWrite();
 
     char *mBuffer; // 0x68
     int mTell; // 0x70
