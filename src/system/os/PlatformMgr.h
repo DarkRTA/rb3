@@ -95,6 +95,7 @@ public:
     bool IsEthernetCableConnected();
     void PreInit();
     void RegionInit();
+    void Init();
     void UpdateSigninState();
     void SetUserSignedIn(int);
     void SetUserSignedOut(int);
@@ -239,4 +240,7 @@ DECLARE_MESSAGE(PartyMembersChangedMsg, "party_members_changed")
 END_MESSAGE
 
 DECLARE_MESSAGE(EnumerateMessagesCompleteMsg, "enumerate_messages_complete")
+END_MESSAGE
+
+DECLARE_MESSAGE(WiiDiscErrorMsg, "wii_disc_error")
 END_MESSAGE
