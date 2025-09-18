@@ -63,7 +63,7 @@ bool StreamChecksumValidator::Validate() {
 
 void StreamChecksumValidator::HandleError(const char *c) {
     TheDebug << MakeString(c);
-    ThePlatformMgr.SetDiskError((DiskError)3);
+    ThePlatformMgr.SetDiskError(kFailedChecksum);
 }
 
 bool StreamChecksumValidator::SetFileChecksum(bool b) {

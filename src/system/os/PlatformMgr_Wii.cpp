@@ -4,8 +4,11 @@
 #include "os/PlatformMgr.h"
 #include "os/Joypad_Wii.h"
 #include "os/CritSec.h"
+#include "system/obj/Dir.h"
+#include "system/utl/HttpWii.h"
 #include "meta/Profile.h"
 #include "meta/WiiProfileMgr.h"
+#include "RevoEX/nhttp/nhttp.h"
 #include "revolution/gx/GXTypes.h"
 #include "revolution/os/OSReset.h"
 #include "revolution/os/OSThread.h"
@@ -128,6 +131,18 @@ void PlatformMgr::RegionInit() {
     } else {
         SetRegion(kRegionNA);
     }
+}
+
+void PlatformMgr::Init() {
+    mHomeMenuWii->Init();
+    SetName("platform_mgr", ObjectDir::sMainDir);
+    JoypadSubscribe(this);
+    SetScreenSaver(true);
+    TheHttpWii.Init();
+    UpdateSigninState();
+    mIsOnlineRestricted = SCCheckPCMessageRestriction();
+    TheContentMgr->RegisterCallback(this, false);
+    SOHeapInit();
 }
 
 void PlatformMgr::SetNotifyUILocation(NotifyLocation) {}
@@ -338,6 +353,8 @@ void PlatformMgr::ClearNetError() {
     mHasNetError = 0;
 }
 
+int PlatformMgr::GetLastNHTTPError() { return NHTTPGetError(); }
+
 int PlatformMgr::GetLastDNSError() { return -gDNSError; }
 
 void PlatformMgr::SetConnected(bool connected) { mConnected = connected; }
@@ -363,7 +380,30 @@ bool PlatformMgr::OnMsg(const ButtonUpMsg &msg) {
     return false;
 }
 
-void PlatformMgr::SetDiskError(DiskError err) {}
+void PlatformMgr::SetDiskError(DiskError err) {
+    if (mDiskError != kFailedChecksum && mDiskError != err) {
+        mDiskError = err;
+        if (err == kNoDiskError) {
+            mDiscErrorMgr->SetDiscError(false);
+            mDiscErrorMgr->mRetryError = false;
+            mDiscErrorMgr->mMovieReadError = false;
+        } else if (err == kDiskError) {
+            mDiscErrorMgr->SetDiscError(true);
+            mDiscErrorMgr->mRetryError = true;
+        } else if (err == kWrongDisk) {
+            mDiscErrorMgr->SetDiscError(true);
+            mDiscErrorMgr->mRetryError = false;
+        }
+        if (err != kNoDiskError) {
+            if (mNetworkPlay == false) {
+            } else {
+            }
+        }
+        if (mDiskError == kFailedChecksum) {
+            TheDebug.Exit(1, true);
+        }
+    }
+}
 
 void WiiPowerCallback() { gPowerCallback = kQuitShutdown; }
 void WiiResetCallback() { gPowerCallback = kQuitRestart; }
