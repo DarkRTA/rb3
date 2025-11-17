@@ -6,20 +6,10 @@
         "objects": {
             "App.cpp": "NonMatching",
             "BandOffline.cpp": "MISSING",
-            "BudgetScreen.cpp": {
-                "status": "NonMatching",
-                "extra_cflags": [
-                    "-ipa function"
-                ]
-            },
+            "BudgetScreen.cpp": { "status": "NonMatching", "extra_cflags": ["-ipa function"] },
             "ChecksumData_wii.cpp": "Matching",
             "Main.cpp": "Matching",
-            "keygen_wii.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-O2,p -sdata 4 -opt noschedule -func_align 4"
-                ]
-            }
+            "keygen_wii.cpp": { "status": "Matching", "extra_cflags": [ "-O2,p -sdata 4 -opt noschedule -func_align 4" ] }
         }
     },
     "band3": {
@@ -40,6 +30,7 @@
             "band3/bandtrack/TrackConfig.cpp": "Matching",
             "band3/bandtrack/TrackPanel.cpp": "NonMatching",
             "band3/bandtrack/VocalTrack.cpp": "NonMatching",
+
             "band3/game/AccuracyTracker.cpp": "Matching",
             "band3/game/Band.cpp": "NonMatching",
             "band3/game/BandPerformer.cpp": "NonMatching",
@@ -117,6 +108,7 @@
             "band3/game/VocalPlayer.cpp": "NonMatching",
             "band3/game/VocalScoreHistory.cpp": "Matching",
             "band3/game/VocalTrainerPanel.cpp": "NonMatching",
+
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentCategory.cpp": "Matching",
             "band3/meta_band/AccomplishmentConditional.cpp": "Matching",
@@ -314,6 +306,7 @@
             "band3/meta_band/WiiFriendsList.cpp": "MISSING",
             "band3/meta_band/WiiFriendsProvider.cpp": "MISSING",
             "band3/meta_band/WiiProfilePanel.cpp": "MISSING",
+
             "band3/net_band/ContextWrapper.cpp": "Matching",
             "band3/net_band/DataResults.cpp": "NonMatching",
             "band3/net_band/EntityUploader_Wii.cpp": "NonMatching",
@@ -325,6 +318,7 @@
             "band3/net_band/RockBandDDF_Wii.cpp": "MISSING",
             "band3/net_band/RockCentral.cpp": "NonMatching",
             "band3/net_band/RockCentralJobs.cpp": "NonMatching",
+
             "band3/tour/FixedSetlist.cpp": "Matching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
@@ -341,12 +335,7 @@
             "band3/tour/TourDesc.cpp": "Matching",
             "band3/tour/TourDescPanel.cpp": "MISSING",
             "band3/tour/TourGameModifier.cpp": "Matching",
-            "band3/tour/TourGameRules.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-ipa function"
-                ]
-            },
+            "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "band3/tour/TourPerformer.cpp": "NonMatching",
             "band3/tour/TourPerformerLocal.cpp": "NonMatching",
             "band3/tour/TourPerformerRemote.cpp": "Matching",
@@ -393,10 +382,12 @@
             "network/Core/SystemSetting.cpp": "NonMatching",
             "network/Core/TimedSignal.cpp": "NonMatching",
             "network/Core/WorkerThreads.cpp": "NonMatching",
+
             "network/ddl/AdapterDeclaration.cpp": "Matching",
             "network/ddl/DOClassDeclaration.cpp": "MISSING",
             "network/ddl/NameSpace.cpp": "Matching",
             "network/ddl/ParseTree.cpp": "Matching",
+
             "network/Extensions/AnyExtDDF.cpp": "MISSING",
             "network/Extensions/AVStreamsDDF.cpp": "MISSING",
             "network/Extensions/ChannelInfo.cpp": "NonMatching",
@@ -438,6 +429,7 @@
             "network/Extensions/VoiceChannelMemberDDL.cpp": "MISSING",
             "network/Extensions/VoiceChatExtDDF.cpp": "MISSING",
             "network/Extensions/VoiceStream.cpp": "MISSING",
+
             "network/net/CustomMatchMakingDDL_Wii.cpp": "MISSING",
             "network/net/HarmonixGameDDF_Wii.cpp": "MISSING",
             "network/net/HarmonixGatheringDDL_Wii.cpp": "MISSING",
@@ -466,6 +458,7 @@
             "network/net/VoiceChatMgr.cpp": "NonMatching",
             "network/net/WiiFriendMgr.cpp": "NonMatching",
             "network/net/WiiMessenger.cpp": "NonMatching",
+
             "network/ObjDup/ActiveDOCallContext.cpp": "MISSING",
             "network/ObjDup/AddToStoreOperation.cpp": "MISSING",
             "network/ObjDup/Authentication.cpp": "MISSING",
@@ -558,6 +551,7 @@
             "network/ObjDup/UserDefinedState.cpp": "MISSING",
             "network/ObjDup/UserDefinedStateDDL.cpp": "MISSING",
             "network/ObjDup/WKHandle.cpp": "MISSING",
+
             "network/Plugins/BitStream.cpp": "NonMatching",
             "network/Plugins/Buffer.cpp": "NonMatching",
             "network/Plugins/ByteStream.cpp": "NonMatching",
@@ -625,6 +619,7 @@
             "network/Plugins/URLProbeList.cpp": "MISSING",
             "network/Plugins/ZLibCompression.cpp": "NonMatching",
             "network/Plugins/ZLibPlugin.cpp": "Matching",
+
             "network/ProductInfo/CoreInfo.cpp": "MISSING",
             "network/ProductInfo/ProductInfo.cpp": "MISSING",
             "network/Products/JobTerminateFacade.cpp": "MISSING",
@@ -634,6 +629,7 @@
             "network/Products/ProductFacade.cpp": "MISSING",
             "network/Products/ProductSpecifics.cpp": "Matching",
             "network/Products/RendezVousProductInfo.cpp": "MISSING",
+
             "network/Protocol/CallProtocolMethodOperation.cpp": "MISSING",
             "network/Protocol/ClientProtocol.cpp": "MISSING",
             "network/Protocol/DynamicProtocol.cpp": "MISSING",
@@ -644,12 +640,14 @@
             "network/Protocol/ProtocolCallContext.cpp": "NonMatching",
             "network/Protocol/ProtocolRequestBroker.cpp": "MISSING",
             "network/Protocol/ServerProtocol.cpp": "MISSING",
+
             "network/RVPackages/JobNintendoLogin.cpp": "MISSING",
             "network/RVPackages/JobNintendoTerminate.cpp": "MISSING",
             "network/RVPackages/JobNintendoUpdateNameByGuest.cpp": "NonMatching",
             "network/RVPackages/NintendoClient.cpp": "MISSING",
             "network/RVPackages/NintendoManagementProtocolDDL.cpp": "MISSING",
             "network/RVPackages/NintendoTokenDDL.cpp": "MISSING",
+
             "network/Services/AccountDataDDL.cpp": "MISSING",
             "network/Services/AccountManagementClient.cpp": "MISSING",
             "network/Services/AccountManagementCommand.cpp": "MISSING",
@@ -739,6 +737,7 @@
             "network/Services/TournamentDDL.cpp": "MISSING",
             "network/Services/UserMessage.cpp": "Matching",
             "network/Services/UserMessageDDL.cpp": "MISSING",
+
             "network/Utility/Chrono.cpp": "MISSING",
             "network/Utility/LocalClock.cpp": "MISSING",
             "network/Utility/Statistics.cpp": "Matching",
@@ -830,9 +829,7 @@
             "system/bandobj/BandCrowdMeter.cpp": "NonMatching",
             "system/bandobj/BandDirector.cpp": {
                 "status": "NonMatching",
-                "extra_cflags": [
-                    "-inline deferred"
-                ]
+                "extra_cflags": ["-inline deferred"]
             },
             "system/bandobj/BandFaceDeform.cpp": "NonMatching",
             "system/bandobj/BandHeadShaper.cpp": "NonMatching",
@@ -891,6 +888,7 @@
             "system/bandobj/TrackPanelDirBase.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
+
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "Matching",
             "system/beatmatch/BeatMaster.cpp": "Equivalent",
             "system/beatmatch/BeatMatch.cpp": "Matching",
@@ -943,6 +941,7 @@
             "system/beatmatch/TrackWatcher.cpp": "Matching",
             "system/beatmatch/TrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/VocalNoteList.cpp": "NonMatching",
+
             "system/char/Char.cpp": "NonMatching",
             "system/char/CharBlendBone.cpp": "Equivalent",
             "system/char/CharBone.cpp": {
@@ -1031,10 +1030,12 @@
             "system/char/FileMerger.cpp": "Equivalent",
             "system/char/FileMergerOrganizer.cpp": "NonMatching",
             "system/char/Waypoint.cpp": "NonMatching",
+
             "system/dsp/IIRFilter.cpp": "MISSING",
             "system/dsp/PitchDetector.cpp": "MISSING",
             "system/dsp/SndAnalysis.cpp": "MISSING",
             "system/dsp/VibratoDetector.cpp": "MISSING",
+
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
             "system/math/strips/RevisitedRadix.cpp": "NonMatching",
@@ -1047,12 +1048,7 @@
             "system/math/FileChecksum.cpp": "Matching",
             "system/math/Geo.cpp": "NonMatching",
             "system/math/Interp.cpp": "Matching",
-            "system/math/Key.cpp": {
-                "status": "NonMatching",
-                "extra_cflags": [
-                    "-fp_contract off"
-                ]
-            },
+            "system/math/Key.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "Matching",
             "system/math/Rand2.cpp": "Matching",
@@ -1063,6 +1059,7 @@
             "system/math/StreamChecksum.cpp": "Matching",
             "system/math/Trig.cpp": "Matching",
             "system/math/Vec.cpp": "Matching",
+
             "system/meta/Achievements.cpp": "Matching",
             "system/meta/ButtonHolder.cpp": "NonMatching",
             "system/meta/ConnectionStatusPanel.cpp": "Matching",
@@ -1099,6 +1096,7 @@
             "system/meta/StorePreviewMgr.cpp": "LinkIssues",
             "system/meta/StreamPlayer.cpp": "Matching",
             "system/meta/WiiProfileMgr.cpp": "NonMatching",
+
             "system/midi/DataEventList.cpp": "Equivalent",
             "system/midi/DisplayEvents.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": "NonMatching",
@@ -1106,11 +1104,13 @@
             "system/midi/MidiReader.cpp": "Matching",
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
+
             "system/movie/CustomSplash_Wii.cpp": "NonMatching",
             "system/movie/Movie_Wii.cpp": "MISSING",
             "system/movie/Movie.cpp": "MISSING",
             "system/movie/Splash.cpp": "NonMatching",
             "system/movie/TexMovie.cpp": "Matching",
+
             "system/obj/DataArray.cpp": "Equivalent",
             "system/obj/DataFile.cpp": "NonMatching",
             "system/obj/DataFunc.cpp": "Equivalent",
@@ -1130,16 +1130,16 @@
                 "comment": "using auto_inline on seems to fix issues we've had where we'd need to unpool data, but then we'd have a floatbase"
             },
             "system/obj/Task.cpp": "NonMatching",
-            "system/obj/TextFile.cpp": {
+            "system/obj/TextFile.cpp":{
                 "status": "Matching",
-                "extra_cflags": [
-                    "-inline noauto -O4,p"
-                ],
+                "extra_cflags": [ "-inline noauto -O4,p" ],
                 "comment": "don't ask me how, but swapping these two flags' order seems to fix the bss meme. just using O4 also achieves the same effect."
             },
             "system/obj/TypeProps.cpp": "Matching",
             "system/obj/Utl.cpp": "NonMatching",
+
             "system/oggvorbis/VorbisMem.cpp": "Matching",
+
             "system/os/AppChild.cpp": "Matching",
             "system/os/Archive.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
@@ -1196,6 +1196,7 @@
             "system/os/UserMgr.cpp": "Matching",
             "system/os/VirtualKeyboard.cpp": "Matching",
             "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
+
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
             "system/rndobj/Anim.cpp": {
                 "status": "Equivalent",
@@ -1271,12 +1272,7 @@
             "system/rndobj/ShadowMap.cpp": "MISSING",
             "system/rndobj/SIVideo.cpp": "Matching",
             "system/rndobj/SoftParticles.cpp": "Matching",
-            "system/rndobj/Tex.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-ipa function"
-                ]
-            },
+            "system/rndobj/Tex.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/rndobj/TexBlendController.cpp": "Matching",
             "system/rndobj/TexBlender.cpp": "Matching",
             "system/rndobj/TexRenderer.cpp": "NonMatching",
@@ -1289,6 +1285,7 @@
             "system/rndobj/TransProxy.cpp": "Matching",
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
+
             "system/rndwii/Cam.cpp": "NonMatching",
             "system/rndwii/Env.cpp": "NonMatching",
             "system/rndwii/Lit.cpp": "NonMatching",
@@ -1302,6 +1299,7 @@
             "system/rndwii/SplitPostProc.cpp": "NonMatching",
             "system/rndwii/Tex.cpp": "NonMatching",
             "system/rndwii/TexRenderer.cpp": "Matching",
+
             "system/synth/ADSR.cpp": "Matching",
             "system/synth/BinkClip.cpp": "Matching",
             "system/synth/BinkReader.cpp": "NonMatching",
@@ -1352,6 +1350,7 @@
             "system/synth/VoiceBeat.cpp": "NonMatching",
             "system/synth/VorbisReader.cpp": "NonMatching",
             "system/synth/WavReader.cpp": "NonMatching",
+
             "system/synthwii/EnvelopeWii.cpp": "NonMatching",
             "system/synthwii/FXWii.cpp": "MISSING",
             "system/synthwii/Mic_Wii.cpp": "NonMatching",
@@ -1362,11 +1361,13 @@
             "system/synthwii/Synth_Wii.cpp": "MISSING",
             "system/synthwii/VoiceWii.cpp": "MISSING",
             "system/synthwii/WahEffect.cpp": "Matching",
+
             "system/track/Track.cpp": "Matching",
             "system/track/TrackDir.cpp": "NonMatching",
             "system/track/TrackTest.cpp": "Matching",
             "system/track/TrackWidget.cpp": "NonMatching",
             "system/track/TrackWidgetImp.cpp": "NonMatching",
+
             "system/ui/CheatProvider.cpp": "Matching",
             "system/ui/LabelNumberTicker.cpp": "Matching",
             "system/ui/LabelShrinkWrapper.cpp": "Matching",
@@ -1410,7 +1411,9 @@
             "system/ui/UITransitionHandler.cpp": "Matching",
             "system/ui/UITrigger.cpp": "NonMatching",
             "system/ui/Utl.cpp": "NonMatching",
+
             "system/usbwii/UsbWii.cpp": "NonMatching",
+
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",
             "system/utl/BinkIntegration.cpp": "NonMatching",
@@ -1451,12 +1454,7 @@
             "system/utl/Mem_Wii.cpp": "NonMatching",
             "system/utl/MemMgr.cpp": "MISSING",
             "system/utl/MemPoint.cpp": "Matching",
-            "system/utl/MemStream.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-ipa function"
-                ]
-            },
+            "system/utl/MemStream.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/utl/MemTracker.cpp": "Matching",
             "system/utl/MemcardBufStream.cpp": "Matching",
             "system/utl/Messages.cpp": "Matching",
@@ -1476,12 +1474,7 @@
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/SongInfoCopy.cpp": "Equivalent",
             "system/utl/Spew.cpp": "Matching",
-            "system/utl/Str.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-ipa function"
-                ]
-            },
+            "system/utl/Str.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/utl/StringTable.cpp": "Matching",
             "system/utl/SuperFormatString.cpp": "NonMatching",
             "system/utl/Symbol.cpp": "Equivalent",
@@ -1499,6 +1492,7 @@
             "system/utl/VarTimer.cpp": "NonMatching",
             "system/utl/Wav.cpp": "NonMatching",
             "system/utl/WaveFile.cpp": "Matching",
+
             "system/world/CameraManager.cpp": "Equivalent",
             "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "Matching",
@@ -1530,10 +1524,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "system/speex",
         "objects": {
-            "system/speex/libspeex/bits.c": {
-                "status": "LinkIssues",
-                "comment": "Has issues with Quazal"
-            },
+            "system/speex/libspeex/bits.c": {"status": "LinkIssues", "comment": "Has issues with Quazal"},
             "system/speex/libspeex/cb_search.c": "Matching",
             "system/speex/libspeex/exc_10_16_table.c": "Matching",
             "system/speex/libspeex/exc_10_32_table.c": "Matching",
@@ -1620,12 +1611,7 @@
             "system/zlib/inflate.c": "Matching",
             "system/zlib/inftrees.c": "Matching",
             "system/zlib/inffast.c": "Matching",
-            "system/zlib/zutil.c": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-str nopool"
-                ]
-            }
+            "system/zlib/zutil.c": { "status": "Matching", "extra_cflags": ["-str nopool"] }
         }
     },
     "lib/binkwii": {
@@ -1685,8 +1671,10 @@
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/wmem.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/wprintf.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/wstring.c": "MISSING",
+
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/ansi_fp.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/math_sun.c": "Matching",
+
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/abort_exit_ppc_eabi.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/math_ppc.c": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/time.dolphin.c": "Matching",
@@ -1753,32 +1741,12 @@
             "sdk/PowerPC_EABI_Support/Runtime/__init_cpp_exceptions.cpp": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/__mem.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/__va_arg.c": "Matching",
-            "sdk/PowerPC_EABI_Support/Runtime/Gecko_ExceptionPPC.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-Cpp_exceptions on"
-                ]
-            },
+            "sdk/PowerPC_EABI_Support/Runtime/Gecko_ExceptionPPC.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
             "sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.c": "Matching",
-            "sdk/PowerPC_EABI_Support/Runtime/MWRTTI.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-Cpp_exceptions on"
-                ]
-            },
-            "sdk/PowerPC_EABI_Support/Runtime/New.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-Cpp_exceptions on"
-                ]
-            },
-            "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-Cpp_exceptions on"
-                ]
-            },
+            "sdk/PowerPC_EABI_Support/Runtime/MWRTTI.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
+            "sdk/PowerPC_EABI_Support/Runtime/New.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
+            "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
             "sdk/PowerPC_EABI_Support/Runtime/ptmf.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/runtime.c": "Matching"
         }
@@ -1791,6 +1759,7 @@
             "sdk/PowerPC_EABI_Support/MetroTRK/custconn/cc_gdev.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MetroTRK/custconn/CircleBuffer.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MetroTRK/custconn/MWCriticalSection_gc.c": "Matching",
+
             "sdk/PowerPC_EABI_Support/MetroTRK/__exception.s": "MISSING",
             "sdk/PowerPC_EABI_Support/MetroTRK/dispatch.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MetroTRK/dolphin_trk_glue.c": "MISSING",
@@ -1822,7 +1791,9 @@
         "cflags": "sdk/RVL_SDK",
         "objects": {
             "sdk/RVL_SDK/src/ai/ai.c": "Matching",
+
             "sdk/RVL_SDK/src/arc/arc.c": "NonMatching",
+
             "sdk/RVL_SDK/src/ax/AX.c": "Matching",
             "sdk/RVL_SDK/src/ax/AXAlloc.c": "MISSING",
             "sdk/RVL_SDK/src/ax/AXAux.c": "MISSING",
@@ -1833,6 +1804,7 @@
             "sdk/RVL_SDK/src/ax/AXSPB.c": "MISSING",
             "sdk/RVL_SDK/src/ax/AXVPB.c": "MISSING",
             "sdk/RVL_SDK/src/ax/DSPCode.c": "Matching",
+
             "sdk/RVL_SDK/src/axfx/AXFXChorus.c": "MISSING",
             "sdk/RVL_SDK/src/axfx/AXFXChorusExp.c": "MISSING",
             "sdk/RVL_SDK/src/axfx/AXFXDelay.c": "MISSING",
@@ -1841,7 +1813,9 @@
             "sdk/RVL_SDK/src/axfx/AXFXReverbHi.c": "MISSING",
             "sdk/RVL_SDK/src/axfx/AXFXReverbHiExp.c": "MISSING",
             "sdk/RVL_SDK/src/axfx/AXFXSrcCoef.c": "Matching",
+
             "sdk/RVL_SDK/src/base/PPCArch.c": "Matching",
+
             "sdk/RVL_SDK/src/bte/bd.c": "MISSING",
             "sdk/RVL_SDK/src/bte/bta_dm_act.c": "MISSING",
             "sdk/RVL_SDK/src/bte/bta_dm_api.c": "MISSING",
@@ -1910,11 +1884,14 @@
             "sdk/RVL_SDK/src/bte/utl.c": "MISSING",
             "sdk/RVL_SDK/src/bte/uusb_ppc.c": "MISSING",
             "sdk/RVL_SDK/src/bte/wbt_ext.c": "MISSING",
+
             "sdk/RVL_SDK/src/cnt/cnt.c": "NonMatching",
             "sdk/RVL_SDK/src/cnt/cntFatal.c": "MISSING",
+
             "sdk/RVL_SDK/src/dsp/dsp_debug.c": "Matching",
             "sdk/RVL_SDK/src/dsp/dsp_task.c": "NonMatching",
             "sdk/RVL_SDK/src/dsp/dsp.c": "Matching",
+
             "sdk/RVL_SDK/src/dvd/dvd_broadway.c": "MISSING",
             "sdk/RVL_SDK/src/dvd/dvd.c": "MISSING",
             "sdk/RVL_SDK/src/dvd/dvdDeviceError.c": "MISSING",
@@ -1923,12 +1900,17 @@
             "sdk/RVL_SDK/src/dvd/dvdfs.c": "MISSING",
             "sdk/RVL_SDK/src/dvd/dvdidutils.c": "MISSING",
             "sdk/RVL_SDK/src/dvd/dvdqueue.c": "MISSING",
+
             "sdk/RVL_SDK/src/esp/esp.c": "NonMatching",
+
             "sdk/RVL_SDK/src/euart/euart.c": "Matching",
+
             "sdk/RVL_SDK/src/exi/EXIBios.c": "NonMatching",
             "sdk/RVL_SDK/src/exi/EXICommon.c": "Matching",
             "sdk/RVL_SDK/src/exi/EXIUart.c": "Matching",
+
             "sdk/RVL_SDK/src/fs/fs.c": "NonMatching",
+
             "sdk/RVL_SDK/src/gx/GXAttr.c": "MISSING",
             "sdk/RVL_SDK/src/gx/GXBump.c": "NonMatching",
             "sdk/RVL_SDK/src/gx/GXDisplayList.c": "Matching",
@@ -1943,6 +1925,7 @@
             "sdk/RVL_SDK/src/gx/GXTev.c": "MISSING",
             "sdk/RVL_SDK/src/gx/GXTexture.c": "MISSING",
             "sdk/RVL_SDK/src/gx/GXTransform.c": "Matching",
+
             "sdk/RVL_SDK/src/hid/hid_api.c": "MISSING",
             "sdk/RVL_SDK/src/hid/hid_client.c": "MISSING",
             "sdk/RVL_SDK/src/hid/hid_device.c": "MISSING",
@@ -1950,30 +1933,38 @@
             "sdk/RVL_SDK/src/hid/hid_ios.c": "MISSING",
             "sdk/RVL_SDK/src/hid/hid_open_close.c": "MISSING",
             "sdk/RVL_SDK/src/hid/hid_task.c": "MISSING",
+
             "sdk/RVL_SDK/src/ipc/ipcMain.c": "Matching",
             "sdk/RVL_SDK/src/ipc/ipcProfile.c": "NonMatching",
             "sdk/RVL_SDK/src/ipc/ipcclt.c": "NonMatching",
             "sdk/RVL_SDK/src/ipc/memory.c": "MISSING",
+
             "sdk/RVL_SDK/src/kbd/kbd_lib_init.c": "MISSING",
             "sdk/RVL_SDK/src/kbd/kbd_lib_led.c": "MISSING",
             "sdk/RVL_SDK/src/kbd/kbd_lib_maps_eu.c": "MISSING",
             "sdk/RVL_SDK/src/kbd/kbd_lib_maps_jp.c": "MISSING",
             "sdk/RVL_SDK/src/kbd/kbd_lib_maps_us.c": "MISSING",
             "sdk/RVL_SDK/src/kbd/kbd_lib.c": "MISSING",
+
             "sdk/RVL_SDK/src/kpad/KMPLS.c": "MISSING",
             "sdk/RVL_SDK/src/kpad/KPAD.c": "MISSING",
             "sdk/RVL_SDK/src/kpad/KZMplsTestSub.c": "MISSING",
+
             "sdk/RVL_SDK/src/kpr/kpr_lib.c": "MISSING",
+
             "sdk/RVL_SDK/src/mem/mem_allocator.c": "Matching",
             "sdk/RVL_SDK/src/mem/mem_expHeap.c": "NonMatching",
             "sdk/RVL_SDK/src/mem/mem_heapCommon.c": "NonMatching",
             "sdk/RVL_SDK/src/mem/mem_list.c": "Matching",
+
             "sdk/RVL_SDK/src/mix/mix.c": "MISSING",
             "sdk/RVL_SDK/src/mix/remote.c": "MISSING",
+
             "sdk/RVL_SDK/src/mtx/mtx.c": "NonMatching",
             "sdk/RVL_SDK/src/mtx/mtx44.c": "Matching",
             "sdk/RVL_SDK/src/mtx/mtxvec.c": "NonMatching",
             "sdk/RVL_SDK/src/mtx/vec.c": "NonMatching",
+
             "sdk/RVL_SDK/src/nand/nand.c": "NonMatching",
             "sdk/RVL_SDK/src/nand/NANDCheck.c": "NonMatching",
             "sdk/RVL_SDK/src/nand/NANDCore.c": "NonMatching",
@@ -1981,6 +1972,7 @@
             "sdk/RVL_SDK/src/nand/NANDLogging.c": "NonMatching",
             "sdk/RVL_SDK/src/nand/NANDOpenClose.c": "Matching",
             "sdk/RVL_SDK/src/nand/NANDSecret.c": "NonMatching",
+
             "sdk/RVL_SDK/src/os/__ppc_eabi_init.c": "Matching",
             "sdk/RVL_SDK/src/os/__start.c": "NonMatching",
             "sdk/RVL_SDK/src/os/OS.c": "NonMatching",
@@ -2016,26 +2008,37 @@
             "sdk/RVL_SDK/src/os/OSThread.c": "NonMatching",
             "sdk/RVL_SDK/src/os/OSTime.c": "Matching",
             "sdk/RVL_SDK/src/os/OSUtf.c": "NonMatching",
+
             "sdk/RVL_SDK/src/pad/Pad.c": "NonMatching",
+
             "sdk/RVL_SDK/src/rso/RSOLink.c": "MISSING",
+
             "sdk/RVL_SDK/src/sc/scapi_prdinfo.c": "MISSING",
             "sdk/RVL_SDK/src/sc/scapi.c": "MISSING",
             "sdk/RVL_SDK/src/sc/scsystem.c": "NonMatching",
+
             "sdk/RVL_SDK/src/scutil/idToIsoA2.c": "Matching",
+
             "sdk/RVL_SDK/src/sdi/sdi_api.c": "MISSING",
+
             "sdk/RVL_SDK/src/si/SIBios.c": "MISSING",
             "sdk/RVL_SDK/src/si/SISamplingRate.c": "NonMatching",
+
             "sdk/RVL_SDK/src/tpl/TPL.c": "Matching",
+
             "sdk/RVL_SDK/src/usb/usb.c": "NonMatching",
+
             "sdk/RVL_SDK/src/usbcmn/puh_ker_mem.c": "MISSING",
             "sdk/RVL_SDK/src/usbcmn/puh_ker_msg.c": "MISSING",
             "sdk/RVL_SDK/src/usbcmn/puh_ker_sem.c": "MISSING",
+
             "sdk/RVL_SDK/src/usbmic/dpc.c": "MISSING",
             "sdk/RVL_SDK/src/usbmic/mic.c": "MISSING",
             "sdk/RVL_SDK/src/usbmic/ringbuffer.c": "MISSING",
             "sdk/RVL_SDK/src/usbmic/usbhelpers.c": "MISSING",
             "sdk/RVL_SDK/src/usbmic/usbmic.c": "MISSING",
             "sdk/RVL_SDK/src/usbmic/usbrequest.c": "MISSING",
+
             "sdk/RVL_SDK/src/vf/d_common.c": "MISSING",
             "sdk/RVL_SDK/src/vf/d_hash.c": "MISSING",
             "sdk/RVL_SDK/src/vf/d_time.c": "MISSING",
@@ -2093,9 +2096,11 @@
             "sdk/RVL_SDK/src/vf/pf_volume.c": "MISSING",
             "sdk/RVL_SDK/src/vf/pf_w_clib.c": "MISSING",
             "sdk/RVL_SDK/src/vf/sd_drv.c": "MISSING",
+
             "sdk/RVL_SDK/src/vi/i2c.c": "MISSING",
             "sdk/RVL_SDK/src/vi/vi.c": "MISSING",
             "sdk/RVL_SDK/src/vi/vi3in1.c": "MISSING",
+
             "sdk/RVL_SDK/src/wenc/wenc.c": "MISSING"
         }
     },
@@ -2111,6 +2116,7 @@
             "sdk/RVL_SDK/src/wpad/WPADMem.c": "Matching",
             "sdk/RVL_SDK/src/wpad/WUD.c": "NonMatching",
             "sdk/RVL_SDK/src/wpad/WUDHidHost.c": "Matching",
+
             "sdk/RVL_SDK/src/wpadDrm/WPADDrm.c": "Matching",
             "sdk/RVL_SDK/src/wpadGtr/WPADGtr.c": "Matching"
         }
@@ -2121,14 +2127,13 @@
         "cflags": "sdk/RevoEX",
         "objects": {
             "sdk/RevoEX/ncd/ncdsystem.c": "MISSING",
+
             "sdk/RevoEX/net/neterrorcode.c": "MISSING",
             "sdk/RevoEX/net/netmemcpy.c": "MISSING",
             "sdk/RevoEX/net/netmemset.c": "MISSING",
-            "sdk/RevoEX/net/NETVersion.c": {
-                "status": "NonMatching",
-                "comment": "Linker just hates me i guess"
-            },
+            "sdk/RevoEX/net/NETVersion.c": {"status": "NonMatching", "comment": "Linker just hates me i guess"},
             "sdk/RevoEX/net/wireless_macaddr.c": "Matching",
+
             "sdk/RevoEX/nhttp/d_nhttp.c": "MISSING",
             "sdk/RevoEX/nhttp/d_nhttp_common.c": "MISSING",
             "sdk/RevoEX/nhttp/d_nhttp_private.c": "MISSING",
@@ -2142,6 +2147,7 @@
             "sdk/RevoEX/nhttp/NHTTP_socket_RVL.c": "MISSING",
             "sdk/RevoEX/nhttp/NHTTP_stdlib_RVL.c": "MISSING",
             "sdk/RevoEX/nhttp/NHTTP_thread.c": "MISSING",
+
             "sdk/RevoEX/nwc24/NWC24Config.c": "MISSING",
             "sdk/RevoEX/nwc24/NWC24Download.c": "MISSING",
             "sdk/RevoEX/nwc24/NWC24FileAPI.c": "MISSING",
@@ -2156,17 +2162,14 @@
             "sdk/RevoEX/nwc24/NWC24System.c": "MISSING",
             "sdk/RevoEX/nwc24/NWC24Time.c": "MISSING",
             "sdk/RevoEX/nwc24/NWC24UserId.c": "MISSING",
+
             "sdk/RevoEX/so/SOBasic.c": "NonMatching",
             "sdk/RevoEX/so/SOCommon.c": "NonMatching",
             "sdk/RevoEX/so/SOInformation.c": "MISSING",
             "sdk/RevoEX/so/SOOption.c": "MISSING",
+
             "sdk/RevoEX/ssl/ssl_api.c": "MISSING",
-            "sdk/RevoEX/ssl/ssl_mutex.c": {
-                "status": "Matching",
-                "extra_cflags": [
-                    "-func_align 4"
-                ]
-            }
+            "sdk/RevoEX/ssl/ssl_mutex.c": {"status": "Matching", "extra_cflags": ["-func_align 4"]}
         }
     },
     "sdk/ec": {
@@ -2181,6 +2184,7 @@
             "sdk/ec/src/ec_checkReg.cpp": "MISSING",
             "sdk/ec/src/ec_chkDevStat.cpp": "MISSING",
             "sdk/ec/src/ec_chkDownload_bw.cpp": "MISSING",
+
             "sdk/ec/src/ec_connect.cpp": "MISSING",
             "sdk/ec/src/ec_content.cpp": "MISSING",
             "sdk/ec/src/ec_csup.cpp": "MISSING",
@@ -2192,6 +2196,7 @@
             "sdk/ec/src/ec_getTitle.cpp": "MISSING",
             "sdk/ec/src/ec_getTitleResReq.cpp": "MISSING",
             "sdk/ec/src/ec_http_bw.cpp": "MISSING",
+
             "sdk/ec/src/ec_list.cpp": "MISSING",
             "sdk/ec/src/ec_listCatalog.cpp": "MISSING",
             "sdk/ec/src/ec_listContentDownloadInfos.cpp": "MISSING",
@@ -2202,6 +2207,7 @@
             "sdk/ec/src/ec_listServiceItems.cpp": "MISSING",
             "sdk/ec/src/ec_listTitleContents.cpp": "MISSING",
             "sdk/ec/src/ec_listTitles.cpp": "MISSING",
+
             "sdk/ec/src/ec_md5.cpp": "Matching",
             "sdk/ec/src/ec_mem.cpp": "Matching",
             "sdk/ec/src/ec_misc.cpp": "MISSING",
@@ -2219,6 +2225,7 @@
         "cflags": "sdk/ec_c",
         "objects": {
             "sdk/ec/src/ec_md5c.c": "NonMatching",
+
             "sdk/ec/src/shr_th_bw.c": "Matching",
             "sdk/ec/src/shr_time_bw.c": "Matching"
         }
@@ -2242,7 +2249,9 @@
             "sdk/DWC/dwc_common/dwc_init.c": "Matching",
             "sdk/DWC/dwc_common/dwc_memfunc.c": "Matching",
             "sdk/DWC/dwc_common/dwc_report.c": "Matching",
+
             "sdk/DWC/dwc_nonport/dwc_nonport.c": "MISSING",
+
             "sdk/DWC/dwcsec_auth/dwc_auth_interface.c": "MISSING",
             "sdk/DWC/dwcsec_nas/dwc_naslogin.c": "Matching",
             "sdk/DWC/dwcsec_prof/dwc_prof.c": "MISSING",
