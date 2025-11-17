@@ -111,7 +111,7 @@ void Tracker::Poll(float f) {
         ReachedTargetLevel(-1);
         FirstFrame_(f);
         mFirstPoll = false;
-        GetTrackPanel()->SetSuppressUnisonDisplay(mDesc.unk11);
+        GetTrackPanel()->SetSuppressTambourineDisplay(mDesc.unk11);
         GetTrackPanel()->SetSuppressPlayerFeedback(mDesc.unk12);
         SetupDisplays();
     }

@@ -13,8 +13,11 @@ class NetLoader {
 public:
     NetLoader(const String &);
     virtual ~NetLoader();
+    virtual void V_Unk0xC();
+    virtual bool V_Unk0x10();
+    virtual bool IsSafeToDelete();
+
     bool IsLoaded();
-    void Create(const String &);
     const char *GetRemotePath() const;
     int GetSize();
     char *GetBuffer();
@@ -22,6 +25,8 @@ public:
     void AttachBuffer(char *);
     void SetSize(int);
     void PostDownload();
+
+    static NetLoader *Create(const String &);
 
     class String mStrRemotePath; // 0x00
     bool mIsLoaded; // 0x10

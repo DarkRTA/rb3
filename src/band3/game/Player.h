@@ -3,6 +3,7 @@
 #include "PlayerBehavior.h"
 #include "PracticeSectionProvider.h"
 #include "bandobj/BandTrack.h"
+#include "os/Debug.h"
 #include "utl/SongPos.h"
 #include "beatmatch/TrackType.h"
 #include "game/BandUser.h"
@@ -105,8 +106,8 @@ public:
     virtual bool FillsEnabled(int) = 0;
     virtual bool AreFillsForced() const { return false; }
     virtual void EnterCoda();
-    virtual void ResetCodaPoints();
-    virtual void AddCodaPoints();
+    virtual void ResetCodaPoints() {}
+    virtual void AddCodaPoints() {}
     virtual int GetCodaPoints() { return 0; }
     virtual bool InFill() const;
     virtual void SetFillLogic(FillLogic);
@@ -132,7 +133,7 @@ public:
     virtual bool InTambourinePhrase() const;
     virtual bool InFreestyleSection() const;
     virtual void PopupHelp(Symbol, bool);
-    virtual bool AutoplaysCoda() const;
+    virtual bool AutoplaysCoda() const { return false; }
     virtual void SetCodaEndMs(float) {}
     virtual bool NeedsToOverrideBasePoints() const { return false; }
     virtual bool NeedsToSetCodaEnd() const { return false; }
@@ -192,6 +193,10 @@ public:
     float GetBandEnergy() const { return mBandEnergy; }
     EnabledState GetEnabledState() const { return mEnabledState; }
     void SetTrackNum(int num) { mTrackNum = num; }
+    void SetBlownCoda(void) {
+        MILO_ASSERT(!mHasFinishedCoda, 197);
+        mHasBlownCoda = true;
+    }
 
     DataNode OnGetOverdriveMeter(DataArray *);
     DataNode OnSendNetGameplayMsg(DataArray *);

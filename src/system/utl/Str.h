@@ -90,6 +90,8 @@ public:
     String &insert(unsigned int, unsigned int, char);
     String &insert(unsigned int, const char *);
     String &insert(unsigned int, const String &);
+
+    operator const char *() const { return c_str(); }
 };
 
 bool SearchReplace(const char *, const char *, const char *, char *);

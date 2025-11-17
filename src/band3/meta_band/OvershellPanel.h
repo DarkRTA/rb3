@@ -166,7 +166,7 @@ public:
     Rand mPartResolver; // 0xa8
     int mPartResolverSeed; // 0x4b8
     bool mAllowRealGuitarFlow; // 0x4bc
-    std::vector<int> unk4c0;
+    std::vector<u64> unk4c0;
     bool unk4c8;
     int unk4cc;
 };

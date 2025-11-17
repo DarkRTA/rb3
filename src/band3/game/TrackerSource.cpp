@@ -127,3 +127,64 @@ BandTrackerSource::BandTrackerSource(Band *band) : mBand(band) {
 }
 
 BandTrackerSource::~BandTrackerSource() {}
+
+TrackerPlayerID BandTrackerSource::GetFirstPlayer() const {
+    UserGuid id = gNullUserGuid;
+    std::vector<Player *> &players = mBand->GetActivePlayers();
+    for (int i = 0; i < players.size(); i++) {
+        Player *p = players[i];
+        const UserGuid &g = p->GetUserGuid();
+        if (PlayerIsEligible(p)) {
+            if (id == gNullUserGuid || g < id) {
+                id = g;
+            }
+        }
+    }
+    return id;
+}
+
+TrackerPlayerID BandTrackerSource::GetNextPlayer(const TrackerPlayerID &tpid) const {
+    UserGuid id = gNullUserGuid;
+    std::vector<Player *> &players = mBand->GetActivePlayers();
+    for (int i = 0; i < players.size(); i++) {
+        Player *p = players[i];
+        const UserGuid &g = p->GetUserGuid();
+        if (PlayerIsEligible(p)) {
+            if (tpid.GetGuid() < g) {
+                if (id == gNullUserGuid) {
+                    id = g;
+                } else if (g < id) {
+                    id = g;
+                }
+            }
+        }
+    }
+    if (id == tpid.GetGuid()) {
+        return gNullUserGuid;
+    } else {
+        return id;
+    }
+}
+
+int BandTrackerSource::GetPlayerCount() const {
+    std::vector<Player *> &players = mBand->GetActivePlayers();
+    int count = 0;
+    for (int i = 0; i < players.size(); i++) {
+        if (PlayerIsEligible(players[i]))
+            count++;
+    }
+    return count;
+}
+
+Player *BandTrackerSource::GetPlayer(const TrackerPlayerID &iID) const {
+    std::vector<Player *> &players = mBand->GetActivePlayers();
+    for (int i = 0; i < players.size(); i++) {
+        Player *p = players[i];
+        if (p->GetUserGuid() == iID.GetGuid())
+            return p;
+    }
+    MILO_FAIL("Couldn\'t find player in band source!");
+    return nullptr;
+}
+
+bool BandTrackerSource::IsFinished() const { return mBand->GetBand()->unk1e1; }

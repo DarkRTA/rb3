@@ -2,6 +2,7 @@
 #include "beatmatch/TrackType.h"
 #include "game/Player.h"
 #include "utl/HxGuid.h"
+#include "game/Band.h"
 
 struct TrackerPlayerID {
     TrackerPlayerID() : mGuid(gNullUserGuid) {}
