@@ -411,7 +411,9 @@ RemoteBandUser *LocalBandUser::GetRemoteBandUser() const {
     return 0;
 }
 
-const std::vector<unsigned long long> &LocalBandUser::GetFriendsConsoleCodes() const {}
+const std::vector<u64> &LocalBandUser::GetFriendsConsoleCodes() const {
+    return TheBandUI.mOvershell->unk4c0;
+}
 
 void LocalBandUser::Reset() {
     BandUser::Reset();
@@ -639,7 +641,16 @@ DataNode RemoteBandUser::OnMsg(const WiiFriendsListChangedMsg &msg) {
     return 1;
 }
 
-void RemoteBandUser::ShowCustomCharacter() {}
+void RemoteBandUser::ShowCustomCharacter() {
+    if (unk18 && mChar != mRemoteChar && mOnlineID->mValid) {
+        int id = mOnlineID->GetPrincipalID();
+        WiiFriendList wfl;
+        TheWiiFriendMgr.GetCachedFriends(&wfl);
+        WiiFriendProfile *wfp = wfl.GetProfile(id);
+        if (wfp != NULL)
+            mChar = mRemoteChar;
+    }
+}
 
 BEGIN_HANDLERS(RemoteBandUser)
     HANDLE_MESSAGE(WiiFriendsListChangedMsg)

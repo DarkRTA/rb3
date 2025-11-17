@@ -1,7 +1,10 @@
 #include "game/Band.h"
 #include "BandPerformer.h"
 #include "bandobj/BandDirector.h"
+#include "bandobj/BandTrack.h"
 #include "bandtrack/TrackPanel.h"
+#include "beatmatch/PlayerTrackConfig.h"
+#include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
@@ -9,9 +12,13 @@
 #include "game/Game.h"
 #include "game/GameConfig.h"
 #include "game/GameMode.h"
+#include "game/GamePanel.h"
+#include "game/GemPlayer.h"
 #include "game/Player.h"
+#include "game/RealGuitarGemPlayer.h"
 #include "game/SongDB.h"
 #include "game/TrainerPanel.h"
+#include "game/VocalPlayer.h"
 #include "meta_band/MetaPerformer.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
@@ -21,7 +28,6 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "utl/Messages.h"
-#include "utl/Messages3.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
 
@@ -238,6 +244,34 @@ void Band::SaveAll() {
     }
 }
 
+void Band::CheckCoda(SongPos &pos) {
+    if (NumNonQuarantinedPlayers() != 1
+        || mActivePlayers[1]->mTrackType != kTrackVocals) {
+        bool past_start_of_coda = false;
+        if (TheSongDB->GetCodaStartTick() >= 0
+            && TheSongDB->GetCodaStartTick() >= pos.GetTick()) {
+            past_start_of_coda = true;
+        }
+        bool end_of_coda = IsEndOfCoda(pos.GetTick());
+        if (past_start_of_coda) {
+            if (end_of_coda && unk60 == 1) {
+                unk60 = 2;
+                TheBandDirector->SetCharacterHideHackEnabled(false);
+            } else if (!end_of_coda && unk60 == 0 && mActivePlayers.size() > 2) {
+                unk60 = 1;
+                TheBandDirector->SetCharacterHideHackEnabled(true);
+            }
+        }
+        if (unk40 && past_start_of_coda && end_of_coda) {
+        }
+        if (EveryoneFinishedCoda()) {
+            WinCoda();
+        }
+        GetTrackPanelDir()->CodaEnd();
+        unk40 = true;
+    }
+}
+
 void Band::BlowCoda(Player *p) {
     if (p->IsLocal()) {
         LocalBlowCoda(p);
@@ -245,7 +279,20 @@ void Band::BlowCoda(Player *p) {
     }
 }
 
-void Band::LocalBlowCoda(Player *p) {}
+void Band::LocalBlowCoda(Player *p) {
+    if (!p->mHasBlownCoda) {
+        TheGamePanel->Handle(coda_blown_msg, false);
+        for (int i = 0; i < mActivePlayers.size(); i++) {
+            BandTrack *bandtrack = mActivePlayers[i]->GetBandTrack();
+            if (bandtrack) {
+                bandtrack->CodaFail(p == mActivePlayers[i]);
+            }
+            mActivePlayers[i]->ResetCodaPoints();
+        }
+        p->SetBlownCoda();
+        unk44 = 2;
+    }
+}
 
 void Band::DealWithCodaGem(Player *p, int, bool b3, bool b4) {
     if (!b3)
@@ -270,6 +317,32 @@ bool Band::IsEndOfCoda(int i1) {
         }
         return i7 <= i1;
     }
+}
+
+bool Band::EveryoneFinishedCoda() {
+    if (unk44 == 2)
+        return false;
+    for (int i = 0; i < mActivePlayers.size(); i++) {
+        Player *p = mActivePlayers[i];
+        bool b = false;
+        if (p->AutoplaysCoda() || p->mHasFinishedCoda || p->mQuarantined) {
+            b = true;
+        }
+        if (!b)
+            return false;
+    }
+    return true;
+}
+
+void Band::WinCoda() {
+    TheGamePanel->Handle(coda_success_msg, false);
+    for (int i = 0; i < mActivePlayers.size(); i++) {
+        BandTrack *bt = mActivePlayers[i]->GetBandTrack();
+        if (bt)
+            bt->CodaSuccess();
+        mActivePlayers[i]->AddCodaPoints();
+    }
+    unk44 = 1;
 }
 
 void Band::FinishedCoda(Player *p) {
@@ -322,6 +395,22 @@ Player *Band::AddPlayer(BeatMaster *m, BandUser *u) {
     mCrowdRatings.push_back(0);
     p->ConfigureBehavior();
     return p;
+}
+
+Player *Band::NewPlayer(BeatMaster *master, BandUser *user) {
+    MILO_ASSERT(user, 820);
+    const PlayerTrackConfigList *ptclist = TheGameConfig->GetConfigList();
+    int track_num = ptclist->GetConfigByUserGuid(user->GetUserGuid()).TrackNum();
+    switch (user->GetTrackType()) {
+    case kTrackVocals:
+        int sing_ct = ptclist->NumSingers();
+        return new VocalPlayer(user, master, this, track_num, mBandPerformer, sing_ct);
+    case kTrackRealGuitar:
+    case kTrackRealBass:
+        return new RealGuitarGemPlayer(user, master, this, track_num, mBandPerformer);
+    default:
+        return new GemPlayer(user, master, this, track_num, mBandPerformer);
+    }
 }
 
 void Band::UpdateBonusLevel(float f1) {

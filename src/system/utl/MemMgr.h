@@ -1,8 +1,11 @@
 #ifndef UTL_MEMMGR_H
 #define UTL_MEMMGR_H
+#include "os/CritSec.h"
 #include <stddef.h>
 #include <new>
 #include "utl/PoolAlloc.h"
+
+extern CriticalSection *gMemLock;
 
 class MemDoTempAllocations {
 public:

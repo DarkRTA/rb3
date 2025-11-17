@@ -41,6 +41,7 @@ public:
     Player *AddPlayerDynamically(BeatMaster *, BandUser *);
     Player *NewPlayer(BeatMaster *, BandUser *);
     bool EveryoneDoneWithSong() const;
+    bool EveryoneFinishedCoda();
     void DealWithCodaGem(Player *, int, bool, bool);
     bool AnyoneSaveable() const;
     void SetGameOver();
@@ -49,6 +50,7 @@ public:
     void Poll(float, SongPos &);
     void CheckCoda(SongPos &);
     bool IsEndOfCoda(int);
+    void WinCoda();
     bool IsMultiplierActive() const { return mMultiplierActive; }
     int AccumulatedScore() const { return mAccumulatedScore; }
     float GetTotalStars() const { return mTotalStars; }
