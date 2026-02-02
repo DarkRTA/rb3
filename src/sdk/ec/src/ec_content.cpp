@@ -1,4 +1,4 @@
-#include <ec/content.h>
+/*#include <ec/content.h>
 
 
 ECResult ec::downloadUcsFule(const ECAsyncOpEnv &env, const ECString &str, char *param3, unsigned char *param4, unsigned long &param5) {
@@ -58,3 +58,4 @@ ECResult ec::getTmd(const ECAsyncOpEnv &env, const ECString &str, unsigned short
 
 
 
+*/
