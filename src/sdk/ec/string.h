@@ -19,6 +19,7 @@ namespace ec {
         ECOstringstream& operator<<(long value);
         ECOstringstream& operator<<(unsigned long long value);
         ECOstringstream& operator<<(long long value);
+        ECOstringstream& operator<<(int value);
 
         ECString str() { return m_Buffer; }
 

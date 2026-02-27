@@ -27,6 +27,8 @@ void *bsearch(
     int (*comp)(const void *, const void *)
 );
 
+long strtol(const char *str, char **_end, int base);
+
 int system(const char *command);
 char *getenv(const char *name);
 

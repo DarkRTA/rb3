@@ -13,7 +13,8 @@ enum ECLogLevel {
 };
 
 namespace ec {
-
+    long lovBufLevel;
+    long logLevel;
     void logmsg(long level, const char* format, ...);
     ECResult setLogLevel(long level);
 
