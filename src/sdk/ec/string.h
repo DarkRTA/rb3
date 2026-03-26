@@ -9,6 +9,8 @@ typedef std::basic_string<char, std::char_traits<char>, ECAllocator<char> > ECSt
 
 namespace ec {
 
+    extern bool isUseNCRs;
+
     class ECOstringstream {
     public:
         ECOstringstream& operator<<(const ECString& str);
