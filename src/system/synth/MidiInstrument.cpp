@@ -109,7 +109,7 @@ DECOMP_FORCEFUNC(MidiInstrument, SampleInst, GetProgress())
 MidiInstrument::MidiInstrument()
     : mMultiSampleMap(this), mPatchNumber(0), mSend(this, 0), mReverbMixDb(-96.0f),
       mReverbEnable(0), mActiveVoices(this), mFaders(this), mFineTuneCents(0.0f) {
-    mFaders.Add(TheSynth->mSfxFader);
+    mFaders.Add(TheSynth->mMasterFader);
     mFaders.Add(TheSynth->mMidiInstrumentFader);
 }
 

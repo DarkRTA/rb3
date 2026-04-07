@@ -1,5 +1,7 @@
 #include "synth/BinkReader.h"
 #include "lib/binkwii/binkread.h"
+#include "os/Debug.h"
+#include "os/Timer.h"
 #include "utl/BinkIntegration.h"
 
 int BinkReader::mPlaying;
@@ -75,7 +77,20 @@ void BinkReader::PollInitStream() {
     gTempLastDecodeSize = -1;
 }
 
-void BinkReader::PollPlay() {}
+void BinkReader::PollPlay() {
+    for (int i = 0; i < 3; i++) {
+        if (mSamplesReady > 0) {
+            START_AUTO_TIMER("bink_consume");
+            int iSamplesConsumed =
+                mStream->ConsumeData((void **)mPCMOffsets, mSamplesReady, mSampleCurrent);
+            MILO_ASSERT(iSamplesConsumed <= mSamplesReady, 247);
+            mSampleCurrent += iSamplesConsumed;
+            mSamplesReady -= iSamplesConsumed;
+            for (int i = 0; i != mBink->NumTracks; i++) {
+            }
+        }
+    }
+}
 
 void BinkReader::Poll(float) {}
 

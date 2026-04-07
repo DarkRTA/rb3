@@ -1,4 +1,5 @@
 #include "synth/Emitter.h"
+#include "math/Utl.h"
 #include "rndobj/Dir.h"
 #include "obj/DirLoader.h"
 #include "synth/FxSend.h"
@@ -84,10 +85,52 @@ void SynthEmitter::CheckLoadResources() {
     }
 }
 
+inline float CoolFloatFunc(
+    float rad_inner, float vol_inner, float rad_outer, float vol_outer, float dst
+) {
+    // float vol_delta = vol_outer - vol_inner;
+    // float rad_delta = rad_outer - rad_inner;
+    float rela = (vol_outer - vol_inner) / (rad_outer - rad_inner);
+    float f0 = -(rela * rad_inner - vol_inner);
+    return rela * dst + f0;
+}
+
 // fn_8066E758 in retail
 void SynthEmitter::Poll() {
-    if (mSfx && mListener && mSynthEmitterEnabled) {
-        Transform &xfm = mListener->WorldXfm();
+    if (!mSfx || !mListener || !mSynthEmitterEnabled) {
+        return;
+    } else {
+        Transform xfm;
+        Invert(mListener->WorldXfm(), xfm);
+        Vector3 pos;
+        Multiply(WorldXfm().v, xfm, pos);
+        float dist = Length(pos);
+        if (dist > mRadOuter) {
+            delete mInst;
+            return;
+        }
+        bool just_started = !mInst;
+        if (just_started) {
+            mInst = dynamic_cast<SfxInst *>(mSfx->MakeInst());
+            if (mInst == NULL)
+                return;
+        }
+        // do volume ramping
+        if (dist > mRadInner) {
+            mInst->SetVolume(
+                CoolFloatFunc(mRadInner, mVolInner, mRadOuter, mVolOuter, dist)
+            );
+        } else {
+            mInst->SetVolume(mVolInner);
+        }
+        // falloff constant?
+        float f = std::atan2(pos.y, pos.x);
+        f *= 1.2732395f;
+        f = 2.0f - f;
+        mInst->SetPan(f);
+        if (just_started) {
+            mInst->Start();
+        }
     }
 }
 
