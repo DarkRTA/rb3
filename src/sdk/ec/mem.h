@@ -89,7 +89,7 @@ public:
 
     void construct(pointer p, const_reference val) {
         ec::logmsg(ECLogLevel_Finest, "construct with placement\n");
-        if (ptr) {
+        if (p) {
             new (p) T(val);
         }
     }
