@@ -21,6 +21,25 @@
 SongSelectPanel::SongSelectPanel()
     : mLeaderboard(0), unk48(0), unk4c(0), unk50(0), unk54(0), unk58(-1) {}
 
+void SongSelectPanel::Poll() {
+    HeldButtonPanel::Poll();
+    if (mLeaderboard) {
+        mLeaderboard->Poll();
+    }
+    if (unk58 >= 0.0f && mState == kUp) {
+        float elapsed = TheTaskMgr.UISeconds() - unk58;
+        if (!unk54 && elapsed > unk4c && unk48->IsReady() && unk48->HasRows()) {
+            unk58 = TheTaskMgr.UISeconds();
+            static Message msg(set_mini_leaderboard_showing, 0);
+            unk54 = true;
+            msg[0] = 1;
+            HandleType(msg);
+        } if (unk54 && elapsed > unk50) {
+            RestartLeaderboardTimer();
+        }
+    }
+}
+
 void SongSelectPanel::Load() {
     UIPanel::Load();
     TheMusicLibrary->OnLoad();
@@ -121,4 +140,15 @@ BEGIN_HANDLERS(SongSelectPanel)
             (Leaderboard::Mode)_msg->Int(5)
         )
     )
+    HANDLE_ACTION_IF(
+        select_lb_row, mLeaderboard,
+        mLeaderboard->OnSelectRow(_msg->Int(2), _msg->Obj<BandUser>(3))
+    )
+    HANDLE_ACTION(restart_leaderboard_timer, RestartLeaderboardTimer())
+    HANDLE_ACTION(cancel_leaderboard_timer, CancelLeaderboardTimer())
+    HANDLE_EXPR(scroll_lb_up, mLeaderboard && mLeaderboard->EnumerateLowerRankRange())
+    HANDLE_EXPR(scroll_lb_down, mLeaderboard && mLeaderboard->EnumerateHigherRankRange())
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_SUPERCLASS(HeldButtonPanel)
+    HANDLE_CHECK(0xC5)
 END_HANDLERS
