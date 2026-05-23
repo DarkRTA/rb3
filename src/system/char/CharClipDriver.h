@@ -16,6 +16,7 @@ public:
     void SetBeatOffset(float, TaskUnits, Symbol);
     void ScaleAdd(CharBones &, float);
     void RotateTo(CharBones &, float);
+    float AlignToBeat(float);
     CharClipDriver *DeleteClip(Hmx::Object *);
     CharClipDriver *PreEvaluate(float, float, float);
     float Evaluate(float, float, float);

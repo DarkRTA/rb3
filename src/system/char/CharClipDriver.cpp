@@ -3,6 +3,7 @@
 #include "math/Rand.h"
 #include "math/Utl.h"
 #include "obj/Msg.h"
+#include "os/Debug.h"
 
 CharClipDriver::CharClipDriver(
     Hmx::Object *owner,
@@ -115,16 +116,16 @@ CharClipDriver *CharClipDriver::DeleteClip(Hmx::Object *obj) {
     return this;
 }
 
-void CharClipDriver::ScaleAdd(CharBones &bones, float f) {
-    if (f != 0) {
-        mWeight = f * Sigmoid(mBlendFrac);
+void CharClipDriver::ScaleAdd(CharBones &bones, float weight) {
+    if (weight != 0) {
+        mWeight = weight * Sigmoid(mBlendFrac);
         bones.ScaleAdd(mClip, mWeight, mBeat, mDBeat);
         if (mPlayMultipleClips) {
             if (mNext)
-                mNext->ScaleAdd(bones, f);
+                mNext->ScaleAdd(bones, weight);
         } else {
             if (mNext)
-                mNext->ScaleAdd(bones, f - mWeight);
+                mNext->ScaleAdd(bones, weight - mWeight);
         }
     }
 }
@@ -136,6 +137,43 @@ void CharClipDriver::RotateTo(CharBones &bones, float f) {
         if (mNext)
             mNext->RotateTo(bones, f - mWeight);
     }
+}
+
+void CharClipDriver::SetBeatOffset(float offset, TaskUnits units, Symbol beatEvent) {
+    if (offset != 0 && mClip) {
+        mBeat = mClip->StartBeat();
+        if (!beatEvent.Null()) {
+            int i = 0;
+            for (; i < mClip->mBeatEvents.size(); i++) {
+                if (mClip->mBeatEvents[i].event == beatEvent) {
+                    mBeat = mClip->mBeatEvents[i].beat;
+                    break;
+                }
+            }
+            if (i == mClip->mBeatEvents.size()) {
+                MILO_WARN("%s could not find event %s", PathName(mClip), beatEvent);
+            }
+        }
+        if (units != kTaskBeats) {
+            offset = mClip->DeltaSecondsToDeltaBeat(offset, mBeat);
+        }
+        mBeat += offset;
+    }
+}
+
+float CharClipDriver::AlignToBeat(float beat) {
+    float flag = (mPlayFlags >> 0xC) & 0xF;
+    if (flag != 0.0f && mTimeScale == 1.0f && (mPlayFlags & 0xF0) != 0x20) {
+        float ret = Modulo(beat - mBeat, flag);
+        if (ret > flag * 0.5f) {
+            ret -= flag;
+            if (mBeat + ret < mClip->mBeatTrack[0].value) {
+                ret += flag;
+            }
+        }
+        return ret;
+    }
+    return 0.0f;
 }
 
 #pragma push
