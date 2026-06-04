@@ -3,7 +3,6 @@
 
 #include <MSL_C++/string>
 #include <ec/mem.h>
-#include <ec/result.h>
 
 typedef std::basic_string<char, std::char_traits<char>, ECAllocator<char> > ECString;
 
@@ -23,6 +22,8 @@ namespace ec {
         ECOstringstream& operator<<(long long value);
 
         ECString str() { return m_Buffer; }
+
+        ECString str(ECString &);
 
     private:
         ECString m_Buffer;

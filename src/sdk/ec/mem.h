@@ -4,7 +4,6 @@
 #include <MSL_C++/cstddef>
 #include <MSL_C++/new>
 
-#include <ec/result.h>
 #include <ec/log.h>
 
 typedef void *(*ECAllocFunc)(std::size_t size, std::size_t align);

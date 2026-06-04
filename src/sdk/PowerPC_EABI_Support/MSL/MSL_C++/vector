@@ -44,7 +44,7 @@ namespace std {
             }
         }
 
-        void clear() {
+        DONT_INLINE_CLASS void clear() {
             size_type n = m_Count;
             m_Count = 0;
 
@@ -100,6 +100,8 @@ namespace std {
         __vec_constructor() {}
         ~__vec_constructor() {}
 
+        void clear() { _Base::clear(); }
+
         iterator existing_insert(iterator pos, const_reference value) {
             const T* valuePtr = &value;
             T* end = this->m_Ptr + this->m_Count;
@@ -150,6 +152,46 @@ namespace std {
             this->m_Count++;
             return this->m_Ptr + posDist;
         }
+    
+        void push_back(const_reference value) {
+            if (this->m_Count < this->m_Capacity.first()) {
+                this->m_Capacity.second().construct(&this->m_Ptr[this->m_Count * 3], value);
+                this->m_Count++;
+            } else {
+                _Base::grow_by(1);
+                allocator_type allocCopy = this->m_Capacity.second();
+                T* ptrCopy = NULL;
+                size_type countVar = 0, newSizeCopy = 0, count = 0;
+                size_type newSize = _Base::grow_by((this->m_Count + 1) - this->m_Capacity.first());
+                if (this->m_Capacity.first() < newSize) {
+                    throw std::length_error("vector length error");
+                }
+                T* ptr = this->m_Capacity.second().allocate(newSize);
+                count = this->m_Count;
+                ptrCopy = ptr;
+                newSizeCopy = newSize;
+                allocCopy.construct(ptr + count * 3 + countVar * 3, value);
+                ptr = this->m_Ptr;
+                T* ptr1 = ptrCopy + count * 3;
+                T* ptr2 = ptr + this->m_Count * 3;
+                while (countVar++, ptr < ptr2) {
+                    ptr2 -= 3;
+                    ptr1 -= 3;
+                    allocCopy.construct(ptr1, *ptr2);
+                    count--;
+                }
+                size_type temp = this->m_Capacity.first();
+                this->m_Capacity.first() = newSizeCopy;
+                newSizeCopy = temp;
+                ptr = this->m_Ptr;  
+                this->m_Ptr = ptrCopy;
+                ptrCopy = ptr;
+                temp = this->m_Count;
+                this->m_Count = countVar;
+                countVar = temp;
+                //ptrCopy->~__vec_deleter_helper();
+            }
+        };
     };
 
     template <typename T, typename Allocator = allocator<T> >
@@ -201,7 +243,7 @@ namespace std {
         size_type size() const { return this->m_Count; }
         size_type capacity() const { return this->m_Capacity.first(); }
 
-        void push_back(const_reference value) {
+        DONT_INLINE_CLASS void push_back(const_reference value) {
             _Base::push_back(value);
         }
 
@@ -214,6 +256,9 @@ namespace std {
             }
 
             return reallocate_insert(pos, value);
+        }
+        void clear() {
+            _Base::clear();
         }
     };
 

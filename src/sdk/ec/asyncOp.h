@@ -1,7 +1,6 @@
 #ifndef RVL_EC_ASYNCOP_H
 #define RVL_EC_ASYNCOP_H
 
-#include <ec/result.h>
 #include <ec/string.h>
 #include <ec/internal/shr.h>
 

@@ -2,6 +2,7 @@
 #define EC_LOG_H
 
 #include <ec/result.h>
+#include <MSL_Common/va_list_def.h>
 
 enum ECLogLevel {
     ECLogLevel_Error = 1,
@@ -13,10 +14,9 @@ enum ECLogLevel {
 };
 
 namespace ec {
-
     void logmsg(long level, const char* format, ...);
     ECResult setLogLevel(long level);
-
+    bool isCidxMaskBitSet(const unsigned char *, unsigned long);
 }
 
 #endif

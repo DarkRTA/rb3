@@ -335,6 +335,27 @@ ECResult EC_GetOverhead(int p1, int *p2, int *p3) {
 f: 
     status = ECResult_InvalidBufHeap;
 end:*/
+    switch (p1) {
+        case 0:
+            *p2 = 3;
+            *p3 = 8;
+            break;
+        case 2:
+            *p2 = 2;
+            *p3 = 6;
+            break;
+        case 1:
+            *p2 = 2;
+            *p3 = 2;
+            break;
+        case 3:
+            *p2 = 3;
+            *p3 = 8;
+            break;
+        default:
+            status = ECResult_InvalidBufHeap;
+    }
+    return status;
     if (p1 == 0) goto label1;
     if (p1 == 2) goto label2;
     if (p1 == 1) goto label3;
