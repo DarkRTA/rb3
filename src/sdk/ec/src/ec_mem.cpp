@@ -1,5 +1,4 @@
 #include <ec/mem.h>
-#include <ec/log.h>
 #include <ec/object.h>
 #include <ec/internal/shr.h>
 

@@ -187,10 +187,21 @@ namespace std {
         DONT_INLINE_CLASS iterator begin() { return get_pointer(); }
         DONT_INLINE_CLASS const_iterator begin() const { return get_pointer(); }
 
+        const CharT *data() const { return get_pointer(); }
+
+        DONT_INLINE_CLASS basic_string substr(size_type pos, size_type count) const {}
+
         DONT_INLINE_CLASS iterator end() {
             CharT *ptr;
             size_t size;
-            pointer_size(ptr, size);
+            rep_s &rep = m.first();
+            if (rep.is_short()) {
+                ptr = rep.shortBuf.buffer;
+                size = rep.shortBuf.length;
+            } else {
+                ptr = rep.longBuf.buffer;
+                size = rep.longBuf.length;
+            }
             return ptr + size;
         }
 
@@ -262,6 +273,11 @@ namespace std {
         DONT_INLINE_CLASS void operator+=(const char *str) { append(str); }
         DONT_INLINE_CLASS void operator+=(CharT c) { append(c); }
 
+        DONT_INLINE_CLASS basic_string assign(const basic_string &str);
+
+        DONT_INLINE_CLASS unsigned int compare(unsigned long, unsigned long, char *, unsigned long);
+
+        DONT_INLINE_CLASS CharT *c_str() const;
     private:
         void do_replace(
             size_t cur_size,

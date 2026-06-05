@@ -222,7 +222,7 @@ int EC_CancelOperation(unsigned long param_1) {
     return status;
 }
 
-//TODO: Work on cntlzw on line 234
+//TODO: Work on cntlzw on at `ec::op->unk0xc0.size() != 0`
 ECResult EC_GetCachedBalance(int *param_1) {
     ECResult status;
     if (ec::op == NULL) {
@@ -335,30 +335,26 @@ ECResult EC_GetOverhead(int p1, int *p2, int *p3) {
 f: 
     status = ECResult_InvalidBufHeap;
 end:*/
-    if (p1 == 0) goto label1;
-    if (p1 == 2) goto label2;
-    if (p1 == 1) goto label3;
-    if (p1 == 3) goto label4;
-    goto beforeEnd;
-label1:
-    *p2 = 3;
-    *p3 = 8;
-    goto end;
-label2:
-    *p2 = 2;
-    *p3 = 6;
-    goto end;
-label3:
-    *p2 = 2;
-    *p3 = 2;
-    goto end;
-label4:
-    *p2 = 3;
-    *p3 = 8;
-    goto end;
-beforeEnd:
-    status = ECResult_InvalidBufHeap;
-end:
+    switch (p1) {
+        case 0:
+            *p2 = 3;
+            *p3 = 8;
+            break;
+        case 2:
+            *p2 = 2;
+            *p3 = 6;
+            break;
+        case 1:
+            *p2 = 2;
+            *p3 = 2;
+            break;
+        case 3:
+            *p2 = 3;
+            *p3 = 8;
+            break;
+        default:
+            status = ECResult_InvalidBufHeap;
+    }
     return status;
 }
 

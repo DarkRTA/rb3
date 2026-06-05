@@ -4,7 +4,6 @@
 #include <MSL_C++/cstddef>
 #include <MSL_C++/new>
 
-#include <ec/result.h>
 #include <ec/log.h>
 
 typedef void *(*ECAllocFunc)(std::size_t size, std::size_t align);
@@ -89,7 +88,7 @@ public:
 
     void construct(pointer p, const_reference val) {
         ec::logmsg(ECLogLevel_Finest, "construct with placement\n");
-        if (ptr) {
+        if (p) {
             new (p) T(val);
         }
     }
