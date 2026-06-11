@@ -114,6 +114,7 @@ public:
     virtual void NotifyUnmounted(Content *);
     virtual void NotifyDeleted(Content *);
     virtual void NotifyFailed(Content *);
+    virtual void RestartEcommerce();
 
     void UnmountContents(Symbol);
     WiiContent *ContentOf(Symbol);

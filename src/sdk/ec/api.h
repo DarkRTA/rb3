@@ -20,4 +20,15 @@ namespace ec {
     ECResult getTitleInfos(ECTitleInfo *, unsigned long *, unsigned long long, bool);
 }
 
+ECResult EC_Init(ECNameValue *, unsigned long);
+int EC_Shutdown();
+int EC_SetParameter(const char *, const char *);
+ECResult EC_GetProgress(unsigned long, ECResult *);
+int EC_CancelOperation(unsigned long);
+ECResult EC_GetCachedBalance(int *);
+ECResult EC_DeleteTitle();
+int EC_GetTitleInfo(unsigned long long, ECTitleInfo *, int *);
+ECResult EC_GetOverhead(int, int *, int *);
+int EC_GetIsSyncNeeded();
+
 #endif
