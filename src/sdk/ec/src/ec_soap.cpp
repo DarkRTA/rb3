@@ -11,7 +11,17 @@
 const char ec::Soap::ecs[4] = "ecs";
 const char ec::Soap::ias[4] = "ias";
 const char ec::Soap::cas[4] = "cas";
-const char ec::Soap::beginningFmt[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                   xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n                   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                   xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n                   xmlns:%s=\"urn:%s.wsapi.broadon.com\">\n<SOAP-ENV:Body>\n<%s:%s xsi:type=\"%s:%sRequestType\">\n  <%s:Version>%s</%s:Version>\n  <%s:MessageId>%s</%s:MessageId>\n";
+const char ec::Soap::beginningFmt[] = 
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"
+    "                   xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n"
+    "                   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+    "                   xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n"
+    "                   xmlns:%s=\"urn:%s.wsapi.broadon.com\">\n"
+    "<SOAP-ENV:Body>\n"
+    "<%s:%s xsi:type=\"%s:%sRequestType\">\n"
+    "  <%s:Version>%s</%s:Version>\n"
+    "  <%s:MessageId>%s</%s:MessageId>\n";
 const char ec::Soap::ending[] = ">\n</SOAP-ENV:Body>\n</SOAP-ENV:Envelope>\n";
 
 //TODO: find out why it expands the first function calls like the ECString constructor
