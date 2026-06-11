@@ -32,7 +32,7 @@ void (*CNTSDGetUserAvailableAreaRSO)(void);
 void (*CNTSDCacheClearRSO)(void);
 void (*CNTSDCacheInUseRSO)(void);
 void (*CNTSDCachePushDeleteContentVRSO)(void);
-void (*CNTSDCachePopRSO)(void);
+int (*CNTSDCachePopRSO)(long);
 void (*FAMountRSO)(void);
 void (*FAIsWriteProtectedRSO)(void);
 void (*CNTSDSetEventCallbackRSO)(void *);
@@ -53,6 +53,7 @@ void unresolved_cntsdModule() {
 }
 
 void CM_CNTSDCacheClearRSO() { CNTSDCacheClearRSO(); }
+int CM_CNTSDCachePopRSO(long p1) { return CNTSDCachePopRSO(p1); }
 
 void SDCallback(int unk) {
     ThePlatformMgr.mStorageChanged = true;

@@ -76,3 +76,5 @@ struct ECProgress {
 namespace ec {
     unsigned long getExternalErrCode(ECProgress *progress);
 }
+
+int EC_GetCustomerSupportCode(int);

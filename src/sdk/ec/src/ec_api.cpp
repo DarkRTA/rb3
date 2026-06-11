@@ -67,7 +67,7 @@ int EC_SetParameter(const char *paramId, const char *value) {
         try {
             ec::op->lock();
             status = ECResult_Success;
-            int cmp = strncmp(paramId, "TIN", 4);
+            int cmp = strncmp(paramId, "TIN", 4); //TIN for CAS?
             if (cmp == 0) {
                 if (value == NULL) {
                     ec::op->m_TIN = "";
@@ -75,7 +75,7 @@ int EC_SetParameter(const char *paramId, const char *value) {
                     ec::op->m_TIN = value;
                 }
             } else {
-                cmp = strncmp(paramId, "AppId", 6);
+                cmp = strncmp(paramId, "AppId", 6); //AppId for CAS?
                 if (cmp == 0) {
                     if (value == NULL) {
                         ec::op->m_AppId = "";
@@ -99,7 +99,7 @@ int EC_SetParameter(const char *paramId, const char *value) {
                                 ec::isUseNCRs = (true - (value == 0));
                             }
                         } else {
-                            cmp = strncmp(paramId, "SPAVE_CHECK_POLICY", 19);
+                            cmp = strncmp(paramId, "SPACE_CHECK_POLICY", 19);
                             if (cmp == 0) {
                                 if (value == NULL) {
                                     status = ECResult_InvalidBufHeap;
@@ -135,7 +135,7 @@ int EC_SetParameter(const char *paramId, const char *value) {
     return status;
 }
 
-int EC_GetProgress(unsigned long p1, ECResult *p2) {
+ECResult EC_GetProgress(unsigned long p1, ECResult *p2) {
     ECResult status;
     if (ec::op == NULL) {
         if (p2 != NULL) {
@@ -195,7 +195,7 @@ int EC_GetProgress(unsigned long p1, ECResult *p2) {
 }
 
 //TODO: Work on this function
-int EC_CancelOperation(unsigned long param_1) {
+int EC_CancelOperation(unsigned long opId) {
     ECResult status;
     _SHRThread *p_Var1;
 
@@ -207,7 +207,7 @@ int EC_CancelOperation(unsigned long param_1) {
         p_Var1 = ec::op->opThread;
         if (p_Var1 == NULL) {
             status = ECResult_NotBusy;
-        } else if (param_1 == 0 && param_1 != p_Var1->osThread.context.gprs[1]) {
+        } else if (opId == 0 && opId != p_Var1->osThread.context.gprs[1]) {
             status = ECResult_NotActive;
             if (p_Var1->osThread.context.gprs[8] == ECResult_NotBusy) {
                 status = ECResult_NotBusy;
