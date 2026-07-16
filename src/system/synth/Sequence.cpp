@@ -1,8 +1,10 @@
 #include "synth/Sequence.h"
+#include "obj/ObjMacros.h"
 #include "synth/SeqInst.h"
 #include "math/Rand.h"
 #include "obj/ObjVector.h"
 #include "obj/Task.h"
+#include "utl/Std.h"
 #include <functional>
 #include "utl/Symbols.h"
 
@@ -584,16 +586,52 @@ void RandomGroupSeqInst::Stop() {
 bool RandomGroupSeqInst::IsRunning() { return mIt != mSeqs.end(); }
 
 void RandomGroupSeqInst::Poll() {
-    for (; mIt != mSeqs.end(); mIt++) {
-        if ((*mIt) && (*mIt)->IsRunning())
-            return;
+    while (mIt != mSeqs.end() && (mIt->Ptr() == NULL || !mIt->Ptr()->IsRunning())) {
+        mIt++;
     }
 }
 
 RandomIntervalGroupSeqInst::RandomIntervalGroupSeqInst(RandomIntervalGroupSeq *seq)
-    : GroupSeqInst(seq, true) {}
+    : GroupSeqInst(seq, false), unk4c(seq->Children().size()), mRunning(false) {
+    unk40 = seq->mMaxSimultaneous;
+    unk44 = seq->mAvgIntervalSecs;
+    unk48 = seq->mIntervalSpread;
+    for (int i = 0; i < seq->Children().size(); i++) {
+        unk4c[i] = -1;
+    }
+}
 
 RandomIntervalGroupSeqInst::~RandomIntervalGroupSeqInst() {}
+
+void RandomIntervalGroupSeqInst::StartImpl() {
+    for (int i = 0; i < unk4c.size(); i++) {
+        ComputeNextTime(i);
+    }
+    mRunning = true;
+}
+
+void RandomIntervalGroupSeqInst::ComputeNextTime(int i) {
+    if (i >= unk4c.size())
+        return;
+    unk4c[i] = TheTaskMgr.Seconds(TaskMgr::kRealTime) + RandomVal(unk44, unk48);
+}
+
+void RandomIntervalGroupSeqInst::Stop() {
+    FOREACH (it, mSeqs) {
+        if (it->Ptr() != NULL) {
+            it->Ptr()->Stop();
+        }
+    }
+    mRunning = false;
+}
+
+bool RandomIntervalGroupSeqInst::IsRunning() { return mRunning; }
+
+void RandomIntervalGroupSeqInst::Poll() {
+    // some loop nonsense here
+    // MakeInst? some shit happening
+    // all around, not fun
+}
 
 void Sequence::Init() {
     SfxSeq::Init();
@@ -607,3 +645,37 @@ void Sequence::Init() {
 SfxSeq::SfxSeq() {}
 
 SAVE_OBJ(SfxSeq, 0x511)
+
+BEGIN_LOADS(SfxSeq)
+    // ghetto LoadRevs...?
+    int rev;
+    bs >> rev;
+    if (rev > 4) {
+        MILO_WARN("Can't load new SfxSeq");
+        return;
+    }
+    if (rev <= 3) {
+        if (rev <= 2) {
+            LOAD_SUPERCLASS(Hmx::Object)
+        } else {
+            LOAD_SUPERCLASS(Sequence)
+        }
+        ObjPtrList<Sequence> &children = mChildren;
+        children.clear();
+        ObjPtr<Sequence> seq(this);
+        bs >> seq;
+        if (seq != NULL) {
+            children.push_back(seq);
+        }
+        if (rev == 2) {
+            bs >> mAvgVol;
+            bs >> mVolSpread;
+            bs >> mAvgTranspose;
+            bs >> mTransposeSpread;
+            bs >> mAvgPan;
+            bs >> mPanSpread;
+        }
+    } else {
+        LOAD_SUPERCLASS(SerialGroupSeq)
+    }
+END_LOADS

@@ -145,3 +145,6 @@ add_relocations:
 - source: .text:0x807f2cf8
   type: l
   target: __RTTI__9ObjectDir
+- source: .text:0x8099913c
+  type: l
+  target: TheLoadMgr

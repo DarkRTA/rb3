@@ -93,16 +93,16 @@ public:
     virtual void Poll();
     virtual void StartImpl();
 
-    void ComputeNextTime();
+    void ComputeNextTime(int);
 
     NEW_POOL_OVERLOAD(RandomIntervalGroupSeqInst);
     DELETE_POOL_OVERLOAD(RandomIntervalGroupSeqInst);
 
     int unk40;
-    int unk44;
-    int unk48;
-    std::vector<int> unk4c;
-    bool unk54;
+    float unk44;
+    float unk48;
+    std::vector<float> unk4c;
+    bool mRunning;
 };
 
 class SerialGroupSeqInst : public GroupSeqInst {

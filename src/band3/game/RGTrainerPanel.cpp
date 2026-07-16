@@ -11,6 +11,7 @@
 #include "game/GameMode.h"
 #include "game/GemTrainerPanel.h"
 #include "game/ProTrainerPanel.h"
+#include "game/RealGuitarGemPlayer.h"
 #include "game/TrainerPanel.h"
 #include "meta_band/AppLabel.h"
 #include "meta_band/BandProfile.h"
@@ -285,7 +286,8 @@ void RGTrainerPanel::FretButtonDown(int i) {
     if (mGemPlayer) {
         mMatcher.FretDown(i, TheTaskMgr.UISeconds() * 1000.0f);
         if (TheGame->IsPaused() || TheGame->InRollback()) {
-            // RealGuitarGemPlayer::SetRGState(const RGState&)
+            static_cast<RealGuitarGemPlayer *>(mGemPlayer)
+                ->SetRGState(*mMatcher.GetState());
         }
     }
 }
@@ -538,6 +540,8 @@ bool RGTrainerPanel::TestFingers(const GameGem &gem) {
 FORCE_LOCAL_INLINE
 bool RGTrainerPanel::GetLegendMode() const { return mLegendMode; }
 END_FORCE_LOCAL_INLINE
+
+DECOMP_FORCEFUNC(RGTrainerPanel, RGTrainerPanel, GetLegendMode())
 
 void RGTrainerPanel::SetLegendGemID(int id) { mLegendGemID = id; }
 

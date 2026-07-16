@@ -354,7 +354,7 @@ void Scoring::GetSoloAward(int i, Symbol s, int &iref, Symbol &sref) {
 DataArray *Scoring::GetSoloBlock(Symbol s) const {
     DataArray *soloarr = mConfig->FindArray("solo");
     DataArray *blockarr = soloarr->FindArray(s, false);
-    return blockarr ? blockarr : soloarr->FindArray("default");
+    return blockarr == NULL ? soloarr->FindArray("default") : blockarr;
 }
 
 float Scoring::GetSoloGemReward(Symbol s) {

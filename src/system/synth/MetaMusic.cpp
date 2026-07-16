@@ -181,8 +181,14 @@ void MetaMusic::UpdateMix() {
         MILO_ASSERT(m_CurrentFxConfig, 0x16F);
         DataArray *volsArr = m_CurrentFxConfig->FindArray(vols);
         DataArray *pansArr = m_CurrentFxConfig->FindArray(pans);
+#ifdef VERSION_SZBE69_B8
+        // lerp stuff?
+        const float f15 = SomePlusFunc();
+        const float f16 = 1 - f15;
+#else
         float f15 = SomeMinusFunc();
         float f16 = SomePlusFunc();
+#endif
         int numChannels = Min(mStream->GetNumChannels(), 6);
         if (unk80 && unk84 <= 90) {
             DataArray *volsArr80 = unk80->FindArray(vols);

@@ -174,8 +174,8 @@ void VorbisReader::Decrypt(unsigned char *data, int bytes) {
         int ret = ctr_decrypt(buf1, buf2, n, mCtrState);
         unsigned char *after = buf2;
         if ((mMagicHashA != 0 || mMagicHashB != 0)
-            && (after[0] == 'H' && after[1] == 'M' && after[2] == 'X' && after[3] == 'A'
-            )) {
+            && (after[0] == 'H' && after[1] == 'M' && after[2] == 'X'
+                && after[3] == 'A')) {
             after[0] = 'O';
             after[2] = 'g';
             after[1] = 'g';
@@ -360,9 +360,10 @@ bool VorbisReader::TryReadPacket(ogg_packet &pk) {
             return true;
         ogg_page page;
         int syncErr = ogg_sync_pageout(mOggSync, &page);
-        if (syncErr > 0)
+        if (syncErr > 0) {
             ogg_stream_pagein(mOggStream, &page);
-        else
+        }
+        if (syncErr <= 0)
             return false;
     }
 }
@@ -432,14 +433,14 @@ void VorbisReader::Init() {
     mStream->InitInfo(mNumChannels, mSampleRate, true, -1);
 }
 
-int VorbisReader::ConsumeData(void **v, int i1, int i2) {
-    MILO_ASSERT(mSeekTarget == -1, 0x444);
+int VorbisReader::ConsumeData(void **pcm, int samples, int startSamp) {
+    MILO_ASSERT(mSeekTarget == -1, 1092);
     if (mSamplesToSkip > 0) {
-        int ret = Min(i1, mSamplesToSkip);
-        mSamplesToSkip -= ret;
-        return ret;
+        int consumed = Min(samples, const_cast<volatile int &>(mSamplesToSkip));
+        mSamplesToSkip -= consumed;
+        return consumed;
     } else {
-        MILO_ASSERT(mStream, 0x44D);
-        return mStream->ConsumeData(v, i1, i2);
+        MILO_ASSERT(mStream, 1101);
+        return mStream->ConsumeData(pcm, samples, startSamp);
     }
 }
