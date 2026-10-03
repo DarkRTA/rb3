@@ -1,8 +1,8 @@
 #include "revolution/os/OSInterrupt.h"
 #include "types.h"
 
-void MWInitializeCriticalSection(BOOL* critsect) {}
+void MWInitializeCriticalSection(u32* critsect) {}
 
-void MWEnterCriticalSection(BOOL* critsect) { *critsect = OSDisableInterrupts(); }
+void MWEnterCriticalSection(u32* critsect) { *critsect = OSDisableInterrupts(); }
 
-void MWExitCriticalSection(BOOL* critsect) { OSRestoreInterrupts(*critsect); }
+void MWExitCriticalSection(u32* critsect) { OSRestoreInterrupts(*critsect); }

@@ -1,6 +1,6 @@
 #include <ec/csup.h>
 
-int EC_GetCustomerSupportCode(int p1) {
+extern "C" int EC_GetCustomerSupportCode(int p1) {
     int code;
     if (p1 >= 0) {
         code = 0;
