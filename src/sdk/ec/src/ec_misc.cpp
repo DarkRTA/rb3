@@ -1,5 +1,6 @@
 #include <ec/misc.h>
 #include <MSL_Common/printf.h>
+#include <stdarg.h>
 namespace {
     char *levelText[] = {"#####  EC ERR: ", "EC WARN: ", "EC INFO: ", "EC FINE: ", "EC FINER: ", "EC FINEST: "};
 };
@@ -12,21 +13,25 @@ namespace ec {
     void (*logMsgToBuffer)(char *, __va_list_struct *);
 
     void logmsg(long level, const char *format, ...) {
+        va_list args;
+        va_start(args, format); 
         if (level != 0 && level <= logLevel || level <= logBufLevel) {
             char *buffer;
-            int ret = snprintf(buffer, 0x100, "%s%s", levelText[level * 4], format);
+            int ret = snprintf(buffer, 0x100, "%s%s", levelText[level], format);
             if (ret < 0 || ret == 0x100) {
                 memcpy(buffer, format, 0x100);
                 char b = 0; //? is this needed?
-                printf("%s log format string exceeds %d: %s\n", levelText, 0xff, format);
+                printf("%s log format string exceeds %d: %s\n", levelText[0], 0xff, format);
             }
             if (level <= logLevel) {
-                vprintf(buffer, (__va_list_struct *)0x2000000);
+                vprintf(buffer, args);
             }
             if (logMsgToBuffer != NULL && level <= logBufLevel) {
-                logMsgToBuffer(buffer, (__va_list_struct *)0x2000000);
+                logMsgToBuffer(buffer, args);
             }
+
         }
+        va_end(args);
     }
 
     ECResult setLogLevel(long newLevel) {

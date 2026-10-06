@@ -116,6 +116,8 @@ public:
     virtual void NotifyFailed(Content *);
     virtual void RestartEcommerce();
 
+    static OpResult CheckNANDSpace(unsigned long, unsigned long, unsigned long &, bool);
+
     void UnmountContents(Symbol);
     WiiContent *ContentOf(Symbol);
     CNTHandle *GetChannelContentHandle();

@@ -29,7 +29,7 @@ void (*CNTSDNANDCheckRSO)(void);
 void (*CNTSDGetAvailableAreaRSO)(void);
 void (*CNTSDGetTmpDirUsageRSO)(void);
 void (*CNTSDGetUserAvailableAreaRSO)(void);
-void (*CNTSDCacheClearRSO)(void);
+int (*CNTSDCacheClearRSO)(void);
 void (*CNTSDCacheInUseRSO)(void);
 void (*CNTSDCachePushDeleteContentVRSO)(void);
 int (*CNTSDCachePopRSO)(long);
@@ -52,7 +52,7 @@ void unresolved_cntsdModule() {
     OSReport("\nError: call cntsdModule unlinked function.\n");
 }
 
-void CM_CNTSDCacheClearRSO() { CNTSDCacheClearRSO(); }
+int CM_CNTSDCacheClearRSO() { return CNTSDCacheClearRSO(); }
 int CM_CNTSDCachePopRSO(long p1) { return CNTSDCachePopRSO(p1); }
 
 void SDCallback(int unk) {

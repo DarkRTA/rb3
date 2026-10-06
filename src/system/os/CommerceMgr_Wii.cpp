@@ -4,13 +4,21 @@
 #include "system/utl/HttpWii.h"
 #include "os/PlatformMgr.h"
 #include "os/ContentMgr_Wii.h"
-#include "ec/csup.h"
+//#include "ec/csup.h"
 #include "revolution/sc/scsystem.h"
 
-extern int EC_CancelOperation(unsigned long);
-extern ECResult EC_GetProgress(unsigned long, ECResult *);
-extern int EC_Connect();
-extern int CM_CNTSDCachePopRSO(long);
+extern "C" {
+    extern int EC_CancelOperation(unsigned long);
+    extern int EC_GetOverhead(int, int *, int *);
+    extern int EC_GetCustomerSupportCode(int);
+    extern ECResult EC_GetProgress(unsigned long, ECResult *);
+    extern int EC_Connect();
+    extern int CM_CNTSDCachePopRSO(long);
+    extern int EC_DownloadTitle(unsigned long long, int);
+    extern long NCDGetCurrentIpConfig(const char *ip); //? is the parameter the ip?
+    
+}
+extern int CM_CNTSDCacheClearRSO();
 
 uint SCCheckPCShoppingRestriction() {
     unsigned long dest [2];
@@ -23,6 +31,10 @@ char gUsersPIN [8];
 
 
 bool gAllowNeedSyncReturn = true;
+bool gNetUseTimedSleep;
+
+int gLastErrorReturnValue;
+char gLastErrorDesc [128];
 
 char *gCommerceFilterName_OfferType = "offer_type";
 char *gCommerceFilterValue_Album = "album";
@@ -30,6 +42,8 @@ char *gCommerceFilterValue_Everything = "*";
 char *gCommerceFilterValue_Pack = "pack";
 char *gCommerceFilterValue_Song = "song";
 char *gCommerceFilterValuePurchasable = "PURCHASABLE";
+char *gTempRequestOfferId;
+char *gTempOfferIdValues;
 
 const char *__FUNCTION__22256 = "_M_set_finish_idx";
 
@@ -53,8 +67,7 @@ void WiiCommerceMgr::Init() {
 bool WiiCommerceMgr::IsBusy() const { return mCommerceAsyncOpId != -1; }
 
 bool WiiCommerceMgr::NeedSync() {
-    int r = EC_GetIsSyncNeeded();
-    return (bool)(gAllowNeedSyncReturn & r != -0xFE2);
+    return (bool)(gAllowNeedSyncReturn & EC_GetIsSyncNeeded() != -0xFE2);
 }
 
 bool WiiCommerceMgr::CheckPurchaseSync() { return true; }
@@ -62,7 +75,7 @@ bool WiiCommerceMgr::CheckPurchaseSync() { return true; }
 void WiiCommerceMgr::GetTitleInfo() {
     // titleInfo is actually WiiCommerceMgr.mTitleInfo
     ECTitleInfo titleInfo;
-    for (int i = 0; i < mTitleIdsNum; i++) {
+    for (unsigned long i = 0; i < mTitleIdsNum; i++) {
         unsigned long long titleId = mTitleIds[i];
         long r = EC_GetTitleInfo(titleId, &titleInfo);
         if (r != -4050) {
@@ -150,20 +163,12 @@ void WiiCommerceMgr::WaitAsyncOp(long opId, WiiCommerceMgr::LastCommerceOperatio
     unke8 = 0;
 }
 
-const char *GetAttributeStr(ECContentCatalogInfo *info, char *name) {
-    uint u1, u3 = 0, u4 = info->nAttributes;
-    int i2, i5 = 0;
-    const char *theName;
-    while (u4 > u3) {
-        i2 = strcmp((info->attributes)[i5].name, name);
-        if (i2 == 0) {
-            theName = (info->attributes)[u3 * 8].name;
-            break;
-        }
-        i5 += 8;
-        u3 += 1;
+const char *GetAttributeStr(const ECContentCatalogInfo *info, char *name) {
+    for (uint i = 0; i < info->nAttributes; i += 1) {
+        if (streq((info->attributes)[i].name, name))
+            return (const char *)(info->attributes)[i].value;
     }
-    return theName;
+    return NULL;
 }
 
 int WiiCommerceMgr::PauseCommerce(bool pause) {
@@ -312,7 +317,7 @@ int WiiCommerceMgr::CancelCurrentOperation() {
 }
 }
 void WiiCommerceMgr::MarkChanged(bool changed) {
-    this[0x44].unkc4 = true; //??? what
+    unk4194 = true; //??? what
     if (changed)
         TheWiiContentMgr.mDirty = true;
 }
@@ -322,14 +327,13 @@ void WiiCommerceMgr::InitPreDownload() {
     void *__dest = &unk2168;
     unk2160 = 0;
     void *__src = (void *)((int)u1 * 2);
-    *(int *)((int)&mTitleId + 4) = 0;
-    *(int *)&mTitleId = 0;
+    mTitleId = 0;
     unsigned long u2;
     if (__dest != __src) {
         if (__dest != __src) { //same comparison again?
             __dest = memmove(__dest, __src, 0);
         }
-        u2 = (int)__dest - unk2158 / 2;
+        u2 = (int)__dest - unk2158.size() / 2;
         std_vec_range_assert(u2, 0xFFFF, __FUNCTION__22256);
         unk215c = (short)u2;
     }
@@ -353,7 +357,7 @@ void WiiCommerceMgr::CleanupAfterDownload() {
 }
 
 unsigned int WiiCommerceMgr::PricesRemaining() {
-    return (unsigned int)(-unkb8 | unkb8) >> 0x1f;
+    //return (unsigned int)(-*(unsigned int *)unkb8 | unkb8) >> 0x1f;
 }
 
 unsigned int WiiCommerceMgr::OffersRemaining() {
@@ -397,6 +401,114 @@ void WiiCommerceMgr::HandleError(WiiCommerceMgr::LastCommerceOperation lastOp, i
 
 
     }
+}
+
+bool WiiCommerceMgr::InitCommerce(Hmx::Object *obj) {
+    if (--unk2154 < 2) {
+        gLastErrorReturnValue = 0;
+        gLastErrorDesc[0] = '\0';
+        customerSupportCode = 0;
+        long err = NCDGetCurrentIpConfig("");
+        if (err < 0) {
+            gLastErrorReturnValue = err;
+            int supportCode = EC_GetCustomerSupportCode(err);
+            customerSupportCode = supportCode;
+            MILO_WARN("WiiCommerceMgr: no network config, %d, %d", err, supportCode);
+            if (err == -7) {
+                customerSupportCode = 50299; //0xC47B
+            }
+            return false;
+        }
+        unk94 = _MemAlloc(0x780, 0x20);
+        unk2120 = _MemAlloc(0x4DB20, 0x20);
+        unkac = 0x80000;
+        unka8 = _MemAlloc(0x80000, 0x20);
+        DataArray *config = SystemConfig("store", "titles");
+        mTitleIds = (unsigned long long *)config->mSize;
+
+    } else {
+        mObj = obj;
+        return true;
+    }
+}
+
+void WiiCommerceMgr::DestroyCommerce() {
+    if (--unk2154 <= 0) {
+        if (unk2154 < 0) {
+            unk2154 = 0;
+        } else {
+            PauseCommerce(false);
+            if (TheWiiContentMgr.mMode == 0)
+                CM_CNTSDCacheClearRSO();
+            if (unka8) {
+                MEMFREE(unka8);
+            }
+            if (unk94) {
+                MEMFREE(unk94);
+            }
+            if (unk2120) {
+                MEMFREE(unk2120);
+            }
+            if (mTitleIdsNum) {
+                _MemFree((void *)mTitleIdsNum);
+                mTitleIdsNum = 0;
+            }
+            gNetUseTimedSleep = false;
+            unkf1 = false;
+        }
+    }
+}
+
+bool WiiCommerceMgr::UpdateTitle(unsigned long long titleId) {
+    if (TheWiiContentMgr.mMode == 0) {
+        long ret = CM_CNTSDCacheClearRSO();
+        if (ret != 0) {
+            MILO_WARN("CM_CNTSDCacheClearRSO failed: %d", ret);
+            HandleError(kDownloadTitle, -0xfa1, "");
+            return false;
+        }
+        ret = 0;
+        unsigned long huh;
+        OpResult res = WiiContentMgr::CheckNANDSpace(unk41a0, unk41a4, huh, true);
+        if (res != kOpSuccess) {
+            MILO_WARN("DownloadSpecifiedContentUnits failed: (%d): spaceCheck: cu (%d), need (%d)", res, unk41a0, ret);
+            HandleError(kDownloadTitle, -4001, "");
+            return false;
+        }
+        //CM_CNTSDCache something something
+    }
+}
+
+bool WiiCommerceMgr::UpdateTitle(StorePurchaseable *offer, bool upgrade) {
+    if (upgrade)
+        return UpdateTitle(offer->GetUpgradeTitleId());
+    return UpdateTitle(offer->GetTitleId());
+}
+
+bool WiiCommerceMgr::UpdateTitleAndContents(unsigned long long titleId) {
+    int ret = EC_DownloadTitle(titleId, 2);
+    if (ret <= 0) {
+        HandleError(kDownloadTitleAndContents, ret, "");
+        return false;
+    }
+    WaitAsyncOp(ret, kDownloadTitleAndContents);
+    return true;
+}
+
+bool WiiCommerceMgr::UpdateTitleAndContents() {
+    DataArray *config = SystemConfig(store, titles);
+    return UpdateTitleAndContents(MakeDataTitleId(String(config->Str(1))));
+}
+
+bool WiiCommerceMgr::RequestPurchase(unsigned long long titleId, const char *offerId) {
+    mTitleId = titleId;
+    unke4 = 2;
+    unk98 = 0x28;
+    strncpy(gTempRequestOfferId, offerId, 0x10);
+    gTempRequestOfferId[0x10] = '\0';
+    gTempOfferIdValues = gTempRequestOfferId;
+    unkc4 = "offer_id";
+    unkc8 = gTempOfferIdValues;
 }
 
 //CommerceMgrCancelCompleteMsg

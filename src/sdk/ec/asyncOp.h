@@ -6,9 +6,11 @@
 
 class ECAsyncOpEnv;
 class ECAsyncOp;
+class ECAsyncOpArg;
 
 class ECAsyncOpEnv {
 public:
+    int p1;
     _SHRThread *opThread; //offset 0x4, size 0x4
     int unk0x4c; //offset 0x4c, size 0x4. maybe cached balance?
     bool unk0x50; //offset 0x50, size 0x1
@@ -30,5 +32,17 @@ public:
 namespace ec {
     ECAsyncOpEnv *op;
 }
+
+class ECAsyncOp {
+public:
+    int init(long, ECAsyncOpArg *);
+};
+class ECAsyncOpArg {
+public:
+    long unk0; // 0
+    long *unk4; // 4
+    long unk8; // 8
+
+};
 
 #endif
