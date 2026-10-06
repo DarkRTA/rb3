@@ -63,6 +63,12 @@ typedef struct _ECContentCatalogInfo {
     unsigned long nIndexes; // offset 0x28, size 0x4
 } ECContentCatalogInfo;
 
+typedef struct _ECAttributeFilterEx {
+    const char *name;
+    const char *value;
+
+} ECAttributeFilterEx;
+
 int EC_Init(ECNameValue *funcs, int numFuncs);
 int EC_Shutdown();
 int EC_DeleteContents(
