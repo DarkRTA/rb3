@@ -88,6 +88,43 @@ void OutfitConfig::MatSwap::UnSwapResource() {
     }
 }
 
+int OutfitConfig::NumIndices(int i2) const {
+    for (int i = 0; i < mMats.size(); i++) {
+        const MatSwap &swap = mMats[i];
+        if (swap.mColor1Option == i2) {
+            if (swap.mColor1Palette) {
+                return swap.mColor1Palette->NumColors();
+            }
+            if (swap.mTextures.size() != 0) {
+                return swap.mTextures.size();
+            }
+        }
+        if (swap.mColor2Option == i2 && swap.mColor2Palette) {
+            return swap.mColor2Palette->NumColors();
+        }
+    }
+    return 0;
+}
+
+int OutfitConfig::NumColorOptions() const {
+    int max = -1;
+    for (int i = 0; i < mMats.size(); i++) {
+        if (mMats[i].mColor1Palette || mMats[i].mTextures.size() != 0) {
+            const MatSwap &swap = mMats[i];
+            if (max < swap.mColor1Option) {
+                max = swap.mColor1Option;
+            }
+        }
+        if (mMats[i].mColor2Palette) {
+            const MatSwap &swap = mMats[i];
+            if (max < swap.mColor2Option) {
+                max = swap.mColor2Option;
+            }
+        }
+    }
+    return max + 1;
+}
+
 OutfitConfig::Piercing::Piercing(Hmx::Object *o)
     : mPiercing(o, 0), mReskin(0), mPieces(o) {}
 
