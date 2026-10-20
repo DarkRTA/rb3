@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+typedef s32 ESFd;
+
 typedef u32 ESId;
 typedef u32 ESContentId;
 typedef u64 ESTitleId;
@@ -21,6 +23,9 @@ typedef u8 ESTmdReserved[62];
 typedef u8 ESTicketReserved[48];
 typedef u8 ESSysAccessMask[2];
 typedef u8 ESCidxMask[64];
+
+typedef u8 ESHash[20];
+typedef u8 ESSignature[60];
 
 #pragma pack(push, 4)
 
@@ -117,6 +122,63 @@ typedef struct {
     ESCidxMask cidxMask;
     ESLpEntry limits[8];
 } ESTicket;
+
+typedef enum ESCertSigType {
+    ES_SIG_RSA4096 = 0x00010000,
+    ES_SIG_RSA2048,
+    ES_SIG_ECC,
+} ESCertSigType;
+
+typedef struct ESCertSignature {
+    ESCertSigType sigType;  // 0x00
+    u8 sig[256];            // 0x04
+    u8 reserved[60];        // 0x104
+    u8 issuer[64];          // 0x140
+} ESCertSignature;
+
+typedef s32 ESError;
+
+#define ES_ERR_OK 0
+#define ES_ERR_DONT_EXISTS -106
+#define ES_ERR_1001 -1001
+#define ES_ERR_1002 -1002
+#define ES_ERR_1003 -1003
+#define ES_ERR_1004 -1004
+#define ES_ERR_INVALID_PUB_KEY_TYPE -1005
+#define ES_ERR_1006 -1006
+#define ES_ERR_1007 -1007
+#define ES_ERR_1008 -1008
+#define ES_ERR_FILE_READ_FAILED -1009
+#define ES_ERR_FILE_WRITE_FAILED -1010
+#define ES_ERR_1011 -1011
+#define ES_ERR_INVALID_SIGNATURE -1012
+#define ES_ERR_1013 -1013
+#define ES_ERR_1014 -1014
+#define ES_ERR_1015 -1015
+#define ES_ERR_TMD_MAXFD -1016
+#define ES_ERR_INVALID -1017
+#define ES_ERR_1018 -1018
+#define ES_ERR_INVALID_UNKNOWN -1019
+#define ES_ERR_INVALID_DEVICE_ID -1020
+#define ES_ERR_1021 -1021
+#define ES_ERR_INVALID_CONTENT_HASH -1022
+#define ES_ERR_1023 -1023
+#define ES_ERR_NO_MEMORY -1024
+#define ES_ERR_NO_TMD_FILE -1025
+#define ES_ERR_NO_RIGHT -1026
+#define ES_ERR_ISSUER_NOT_FOUND -1027
+#define ES_ERR_TICKET_NOT_FOUND -1028
+#define ES_ERR_INVALID_TICKET -1029
+#define ES_ERR_1030 -1030
+#define ES_ERR_INVALID_BOOT2 -1031
+#define ES_ERR_UNKNOWN_FATAL -1032
+#define ES_ERR_TICKET_EXPIRED -1033
+#define ES_ERR_NO_NEW_COMMON_KEY -1034
+#define ES_ERR_INVALID_TITLE_VER -1035
+#define ES_ERR_BAD_SYSMENU_TICKET -1036
+#define ES_ERR_BAD_SYSMENU_CONTENTS -1037
+#define ES_ERR_1038 -1038
+#define ES_ERR_NO_DISC_NAND_TMD -1039
 
 #pragma pack(pop)
 
