@@ -157,7 +157,7 @@ void BandSongMgr::ContentDone() {
     }
     unk124 = false;
     SyncSharedSongs();
-    if (&TheRockCentral) {
+    if (TheRockCentral.mState == 2) {
         std::vector<BandProfile *> profiles = TheProfileMgr.GetSignedInProfiles();
         std::vector<int> songs2;
         GetRankedSongs(songs2, false, true);
