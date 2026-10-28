@@ -59,4 +59,4 @@ We can, and have, accepted AI code in the past, but the code still needs to be u
 
 ## Conclusion
 
-That's the general gist! We’re happy you have an interest in contributing and can’t wait to see what you uncover! If you have any further questions, reach out to us on the [MiloHax discord](https://discord.gg/milohax) (for general milo engine knowledge/interest) or the [GC/Wii Decompilation Discord](https://discord.gg/hKx3FJJgrV) (although this is an Xbox 360 game, the GC/Wii also uses PowerPC, and this discord is very knowledgeable on decompiling with it).
+That's the general gist! We’re happy you have an interest in contributing and can’t wait to see what you uncover! If you have any further questions, reach out to us on the [MiloHax discord](https://discord.gg/milohax) (for general milo engine knowledge/interest) or the [GC/Wii Decompilation Discord](https://discord.gg/hKx3FJJgrV).
